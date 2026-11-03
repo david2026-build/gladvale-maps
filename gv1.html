@@ -687,6 +687,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .fab{width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);display:grid;place-items:center}
 .fab svg{width:22px;height:22px;fill:var(--ink)}
 .fab.on svg{fill:#1a73e8}
+#keyBtn.on{background:#1e40c8;color:#fff}
 .sheet{position:fixed;z-index:1001;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.2);
 padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(110%);transition:transform .22s ease;max-height:72vh;overflow-y:auto}
 .sheet.open{transform:none}
@@ -727,7 +728,15 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .me{width:18px;height:18px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 8px rgba(26,115,232,.22)}
 .toast{position:fixed;z-index:1002;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%);background:rgba(20,30,20,.9);color:#fff;padding:9px 14px;border-radius:20px;font-size:14px;display:none;max-width:90vw;text-align:center}
 .leaflet-control-attribution{font-size:10px}
-.fab.suggest{background:var(--accent)}.fab.suggest svg{fill:#fff}
+.key{position:fixed;z-index:999;left:10px;top:calc(64px + env(safe-area-inset-top));background:rgba(255,255,255,.96);border:3px solid #1e40c8;border-radius:12px;padding:8px 12px 8px 10px;box-shadow:0 2px 12px rgba(0,0,0,.25);max-height:calc(100vh - 160px);overflow-y:auto;display:none;min-width:190px;max-width:260px}
+.key.open{display:block}
+.key h3{margin:0 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.key h3 button{font-size:18px;line-height:1;color:var(--muted);padding:0 2px}
+.key .row{display:flex;align-items:center;gap:9px;padding:3px 0;font-size:13.5px;width:100%;text-align:left}
+.key .row .sw{width:22px}
+.key .hint{font-size:11px;color:var(--muted);margin-top:6px}
+@media(max-width:759px){.key{top:auto;bottom:calc(30px + env(safe-area-inset-bottom));max-height:42vh;max-width:62vw;font-size:12px}.key .row{font-size:12.5px}}
+.sgbtn{background:#ef6c00;color:#fff;border-radius:24px;padding:0 14px;font-weight:800;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.25);white-space:nowrap}
 .drawbar{position:fixed;z-index:1003;left:10px;right:10px;bottom:calc(16px + env(safe-area-inset-bottom));background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:12px 14px;display:none}
 @media(min-width:760px){.drawbar{left:auto;right:12px;width:380px}}
 .drawbar p{margin:0 0 10px;font-size:14px}
@@ -752,11 +761,12 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
     <input id="q" type="search" inputmode="numeric" placeholder="Paddock number…" autocomplete="off">
     <div class="results" id="results"></div>
   </div>
+  <button class="sgbtn" id="suggestBtn" title="Suggest a change">＋ Suggest</button>
   <button class="farm" id="farmBtn" title="All farms">GV1 ▾</button>
 </div>
 
 <div class="fabs" id="fabs">
-  <button class="fab suggest" id="suggestBtn" aria-label="Suggest a change"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7zm-1 4v2H9v2h2v2h2v-2h2V8h-2V6h-2z"/></svg></button>
+  <button class="fab" id="keyBtn" aria-label="Map key" title="Map key" style="font-weight:800;font-size:13px">KEY</button>
   <button class="fab" id="layersBtn" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="M12 2 1 8l11 6 11-6-11-6zm0 14.2L3.2 11.4 1 12.6 12 18.6l11-6-2.2-1.2L12 16.2zm0 4L3.2 15.4 1 16.6l11 6 11-6-2.2-1.2L12 20.2z"/></svg></button>
   <button class="fab" id="listBtn" aria-label="Paddock sizes"><svg viewBox="0 0 24 24"><path d="M3 5h2v2H3V5zm4 0h14v2H7V5zM3 11h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/></svg></button>
   <button class="fab" id="fitBtn" aria-label="Whole farm"><svg viewBox="0 0 24 24"><path d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg></button>
@@ -765,6 +775,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 
 <div class="sheet" id="sheet"><div class="grab"></div><button class="x" id="closeSheet" aria-label="Close">×</button><div id="sheetBody"></div></div>
 <div class="toast" id="toast"></div>
+<div class="key" id="keyBox"></div>
 <div class="drawbar" id="drawbar"><p id="drawMsg"></p><div class="btns"><button class="btn alt" id="drawUndo">Undo point</button><button class="btn alt" id="drawCancel">Cancel</button><button class="btn" id="drawDone">Next</button></div></div>
 
 <script>/* @preserve
@@ -874,6 +885,7 @@ function syncLayers(){
     if(on){ if(!map.hasLayer(d.layer)) d.layer.addTo(map);} else map.removeLayer(d.layer); });
   order.forEach(id=>{ const d=LAYERS.find(x=>x.id===id); if(map.hasLayer(d.layer) && d.layer.bringToFront) d.layer.bringToFront(); });
   updateLabels();
+  if(typeof renderKey==='function') renderKey();
 }
 function isOn(id){ const d=LAYERS.find(x=>x.id===id); return id in state ? state[id] : d.on; }
 
@@ -1025,7 +1037,7 @@ function sgShow(s){
 function sgLoad(){
   if(!/^https:/.test(SUGGEST_URL)) return;
   fetch(SUGGEST_URL+'?farm='+encodeURIComponent(META.name)).then(r=>r.json()).then(d=>{ sgData=d; sgDraw();
-    const sp=new URLSearchParams(location.hash.slice(1)).get('s'); if(sp){ const s=sgData.find(x=>x.id===sp); if(s){ sgShow(s); const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); } }
+    const sp=new URLSearchParams(location.search).get('s') || new URLSearchParams(location.hash.slice(1)).get('s'); if(sp){ const s=sgData.find(x=>x.id===sp); if(s){ sgShow(s); const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18,paddingBottomRight:[0,innerWidth<760?220:0]}); sgShow(s); } else if(sp) toast('That suggestion has been removed or rejected'); }
   }).catch(()=>{});
 }
 // drawing
@@ -1089,6 +1101,27 @@ document.getElementById('suggestBtn').onclick=()=>{ clearSel();
    <div class="choice"><button data-s="Pin">📍 Pin<small>a spot</small></button><button data-s="Line">〰 Line<small>e.g. a drain</small></button><button data-s="Area">⬠ Area<small>e.g. wet patch</small></button></div>`);
   body.querySelectorAll('.choice button').forEach(b=>b.onclick=()=>drawStart(b.dataset.s)); };
 
+
+/* ---------- map key (legend) ---------- */
+const keyBox=document.getElementById('keyBox'), keyBtn=document.getElementById('keyBtn');
+function renderKey(){
+  if(!keyBox.classList.contains('open')) return;
+  let h='<h3>Key <button id="keyClose" aria-label="Close key">×</button></h3>', grp=null, any=false;
+  LAYERS.forEach(d=>{
+    if(d.grp){ grp=d.grp; return; }
+    if(!isOn(d.id)) return;
+    any=true;
+    h+=`<button class="row" data-id="${d.id}" title="Tap to hide"><span class="sw">${d.sw}</span><span>${d.name}</span></button>`;
+  });
+  if(!any) h+='<div class="hint">No layers turned on.</div>';
+  h+='<div class="hint">Shows layers that are on. Tap one to hide it; use the layers button to add more.</div>';
+  keyBox.innerHTML=h;
+  document.getElementById('keyClose').onclick=()=>toggleKey(false);
+  keyBox.querySelectorAll('.row').forEach(b=>b.onclick=()=>{ state[b.dataset.id]=false; try{localStorage.setItem('gvmap.layers',JSON.stringify(state));}catch(e){} syncLayers(); });
+}
+function toggleKey(on){ keyBox.classList.toggle('open',on); keyBtn.classList.toggle('on',on); try{localStorage.setItem('gvmap.key',on?'1':'0');}catch(e){} renderKey(); }
+keyBtn.onclick=()=>toggleKey(!keyBox.classList.contains('open'));
+
 /* ---------- start ---------- */
 const farmBounds = paddocks.getBounds();
 function fitFarm(){ map.fitBounds(farmBounds,{padding:[20,20],paddingTopLeft:[20,70]}); updateLabels(); }
@@ -1099,6 +1132,8 @@ document.getElementById('listBtn').onclick=()=>{ clearSel();
   openSheet(`<h2>Paddock sizes</h2><div class="sub">${ps.length} paddocks · GV1 ${padSum('GV1')} ha · McFarlane ${padSum('McFarlane')} ha · total ${(+padSum('GV1')+ +padSum('McFarlane')).toFixed(2)} ha effective</div>${ps.map(row).join('')}`);
   body.querySelectorAll('.lyr[data-n]').forEach(b=>b.onclick=()=>selectPaddock(+b.dataset.n)); };
 syncLayers(); fitFarm(); sgLoad();
+let keyPref=null; try{ keyPref=localStorage.getItem('gvmap.key'); }catch(e){}
+toggleKey(keyPref===null ? innerWidth>=760 : keyPref==='1');
 const hp = new URLSearchParams(location.hash.slice(1)); if(hp.get('p')) selectPaddock(+hp.get('p'));
 </script>
 </body>
