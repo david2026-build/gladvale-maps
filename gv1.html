@@ -758,8 +758,8 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .ico img{display:block;filter:drop-shadow(0 0 1.5px #fff)}.sw img{display:block}.ico svg{display:block;filter:drop-shadow(0 0 1.2px #fff) drop-shadow(0 0 1px #fff)}.sw svg{display:block;max-width:24px}
 .fiw{background:none;border:0}.fi{display:flex;align-items:center;gap:3px;background:#fff;border:2px solid;border-radius:14px;padding:1px 6px 1px 2px;box-shadow:0 1px 4px rgba(0,0,0,.35);white-space:nowrap;position:relative}
 .fi svg{width:20px;height:20px;display:block}.fi b{font-size:11.5px;color:#222}.fi .lv{position:absolute;left:6px;right:6px;bottom:-5px;height:4px;background:#e0e0e0;border-radius:2px;overflow:hidden}.fi .lv i{display:block;height:100%}
-.qg{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}.qg button{border:1.5px solid #c8c8c8;border-radius:16px;padding:5px 10px;font-size:12.5px;font-weight:600;background:#fff;color:#555}
-.qg button.on{background:var(--accent);border-color:var(--accent);color:#fff}.qg button.some{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.qg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin:6px 0 4px}.qg button{text-align:left;border:1.5px solid #ddd;border-radius:10px;padding:7px 10px;background:#fff;color:var(--ink);position:relative}.qg button b{display:block;font-size:13px;padding-right:34px}.qg button small{display:block;color:var(--muted);font-size:11px;line-height:1.25}.qg button i{position:absolute;right:8px;top:7px;font-style:normal;font-size:10.5px;font-weight:800;color:#888}
+.qg button.on{border-color:var(--accent);background:var(--accent-soft)}.qg button.on i{color:var(--accent)}.qg button.some{border-color:#9ccc65;background:#f6faef}.qg button.some i{color:#689f38}
 .measbar{position:fixed;z-index:1003;left:10px;right:10px;bottom:calc(16px + env(safe-area-inset-bottom));background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:12px 14px;display:none}
 @media(min-width:760px){.measbar{left:auto;right:70px;width:340px}}
 .measbar b{font-size:20px}.measbar p{margin:0 0 8px;font-size:13px;color:var(--muted)}.mlbl{background:#fff;border:1px solid #333;border-radius:6px;padding:1px 5px;font-size:11.5px;font-weight:700;white-space:nowrap}
@@ -1146,7 +1146,13 @@ function layersPanel(){
   let h = `<h2>Map layers</h2><div class="sub">${META.title}</div>
   <div class="grp">Background</div><div class="base">
    <button data-b="sat" class="${baseKey==='sat'?'on':''}">Satellite</button><button data-b="street" class="${baseKey==='street'?'on':''}">Street</button><button data-b="none" class="${baseKey==='none'?'on':''}">Plain</button></div>`;
-  h+=`<div class="grp">Quick on / off</div><div class="qg">${Object.keys(GROUPS).filter(g=>GROUPS[g].length).map(g=>`<button data-qg="${g}" class="${grpState(g)}">${g.replace(/ \(2019 plan\)/,'')}</button>`).join('')}</div>`;
+  const GDESC={'Suggestions':'Staff suggestions & closed history','Paddocks':'Paddock boundaries & sizes','Buildings & access':'Buildings, houses, cow shed, yard, lanes',
+    'Dairy shed & barn services (2019 plan)':'Washdown, effluent pipes & drains at the shed','Drainage & services':'Tile drains, main drain, creeks, power',
+    'Effluent':'Pipes, hydrants, ponds, irrigation area','Environment':'Trees, riparian, waterways, CSAs, offal pits','Farm information':'Vat, silo, pond & tank levels',
+    'Health & safety':'Hazards, first aid, assembly point, addresses','Map notes':'FieldMAP text notes','Stock water':'Water lines, troughs, valves, bores, taps',
+    'Water blocks':'The 7 stock water blocks','Winter management':'Winter supplement rows'};
+  const qlab = st => st==='on'?'ON':st==='some'?'PART':'OFF';
+  h+=`<div class="grp">Quick on / off</div><div class="qg">${Object.keys(GROUPS).filter(g=>GROUPS[g].length).map(g=>`<button data-qg="${g}" class="${grpState(g)}"><b>${g.replace(/ \(2019 plan\)/,'')}</b><small>${GDESC[g]||GROUPS[g].length+' layers'}</small><i>${qlab(grpState(g))}</i></button>`).join('')}</div>`;
   LAYERS.forEach(d=>{
     if(d.grp){ h+= GROUPS[d.grp].length>1 ? `<button class="grp gt ${grpState(d.grp)}" data-g="${d.grp}" title="Turn the whole group on/off"><span class="l">${d.grp}</span><span style="font-weight:500;text-transform:none;letter-spacing:0">all</span><span class="tg"></span></button>` : `<div class="grp">${d.grp}</div>`; return; }
     h+=`<button class="lyr ${isOn(d.id)?'on':''}" data-id="${d.id}"><span class="sw">${d.sw}</span><span class="nm">${d.name}${d.cnt?`<span class="cnt">${d.cnt}</span>`:''}</span><span class="tg"></span></button>`;
@@ -1160,7 +1166,7 @@ function layersPanel(){
   body.querySelectorAll('.lyr').forEach(b=>b.onclick=()=>{ const id=b.dataset.id; state[id]=!isOn(id);
     try{localStorage.setItem(STKEY,JSON.stringify(state));}catch(e){}
     b.classList.toggle('on',state[id]); syncLayers(); refreshGrp(); });
-  function refreshGrp(){ body.querySelectorAll('.qg button').forEach(x=>{ x.classList.remove('on','some'); const st=grpState(x.dataset.qg); if(st) x.classList.add(st); });
+  function refreshGrp(){ body.querySelectorAll('.qg button').forEach(x=>{ x.classList.remove('on','some'); const st=grpState(x.dataset.qg); if(st) x.classList.add(st); x.querySelector('i').textContent=qlab(st); });
     body.querySelectorAll('.grp.gt').forEach(x=>{ x.classList.remove('on','some'); const st=grpState(x.dataset.g); if(st) x.classList.add(st); }); }
   body.querySelectorAll('.qg button').forEach(b=>b.onclick=()=>{ const g=b.dataset.qg; setGroup(g, !grpState(g));
     body.querySelectorAll('.lyr[data-id]').forEach(x=>x.classList.toggle('on',isOn(x.dataset.id))); refreshGrp(); });
@@ -1439,9 +1445,11 @@ const VIEWS = [
   {k:'hs', n:'Health & safety', d:'Hazards, first aid, assembly point, power', ids:()=>['paddocks','hzhaz','hzemerg','hzarea','hzaddr','power','cables','lanes','buildings','pond']},
   {k:'shed', n:'Dairy shed', d:'Shed & barn services, levels', ids:()=>['sbwashdown','sbeffpipe','sbdrain','sbtiles','cables','pond','buildings','cowshed','yards','lanes','farminfo','effpit','effdrain','wtap','hzhaz','hzemerg']},
   {k:'winter', n:'Winter', d:'Winter grazing & supplements', ids:()=>['paddocks','wsupp','creek','trough','lanes']},
-  {k:'clear', n:'Paddocks only', d:'Start from a clean map', ids:()=>['paddocks']}];
+  {k:'sugg', n:'Suggestions', d:'Just the staff suggestions (open & closed)', ids:()=>['paddocks']},
+  {k:'clear', n:'Paddocks only', d:'Start from a clean map', ids:()=>['paddocks'], nosugg:true},
+  {k:'all', n:'All layers', d:'Everything on – very busy!', ids:()=>LAYERS.filter(d=>d.id).map(d=>d.id)}];
 let curView=''; try{ curView=localStorage.getItem('gvmap.view')||''; }catch(e){}
-function applyView(v){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); [...v.ids(),'sugg','sghist'].forEach(k=>state[k]=true);
+function applyView(v){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); [...v.ids(),...(v.nosugg?[]:['sugg','sghist'])].forEach(k=>state[k]=true);
   curView=v.k; try{ localStorage.setItem(STKEY,JSON.stringify(state)); localStorage.setItem('gvmap.view',v.k); }catch(e){}
   syncLayers(); body.querySelectorAll('.views button').forEach(b=>b.classList.toggle('on',b.dataset.v===v.k));
   if(v.k==='shed') map.fitBounds([[-46.17135,168.13400],[-46.16790,168.13560]],{paddingTopLeft:[innerWidth>=760?280:10,70],paddingBottomRight:[70,10]}); else fitFarm();
