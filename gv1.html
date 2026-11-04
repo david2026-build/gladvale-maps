@@ -685,6 +685,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .farm{background:var(--accent);color:#fff;border-radius:24px;padding:0 14px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.2);font-size:14px}
 .fabs{position:fixed;z-index:1000;right:10px;transition:right .15s,bottom .2s;bottom:calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;transition:bottom .2s}
 .fab{width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);display:grid;place-items:center}
+.fab{position:relative}.fab:after{content:attr(data-label);position:absolute;right:56px;top:50%;transform:translateY(-50%);color:#fff;font-weight:700;font-size:13px;white-space:nowrap;pointer-events:none;text-shadow:0 0 3px #000,0 0 2px #000,0 1px 4px #000}
 .fab svg{width:22px;height:22px;fill:var(--ink)}
 .fab.on svg{fill:#1a73e8}
 #keyBtn.on{background:#1e40c8;color:#fff}
@@ -768,14 +769,16 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .sgphoto{display:block;width:100%;max-height:280px;object-fit:cover;border-radius:10px;margin-top:10px;background:#eee}
 .hz svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}.z-xlo .hz svg{transform:scale(.7)}
 .sghi{opacity:.5}.sghi .sgi{width:26px;height:26px;border-width:2px;transform:scale(.9)}
-.views{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.views button{text-align:left;border:1.5px solid #ddd;border-radius:12px;padding:10px 12px;background:#fff}
-.views button b{display:block;font-size:14px}.views button small{color:var(--muted);font-size:12px}.views button.on{border-color:var(--accent);background:var(--accent-soft)}
+.views{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:8px}.views button{text-align:left;border:1.5px solid #ddd;border-radius:10px;padding:7px 10px;background:#fff}
+.views button b{display:block;font-size:13.5px}.views button small{color:var(--muted);font-size:11px;line-height:1.25;display:block}.views button.on{border-color:var(--accent);background:var(--accent-soft)}
 .warrow{background:none;border:0}.z-lo .warrow{display:none}
 .editbar{position:fixed;z-index:1003;left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.3);padding:10px 12px;display:none;border:3px solid #ef6c00}
 @media(min-width:760px){.editbar{left:auto;right:70px;width:420px}}
 .editbar select{width:100%;padding:8px;border:1px solid #ccc;border-radius:8px;font:inherit;font-size:14px;margin:4px 0 8px}
 .editbar .btns{flex-wrap:wrap}.editbar .btn{flex:1 1 30%;padding:9px 6px;font-size:13px}.editbar .btn.on{background:#ef6c00;color:#fff}
 .editbar p{margin:0;font-size:12.5px;color:var(--muted)}.editbar h4{margin:0 0 2px;font-size:14px;color:#ef6c00}
+.editing path.leaflet-interactive:not(.ed-on),.editing .leaflet-marker-icon:not(.ed-on):not(.marker-icon):not(.leaflet-pm-draggable){pointer-events:none!important}
+.editing .leaflet-tooltip{display:none}
 .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:#fff}
 .sgpin{width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .sgpin span{display:block;transform:rotate(45deg);color:#fff;font-weight:900;font-size:13px;text-align:center;line-height:18px}
@@ -795,13 +798,13 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 </div>
 
 <div class="fabs" id="fabs">
-  <button class="fab" id="keyBtn" aria-label="Map key" title="Map key" style="font-weight:800;font-size:13px">KEY</button>
-  <button class="fab" id="viewsBtn" aria-label="Map views" title="Map views"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
-  <button class="fab" id="measBtn" aria-label="Measure distance" title="Measure distance / area"><svg viewBox="0 0 24 24"><path d="M2.6 15.6 15.6 2.6l5.8 5.8L8.4 21.4zM6.2 15.2l1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1zm2.8-2.8 1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1z"/></svg></button>
-  <button class="fab" id="layersBtn" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="M12 2 1 8l11 6 11-6-11-6zm0 14.2L3.2 11.4 1 12.6 12 18.6l11-6-2.2-1.2L12 16.2zm0 4L3.2 15.4 1 16.6l11 6 11-6-2.2-1.2L12 20.2z"/></svg></button>
-  <button class="fab" id="listBtn" aria-label="Paddock sizes"><svg viewBox="0 0 24 24"><path d="M3 5h2v2H3V5zm4 0h14v2H7V5zM3 11h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/></svg></button>
-  <button class="fab" id="fitBtn" aria-label="Whole farm"><svg viewBox="0 0 24 24"><path d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg></button>
-  <button class="fab" id="locBtn" aria-label="My location"><svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm-1-7h2v3.06A8 8 0 0 1 19.94 11H23v2h-3.06A8 8 0 0 1 13 19.94V23h-2v-3.06A8 8 0 0 1 4.06 13H1v-2h3.06A8 8 0 0 1 11 4.06V1zm1 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg></button>
+  <button class="fab" data-label="Key" id="keyBtn" aria-label="Map key" title="Map key" style="font-weight:800;font-size:13px">KEY</button>
+  <button class="fab" data-label="Views" id="viewsBtn" aria-label="Map views" title="Map views"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
+  <button class="fab" data-label="Layers" id="layersBtn" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="M12 2 1 8l11 6 11-6-11-6zm0 14.2L3.2 11.4 1 12.6 12 18.6l11-6-2.2-1.2L12 16.2zm0 4L3.2 15.4 1 16.6l11 6 11-6-2.2-1.2L12 20.2z"/></svg></button>
+  <button class="fab" data-label="Measure" id="measBtn" aria-label="Measure distance" title="Measure distance / area"><svg viewBox="0 0 24 24"><path d="M2.6 15.6 15.6 2.6l5.8 5.8L8.4 21.4zM6.2 15.2l1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1zm2.8-2.8 1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1z"/></svg></button>
+  <button class="fab" data-label="Paddock sizes" id="listBtn" aria-label="Paddock sizes"><svg viewBox="0 0 24 24"><path d="M3 5h2v2H3V5zm4 0h14v2H7V5zM3 11h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/></svg></button>
+  <button class="fab" data-label="Whole farm" id="fitBtn" aria-label="Whole farm"><svg viewBox="0 0 24 24"><path d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg></button>
+  <button class="fab" data-label="My location" id="locBtn" aria-label="My location"><svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm-1-7h2v3.06A8 8 0 0 1 19.94 11H23v2h-3.06A8 8 0 0 1 13 19.94V23h-2v-3.06A8 8 0 0 1 4.06 13H1v-2h3.06A8 8 0 0 1 11 4.06V1zm1 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg></button>
 </div>
 
 <div class="measbar" id="measbar"><p>Tap the map to measure. Add 3+ points for an area.</p><div><b id="measD">0 m</b> <span id="measA" style="margin-left:10px;color:var(--muted)"></span></div><div class="btns"><button class="btn alt" id="measUndo">Undo</button><button class="btn alt" id="measClear">Clear</button><button class="btn" id="measClose">Done</button></div></div>
@@ -985,7 +988,7 @@ const LAYERS = [
     layer:gj('tiles',{style:{color:'#ff1f6b',weight:2.2,opacity:.95},
       onEachFeature:(f,l)=>l.on('click',e=>{L.DomEvent.stopPropagation(e);showTile(f.properties,e.latlng);})})},
   {id:'tilelabel', name:'Tile drain sizes & years', cnt:'FieldMAP labels (zoom in to see)', sw:'<i class="dot" style="color:#ff1f6b;background:#ff1f6b;width:8px;height:8px"></i>', on:false, layer:tileLabels},
-  {id:'maindrain', name:'300 mm main drain pipe (2026)', cnt:'McFarlane – replaces ditch & tree line', sw:'<i style="background:#ff1f6b;height:6px"></i>', on:true,
+  {id:'maindrain', name:'300 mm main drain pipe (2026)', cnt:'McFarlane – replaces ditch & tree line', sw:'<i style="background:#ff1f6b;height:6px"></i>', on:false,
     layer:gj('maindrain',{style:{color:'#ff1f6b',weight:5.5,opacity:.95},
       onEachFeature:(f,l)=>l.on('click',e=>{L.DomEvent.stopPropagation(e);showTile(Object.assign({},f.properties,{name:'300 mm main drain – replaces the open ditch beside the old tree line; tile drains feed into it',src:'traced along the trees from satellite imagery'}),e.latlng);})})},
   {id:'inspect', name:'Tile drain inspection pipes', cnt:by('inspect').length+' pipes', sw:'<i class="dot" style="color:#283593;background:#7986cb"></i>', on:false, layer:P('inspect','Tile drain inspection pipe','#283593','#7986cb',5)},
@@ -1150,7 +1153,8 @@ function layersPanel(){
     if(d.id==='sugg') h+=`<div class="sglg">${Object.entries(SGI).map(([k,v])=>`<span>${v[1]}${k}</span>`).join('')}</div>`;
     if(d.legend) h+=`<div class="legend">${Object.entries(WATER_COL).map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')}</div>`;
   });
-  h+=`<div class="btns" style="margin-top:14px"><button class="btn alt" id="editMapBtn">✎ Edit the map (Dave)</button></div>`;
+  let canEdit=false; try{ canEdit=!!localStorage.getItem('gvmap.pin') || /admin/.test(location.hash+location.search); }catch(e){}
+  if(canEdit) h+=`<div class="btns" style="margin-top:14px"><button class="btn alt" id="editMapBtn">✎ Edit the map (Dave)</button></div>`;
   h+=`<p class="note">Source: ${META.source}. Paddock areas are the surveyor's effective areas (GV1 ${padSum('GV1')} ha, McFarlane ${padSum('McFarlane')} ha).</p>`;
   openSheet(h);
   body.querySelectorAll('.lyr').forEach(b=>b.onclick=()=>{ const id=b.dataset.id; state[id]=!isOn(id);
@@ -1162,7 +1166,7 @@ function layersPanel(){
     body.querySelectorAll('.lyr[data-id]').forEach(x=>x.classList.toggle('on',isOn(x.dataset.id))); refreshGrp(); });
   body.querySelectorAll('.grp.gt').forEach(b=>b.onclick=()=>{ const g=b.dataset.g; setGroup(g, grpState(g)!=='on' && grpState(g)!=='some' ? true : false);
     body.querySelectorAll('.lyr[data-id]').forEach(x=>x.classList.toggle('on',isOn(x.dataset.id))); refreshGrp(); });
-  document.getElementById('editMapBtn').onclick=editStart;
+  const eb=document.getElementById('editMapBtn'); if(eb) eb.onclick=editStart;
   body.querySelectorAll('.base button').forEach(b=>b.onclick=()=>{ map.removeLayer(bases[baseKey]); baseKey=b.dataset.b; bases[baseKey].addTo(map); bases[baseKey].bringToBack&&bases[baseKey].bringToBack();
     body.querySelectorAll('.base button').forEach(x=>x.classList.toggle('on',x===b)); });
 }
@@ -1370,19 +1374,20 @@ function editStart(){ let pin=''; try{ pin=localStorage.getItem('gvmap.pin')||''
         .then(r=>{ if(r.ok){ try{localStorage.setItem('gvmap.pin',p);}catch(e){} editStart(); } else toast(r.error||'Wrong PIN'); }).catch(()=>toast('No connection')); };
     return; }
   if(!L.PM){ toast('The editing tools could not load – check your connection'); return; }
-  closeSheet(); window.EDITING=true; fabs.style.display='none'; editbar.style.display='block';
+  closeSheet(); toggleKey(false); window.EDITING=true; map.getContainer().classList.add('editing'); clearSel(); fabs.style.display='none'; editbar.style.display='block';
   ed={pin, changes:{}, key:null, d:null, mode:''};
   const sel=document.getElementById('edLayer');
   sel.innerHTML='<option value="">— choose a layer to edit —</option>'+editables().map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
   sel.onchange=()=>edPick(sel.value); edCount(); }
 function edLayerObj(d){ return d.layer._lines || d.layer; }
-function edOff(){ if(!ed||!ed.d) return; map.pm.disableDraw(); map.pm.disableGlobalRemovalMode(); leaves(edLayerObj(ed.d)).forEach(l=>{ try{ l.pm.disable(); }catch(e){} l.off('pm:edit pm:dragend pm:markerdragend pm:vertexremoved pm:remove'); }); }
+const edEl = l => l._path || l._icon;
+function edOff(){ if(!ed||!ed.d) return; map.pm.disableDraw(); map.pm.disableGlobalRemovalMode(); leaves(edLayerObj(ed.d)).forEach(l=>{ try{ l.pm.disable(); }catch(e){} l.off('pm:edit pm:dragend pm:markerdragend pm:vertexremoved pm:remove'); const el=edEl(l); if(el) el.classList.remove('ed-on'); }); }
 function edPick(id){ edOff(); ed.mode=''; edModes(); if(!id){ ed.d=null; return; }
   const d=LAYERS.find(x=>x.id===id); ed.d=d; ed.key=edLayerObj(d)._k; state[id]=true; syncLayers();
   if(MINZ[id] && map.getZoom()<MINZ[id]) toast('Zoom in to see this layer');
   document.getElementById('edRev').style.display = ed.key==='wsupp' ? '' : 'none';
   leaves(edLayerObj(d)).forEach(l=>{ L.PM.reInitLayer && !l.pm && L.PM.reInitLayer(l); if(!l.pm) return;
-    l.pm.enable({allowSelfIntersection:true, removeVertexOn:'click', draggable:!!l.getLatLng});
+    l.pm.enable({allowSelfIntersection:true, removeVertexOn:'click', draggable:!!l.getLatLng}); const el=edEl(l); if(el) el.classList.add('ed-on');
     const mark=()=>{ ed.changes[l.feature.properties.fid]={action:l.feature._new?'add':'update', l}; edCount(); };
     l.on('pm:edit pm:dragend pm:markerdragend pm:vertexremoved', mark);
     l.on('click', e=>{ if(ed && ed.mode==='rev' && l.getLatLngs){ L.DomEvent.stopPropagation(e); l.setLatLngs(l.getLatLngs().slice().reverse()); mark(); toast('Direction reversed'); } }); }); }
@@ -1425,7 +1430,7 @@ if(/^https:/.test(SUGGEST_URL)) fetch(SUGGEST_URL+'?edits=1&farm='+encodeURIComp
 /* ---------- map views (ready-made layer sets) ---------- */
 const WL = () => LAYERS.filter(d=>d.id && /^w(\d|Wash)/.test(d.id)).map(d=>d.id);
 const VIEWS = [
-  {k:'everyday', n:'Everyday', d:'Paddocks, troughs, lanes, suggestions', ids:()=>['paddocks','trough','lanes','buildings','maindrain','creek']},
+  {k:'everyday', n:'Everyday', d:'Paddocks, troughs, lanes, suggestions', ids:()=>['paddocks','trough','lanes','buildings','creek']},
   {k:'water', n:'Stock water', d:'Water lines, troughs, valves, bores, taps', ids:()=>['paddocks','trough','valve','bore','wtap','gtap','divined',...WL()]},
   {k:'blocks', n:'Water blocks', d:'The 7 stock water blocks', ids:()=>['paddocks','trough','wb0','wb1','wb2','wb3','wb4','wb5','wb6']},
   {k:'drain', n:'Drainage', d:'Tile drains, main drain, creeks, culverts', ids:()=>['paddocks','tiles','maindrain','tilelabel','inspect','creek','bridge','storm','sbtiles']},
@@ -1438,11 +1443,11 @@ const VIEWS = [
 let curView=''; try{ curView=localStorage.getItem('gvmap.view')||''; }catch(e){}
 function applyView(v){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); [...v.ids(),'sugg','sghist'].forEach(k=>state[k]=true);
   curView=v.k; try{ localStorage.setItem(STKEY,JSON.stringify(state)); localStorage.setItem('gvmap.view',v.k); }catch(e){}
-  syncLayers(); closeSheet();
+  syncLayers(); body.querySelectorAll('.views button').forEach(b=>b.classList.toggle('on',b.dataset.v===v.k));
   if(v.k==='shed') map.fitBounds([[-46.17135,168.13400],[-46.16790,168.13560]],{paddingTopLeft:[innerWidth>=760?280:10,70],paddingBottomRight:[70,10]}); else fitFarm();
-  toast(v.n+' view'); }
+}
 document.getElementById('viewsBtn').onclick=()=>{ clearSel();
-  openSheet(`<h2>Map views</h2><div class="sub">Pick a view to show just the layers for that job. You can still turn layers on and off after.</div>
+  openSheet(`<h2>Map views</h2><div class="sub">Tap a view to show just the layers for that job – this box stays open so you can flick between them.</div>
    <div class="views">${VIEWS.map(v=>`<button data-v="${v.k}" class="${v.k===curView?'on':''}"><b>${v.n}</b><small>${v.d}</small></button>`).join('')}</div>`);
   body.querySelectorAll('.views button').forEach(b=>b.onclick=()=>applyView(VIEWS.find(v=>v.k===b.dataset.v))); };
 
