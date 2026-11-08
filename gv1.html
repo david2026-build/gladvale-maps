@@ -1242,7 +1242,7 @@ let toastT; function toast(t){ const el=document.getElementById('toast'); el.tex
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1OXyMJkW_mjoQ3t3319DvobrX41oXU3t4I0eLdFDYmc4/edit';
 const SUGGEST_URL = 'https://script.google.com/macros/s/AKfycbyjpYbL9yBzKs-4a-VxgNqF_mKoF3cAbBNNUdag0_WjvvtFYA6d5LVkIm2jP1CWGTYI/exec';
 const SG_COL = {New:'#ef6c00', Actioned:'#1e88e5', Completed:'#2e7d32', Deferred:'#8e24aa', Approved:'#1e88e5', Done:'#2e7d32'};
-const SG_CATS = ['Health & safety','Drainage needed','Soak hole needed','Tile drain issue','Drain plough required','Water / trough','Fence / gate','Effluent','Lane / track','Pasture / weeds','Pasture damage','Aeration required','Other'];
+const SG_CATS = ['Health & safety','Drainage needed','Soak hole needed','Tile drain issue','Drain plough required','Water / trough','Fence / gate','Effluent','Lane / track','Pasture / weeds','Pasture damage','Aeration required','Infrastructure','Repairs & maintenance','Machinery & equipment','Other'];
 const SGI = (()=>{ const sv=(c,p)=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   const B='#1565c0', W='#0097a7', F='#6d4c41', E='#8d6e63', La='#616161', P='#2e7d32', O='#455a64';
   return {
@@ -1258,6 +1258,9 @@ const SGI = (()=>{ const sv=(c,p)=>`<svg viewBox="0 0 24 24" width="18" height="
    'Pasture damage':[P,sv(P,'<path d="M4 21c1-5 2-8 4-11M10 21c0-5 1-9 2-13"/><path d="M14 4l7 7M21 4l-7 7" stroke="#c62828"/>')],
    'Aeration required':[P,sv(P,'<path d="M3 7h18"/><path d="M6 7l1 11M11 7l1 11M16 7l1 11M20 7l-.5 9"/>')],
    'Health & safety':['#c62828',`<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2.5 23 21H1z" fill="#ffd600" stroke="#b71c1c" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9v6" stroke="#212121" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="18" r="1.4" fill="#212121"/></svg>`],
+   'Infrastructure':['#5d4037',sv('#5d4037','<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>')],
+   'Repairs & maintenance':['#ef6c00',sv('#ef6c00','<path d="M14.5 5.5a4 4 0 0 0-5.3 5.3L4 16l4 4 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.6 2.6-2.8-.6-.6-2.8z"/>')],
+   'Machinery & equipment':['#37474f',sv('#37474f','<circle cx="7" cy="17" r="3"/><circle cx="18" cy="17" r="2"/><path d="M4 14V8h7l2 4h6v5M10 8v6"/>')],
    'Other':[O,sv(O,'<path d="M9 9a3 3 0 1 1 4 2.8c-.8.4-1 .9-1 1.7V15"/><circle cx="12" cy="19" r=".8" fill="'+O+'"/>')]};})();
 const sgIcon = (s) => { const c=SGI[s.cat]||SGI.Other, st=SG_COL[s.status]||SG_COL.New;
   return L.divIcon({className:'',html:`<div class="sgi" style="border-color:${st}">${c[1]}${s.photo?'<i class="sgcam">📷</i>':''}</div>`,iconSize:[32,32],iconAnchor:[16,16]}); };
@@ -1290,9 +1293,9 @@ function sgShow(s){
   const mg = pin ? `<div class="mg"><div class="grp" style="margin-top:4px">Manage</div>
      <label>Status<select id="mgS">${['New','Actioned','Completed','Deferred','Rejected'].map(x=>`<option ${x===(s.status||'New')?'selected':''}>${x}</option>`).join('')}</select></label>
      <label>Response – what we will do<textarea id="mgR" rows="3" maxlength="2000">${esc(s.notes)}</textarea></label>
-     <label>Due date<input id="mgD" type="date" value="${ymd(s.due)}"></label>
+     <label>Agreed date for repair<input id="mgD" type="date" value="${ymd(s.due)}"></label>
      <label>Rating<select id="mgRt"><option value="">— not rated —</option>${Object.keys(RATE).map(x=>`<option ${x===s.rating?'selected':''}>${x}</option>`).join('')}</select></label>
-     <label>Repairer<input id="mgRp" maxlength="80" value="${esc(s.repairer)}"></label>
+     <label>Repairer / contractor<input id="mgRp" maxlength="80" value="${esc(s.repairer)}"></label>
      <div class="btns"><button class="btn" id="mgSave">Save</button><button class="btn alt" id="mgLock">Lock</button></div>
      <p class="note" style="margin-top:6px">Rejected removes it from the map and files it on the Rejected tab.</p></div>`
    : `<div class="btns"><button class="btn alt" id="mgOpen">Manage (Dave)</button><a class="btn alt" href="${SHEET_URL}" target="_blank" rel="noopener">Suggestions sheet</a></div>
@@ -1300,7 +1303,7 @@ function sgShow(s){
   openSheet(`<h2>${esc(s.cat)||'Suggestion'}</h2><div class="sub"><span class="badge" style="background:${SG_COL[s.status]||SG_COL.New}">${esc(s.status||'New')}</span> ${s.paddock?'· Paddock '+esc(s.paddock):''} · ${esc(s.name)} · ${when}</div>
    <div class="kv"><div style="grid-column:1/-1">Comment<b style="font-weight:500">${esc(s.comment)||'—'}</b></div>
    <div style="grid-column:1/-1">Response / plan<b style="font-weight:500">${esc(s.notes)||'— not yet —'}</b></div>
-   <div>Due<b>${s.due?esc(fmt(s.due)):'—'}</b></div><div>Rating<b class="mbr-${esc(s.rating)}" style="padding:0 4px">${esc(s.rating)||'—'}</b></div><div>Repairer<b>${esc(s.repairer)||'—'}</b></div><div>Ref<b style="font-size:12px">${esc(s.id)}</b></div></div>
+   <div>Agreed date<b>${s.due?esc(fmt(s.due)):'—'}</b></div><div>Rating<b class="mbr-${esc(s.rating)}" style="padding:0 4px">${esc(s.rating)||'—'}</b></div><div>Repairer<b>${esc(s.repairer)||'—'}</b></div><div>Ref<b style="font-size:12px">${esc(s.id)}</b></div></div>
    ${s.photo&&/^[\w-]{20,}$/.test(s.photo)?`<a href="https://drive.google.com/file/d/${s.photo}/view" target="_blank" rel="noopener"><img class="sgphoto" src="https://drive.google.com/thumbnail?id=${s.photo}&sz=w1000" alt="Photo"></a>`:''}${mg}`);
   const post = body => fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}).then(r=>r.json());
   const o=document.getElementById('mgOpen'); if(o) o.onclick=()=>{ document.getElementById('mgPin').style.display='block'; document.getElementById('mgP').focus(); };
@@ -1328,7 +1331,11 @@ function boardHTML(){ const esc=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt
   return `<div class="mblg"><span style="font-weight:700;grid-column:1/-1;text-align:center">Rating Assessment</span>${Object.entries(RATE).map(([k,v])=>`<span class="mbr-${k}">${k}</span><span>${v}</span>`).join('')}</div>
   <div class="mbw"><table class="mb"><tr><th>Item</th><th>Required Repair</th><th>Repairer</th><th>Repair Request Date</th><th>Rating</th><th>Agreed Date for Repair</th></tr>
   ${rows.length?rows.map(s=>`<tr data-id="${esc(s.id)}"><td>${esc(s.cat)}${s.paddock?' (paddock '+esc(s.paddock)+')':''}</td><td>${esc(s.comment)}${s.notes?'. Plan: '+esc(s.notes):''}</td><td>${esc(s.repairer)}</td><td>${fmt(s.when)}</td><td class="mbr-${esc(s.rating)}">${esc(s.rating)}</td><td>${fmt(s.due)}</td></tr>`).join(''):'<tr><td colspan="6">No open jobs</td></tr>'}</table></div>`; }
-document.getElementById('boardBtn').onclick=()=>{ clearSel(); let pin=''; try{ pin=localStorage.getItem('gvmap.pin')||''; }catch(e){}
+document.getElementById('boardBtn').onclick=()=>{ clearSel();
+  if(!window._mbFresh){ openSheet(`<h2>GV1 Maintenance Board</h2><div class="sub">Loading the latest jobs…</div>`);
+    fetch(SUGGEST_URL+'?farm='+encodeURIComponent(META.name)).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); window._mbFresh=true; document.getElementById('boardBtn').click(); window._mbFresh=false; })
+      .catch(()=>{ window._mbFresh=true; document.getElementById('boardBtn').click(); window._mbFresh=false; toast('No connection – showing the last jobs loaded'); });
+    return; } let pin=''; try{ pin=localStorage.getItem('gvmap.pin')||''; }catch(e){}
   openSheet(`<h2>GV1 Maintenance Board</h2><div class="sub">Open jobs from map suggestions (New and Actioned), most urgent first. Tap a row to see it on the map.</div>${boardHTML()}
    <div class="btns" style="margin-top:12px"><button class="btn" id="mbPrint">Print</button>${pin?`<a class="btn alt" href="${BOARD_URL}" target="_blank" rel="noopener">Open in Google Sheets</a>`:''}</div>`);
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
@@ -1381,6 +1388,9 @@ function sgForm(){
   openSheet(`<h2>Suggest a change</h2><div class="sub">${draw.shape}${pd?' · Paddock '+pd:''} · goes to Dave for review</div>
     <label class="field">Your name<input id="sgName" value="${nm.replace(/"/g,'')}" autocomplete="name"></label>
     <label class="field">What is it?<select id="sgCat">${SG_CATS.map(x=>`<option>${x}</option>`).join('')}</select></label>
+    <label class="field">Rating<select id="sgRate"><option value="">— choose —</option><option value="Critical">Critical – must be fixed ASAP</option><option value="Major">Major – fix within 7 days</option><option value="Minor">Minor – fix by the agreed date</option></select></label>
+    <label class="field">Repairer / contractor (optional)<input id="sgRep" maxlength="80" placeholder="e.g. Rob, or Southern Drainage"></label>
+    <label class="field">Agreed date for repair (optional)<input id="sgDue" type="date"></label>
     <label class="field">Photo (optional)<input id="sgPhoto" type="file" accept="image/*"></label><img id="sgPrev" class="sgphoto" style="display:none;max-height:160px" alt=""><label style="display:none"></label>
     <label class="field">Comment<textarea id="sgText" placeholder="e.g. Wet patch every winter – needs a tile drain to the 300 mm main"></textarea></label>
     <div class="btns"><button class="btn alt" id="sgBack">Cancel</button><button class="btn" id="sgSend">Send</button></div>`);
@@ -1397,11 +1407,13 @@ function sgForm(){
     const name=document.getElementById('sgName').value.trim(), cat=document.getElementById('sgCat').value, comment=document.getElementById('sgText').value.trim();
     if(!name){ toast('Please add your name'); return; } if(!comment){ toast('Please add a comment'); return; }
     try{ localStorage.setItem('gvmap.name',name); }catch(e){}
-    const rec={farm:META.name,name,cat,comment,shape:draw.shape,paddock:String(pd),lat:+c.lat.toFixed(6),lng:+c.lng.toFixed(6),geom};
+    const rating=document.getElementById('sgRate').value, repairer=document.getElementById('sgRep').value.trim(), due=document.getElementById('sgDue').value;
+    if(!rating){ toast('Please choose a rating'); return; }
+    const rec={farm:META.name,name,cat,comment,shape:draw.shape,paddock:String(pd),lat:+c.lat.toFixed(6),lng:+c.lng.toFixed(6),geom,rating,repairer,due};
     const btn=document.getElementById('sgSend'); btn.textContent='Sending…'; btn.disabled=true;
     if(!/^https:/.test(SUGGEST_URL)){ toast('Suggestions are not switched on yet'); return; }
     fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(photo?{...rec,photo:photo.split(',')[1]}:rec)})
-      .then(r=>r.json()).then(res=>{ sgData.push({...rec,id:res.id,status:'New',when:new Date().toISOString(),photo:res.photo||''}); sgDraw();
+      .then(r=>r.json()).then(res=>{ sgData.push({...rec,id:res.id,status:'New',when:new Date().toISOString(),photo:res.photo||'',due:due?new Date(due+'T00:00:00').toISOString():''}); sgDraw();
         state.sugg=true; syncLayers(); closeSheet(); drawEnd(); toast('Thanks – sent to Dave for review'); })
       .catch(()=>{ btn.textContent='Send'; btn.disabled=false; toast('Could not send – check your signal and try again'); });
   };
@@ -1572,7 +1584,7 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
 } else if(HAZ){
   state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=true; }); syncLayers(); fitFarm(); document.title='GV1 Hazard Map';
   ['viewsBtn','boardBtn'].forEach(i=>{ const e=document.getElementById(i); if(e) e.style.display='none'; });
-  document.getElementById('farmBtn').textContent='GV1 Hazards ▾';
+  { const fb=document.getElementById('farmBtn'); fb.textContent='GV1 Hazard Map'; fb.onclick=null; fb.style.cursor='default'; }
 } else if(VIEW==='water'){   // website link beside the stock water PDF: paddocks, stock water and the water blocks
   if(!Object.keys(state).length){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; });
     ['paddocks','trough','valve','bore',...WL(),'wb0','wb1','wb2','wb3','wb4','wb5','wb6'].forEach(k=>state[k]=true); }
