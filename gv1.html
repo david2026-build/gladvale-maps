@@ -687,12 +687,16 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .fab{width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.25);display:grid;place-items:center}
 .fab{position:relative}.fab:after{content:attr(data-label);position:absolute;right:56px;top:50%;transform:translateY(-50%);color:#fff;font-weight:700;font-size:13px;white-space:nowrap;pointer-events:none;text-shadow:0 0 3px #000,0 0 2px #000,0 1px 4px #000}
 .fab svg{width:22px;height:22px;fill:var(--ink)}
+@media print{.top,.fabs,.sheet,.toast,.measbar,.drawbar,.editbar,.leaflet-control-zoom{display:none!important}}
+.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}.mb th,.mb td{border:1px solid #999;padding:6px;text-align:center;vertical-align:middle}.mb th{background:#eee}
+.mbr-Critical{background:#b7b7b7}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.mblg{display:grid;grid-template-columns:auto 1fr;gap:0;margin:6px 0 2px;font-size:12px;max-width:340px}.mblg span{border:1px solid #999;padding:3px 6px}
 .fab.on svg{fill:#1a73e8}
 #keyBtn.on{background:#1e40c8;color:#fff}
 .sheet{position:fixed;z-index:1001;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.2);
 padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(110%);transition:transform .22s ease;max-height:72vh;overflow-y:auto}
 .sheet.open{transform:none}
-@media(min-width:760px){.sheet{left:12px;right:auto;width:380px;bottom:12px;border-radius:18px;max-height:calc(100vh - 90px)}}
+@media(min-width:760px){.sheet{left:12px;right:auto;width:380px;bottom:12px;border-radius:18px;max-height:calc(100vh - 90px)}.sheet.wide{width:min(860px,calc(100vw - 110px))}}
+.mbw{overflow-x:auto}
 .grab{width:40px;height:4px;border-radius:2px;background:#d4d4d4;margin:0 auto 10px}
 .sheet h2{margin:0;font-size:21px}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 12px}
@@ -803,6 +807,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
   <button class="fab" data-label="Layers" id="layersBtn" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="M12 2 1 8l11 6 11-6-11-6zm0 14.2L3.2 11.4 1 12.6 12 18.6l11-6-2.2-1.2L12 16.2zm0 4L3.2 15.4 1 16.6l11 6 11-6-2.2-1.2L12 20.2z"/></svg></button>
   <button class="fab" data-label="Measure" id="measBtn" aria-label="Measure distance" title="Measure distance / area"><svg viewBox="0 0 24 24"><path d="M2.6 15.6 15.6 2.6l5.8 5.8L8.4 21.4zM6.2 15.2l1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1zm2.8-2.8 1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1z"/></svg></button>
   <button class="fab" data-label="Paddock sizes" id="listBtn" aria-label="Paddock sizes"><svg viewBox="0 0 24 24"><path d="M3 5h2v2H3V5zm4 0h14v2H7V5zM3 11h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/></svg></button>
+  <button class="fab" data-label="Maintenance board" id="boardBtn" aria-label="Maintenance board" title="Maintenance board"><svg viewBox="0 0 24 24"><path d="M9 2h6a1 1 0 0 1 1 1v1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3V3a1 1 0 0 1 1-1zm1 2v2h4V4h-4zM6 6v14h12V6h-2v2H8V6H6zm2 4h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></button>
   <button class="fab" data-label="Whole farm" id="fitBtn" aria-label="Whole farm"><svg viewBox="0 0 24 24"><path d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg></button>
   <button class="fab" data-label="My location" id="locBtn" aria-label="My location"><svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm-1-7h2v3.06A8 8 0 0 1 19.94 11H23v2h-3.06A8 8 0 0 1 13 19.94V23h-2v-3.06A8 8 0 0 1 4.06 13H1v-2h3.06A8 8 0 0 1 11 4.06V1zm1 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg></button>
 </div>
@@ -1056,6 +1061,9 @@ const LAYERS = [
   groups.sort((a,b)=>((fixed.indexOf(a.g.grp)+1)||99)-((fixed.indexOf(b.g.grp)+1)||99) || a.g.grp.localeCompare(b.g.grp));
   const out=[]; groups.forEach(G=>{ out.push(G.g); G.items.sort((a,b)=>a.name.localeCompare(b.name,'en',{numeric:true})); out.push(...G.items); });
   LAYERS.splice(0,LAYERS.length,...out); })();
+const URLVIEW = new URLSearchParams(location.search).get('view') || '';
+const HAZ = URLVIEW==='hazard';   // website "GV1 Interactive Hazard Map": paddocks + health & safety only, nothing else available
+if(HAZ){ let g=null; const keep=LAYERS.filter(d=>{ if(d.grp) g=d.grp; return g==='Paddocks' || g==='Health & safety'; }); LAYERS.splice(0,LAYERS.length,...keep); }
 { const OFF=['Buildings & access','Dairy shed & barn services (2019 plan)','Effluent','Map notes','Winter management']; let g=null;
   LAYERS.forEach(d=>{ if(d.grp) g=d.grp; else if(OFF.includes(g)) d.on=false; }); }
 const VIEW = new URLSearchParams(location.search).get('view') || '';
@@ -1064,6 +1072,9 @@ let state = {};
 try{ state = JSON.parse(localStorage.getItem(STKEY)||'{}'); }catch(e){}
 const order = ['effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
 const MINZ = {trough:15, trees:15, riparian:14.5, valve:15.5, hydrant:15, gtap:16, effpit:16, inspect:16, storm:16, septic:16, septicinfo:16, offal:15, sghist:16, hzaddr:14.5, divined:15};
+if(URLVIEW==='water'){ delete MINZ.trough; delete MINZ.valve; }
+
+order.splice(0,order.length,...order.filter(id=>LAYERS.some(d=>d.id===id)));
 function syncLayers(){
   const z=map.getZoom();
   order.forEach(id=>{ const d=LAYERS.find(x=>x.id===id); const on = (id in state ? state[id] : d.on) && !(MINZ[id] && z<MINZ[id]);
@@ -1072,7 +1083,7 @@ function syncLayers(){
   updateLabels();
   if(typeof renderKey==='function') renderKey();
 }
-function isOn(id){ const d=LAYERS.find(x=>x.id===id); return id in state ? state[id] : d.on; }
+function isOn(id){ const d=LAYERS.find(x=>x.id===id); if(!d) return false; return id in state ? state[id] : d.on; }
 const GROUPS={}; { let g=null; LAYERS.forEach(d=>{ if(d.grp){ g=d.grp; GROUPS[g]=[]; } else if(g) GROUPS[g].push(d.id); }); }
 function grpState(g){ const n=GROUPS[g].filter(isOn).length; return n===0?'':(n===GROUPS[g].length?'on':'some'); }
 function setGroup(g,on){ GROUPS[g].forEach(id=>state[id]=on); try{localStorage.setItem(STKEY,JSON.stringify(state));}catch(e){} syncLayers(); }
@@ -1093,7 +1104,7 @@ map.on('zoomend',syncLayers);
 
 /* ---------- sheet ---------- */
 const sheet = document.getElementById('sheet'), body = document.getElementById('sheetBody'), fabs = document.getElementById('fabs');
-function openSheet(html){ if(window.EDITING) return; body.innerHTML = html; sheet.classList.add('open');
+function openSheet(html){ if(window.EDITING) return; body.innerHTML = html; sheet.classList.toggle('wide', html.indexOf('class="mb"')>=0); sheet.classList.add('open');
   requestAnimationFrame(()=>{ if(innerWidth<760){ const h=sheet.offsetHeight; fabs.style.visibility = h>innerHeight*0.45?'hidden':''; fabs.style.bottom=(h+14)+'px'; } }); }
 function closeSheet(){ sheet.classList.remove('open'); fabs.style.bottom=''; fabs.style.visibility=''; clearSel(); try{ if(draw && drawbar.style.display==='none') drawEnd(); }catch(e){} }
 document.getElementById('closeSheet').onclick = closeSheet;
@@ -1169,7 +1180,7 @@ function layersPanel(){
     if(d.legend) h+=`<div class="legend">${Object.entries(WATER_COL).map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join('')}</div>`;
   });
   let canEdit=false; try{ canEdit=!!localStorage.getItem('gvmap.pin') || /admin/.test(location.hash+location.search); }catch(e){}
-  if(canEdit) h+=`<div class="btns" style="margin-top:14px"><button class="btn alt" id="editMapBtn">✎ Edit the map (Dave)</button></div>`;
+  if(canEdit && !HAZ) h+=`<div class="btns" style="margin-top:14px"><button class="btn alt" id="editMapBtn">✎ Edit the map (Dave)</button></div>`;
   h+=`<p class="note">Source: ${META.source}. Paddock areas are the surveyor's effective areas (GV1 ${padSum('GV1')} ha, McFarlane ${padSum('McFarlane')} ha).</p>`;
   openSheet(h);
   body.querySelectorAll('.lyr').forEach(b=>b.onclick=()=>{ const id=b.dataset.id; state[id]=!isOn(id);
@@ -1275,6 +1286,8 @@ function sgShow(s){
      <label>Status<select id="mgS">${['New','Actioned','Completed','Deferred','Rejected'].map(x=>`<option ${x===(s.status||'New')?'selected':''}>${x}</option>`).join('')}</select></label>
      <label>Response – what we will do<textarea id="mgR" rows="3" maxlength="2000">${esc(s.notes)}</textarea></label>
      <label>Due date<input id="mgD" type="date" value="${ymd(s.due)}"></label>
+     <label>Rating<select id="mgRt"><option value="">— not rated —</option>${Object.keys(RATE).map(x=>`<option ${x===s.rating?'selected':''}>${x}</option>`).join('')}</select></label>
+     <label>Repairer<input id="mgRp" maxlength="80" value="${esc(s.repairer)}"></label>
      <div class="btns"><button class="btn" id="mgSave">Save</button><button class="btn alt" id="mgLock">Lock</button></div>
      <p class="note" style="margin-top:6px">Rejected removes it from the map and files it on the Rejected tab.</p></div>`
    : `<div class="btns"><button class="btn alt" id="mgOpen">Manage (Dave)</button><a class="btn alt" href="${SHEET_URL}" target="_blank" rel="noopener">Suggestions sheet</a></div>
@@ -1282,7 +1295,7 @@ function sgShow(s){
   openSheet(`<h2>${esc(s.cat)||'Suggestion'}</h2><div class="sub"><span class="badge" style="background:${SG_COL[s.status]||SG_COL.New}">${esc(s.status||'New')}</span> ${s.paddock?'· Paddock '+esc(s.paddock):''} · ${esc(s.name)} · ${when}</div>
    <div class="kv"><div style="grid-column:1/-1">Comment<b style="font-weight:500">${esc(s.comment)||'—'}</b></div>
    <div style="grid-column:1/-1">Response / plan<b style="font-weight:500">${esc(s.notes)||'— not yet —'}</b></div>
-   <div>Due<b>${s.due?esc(fmt(s.due)):'—'}</b></div><div>Ref<b style="font-size:12px">${esc(s.id)}</b></div></div>
+   <div>Due<b>${s.due?esc(fmt(s.due)):'—'}</b></div><div>Rating<b class="mbr-${esc(s.rating)}" style="padding:0 4px">${esc(s.rating)||'—'}</b></div><div>Repairer<b>${esc(s.repairer)||'—'}</b></div><div>Ref<b style="font-size:12px">${esc(s.id)}</b></div></div>
    ${s.photo&&/^[\w-]{20,}$/.test(s.photo)?`<a href="https://drive.google.com/file/d/${s.photo}/view" target="_blank" rel="noopener"><img class="sgphoto" src="https://drive.google.com/thumbnail?id=${s.photo}&sz=w1000" alt="Photo"></a>`:''}${mg}`);
   const post = body => fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}).then(r=>r.json());
   const o=document.getElementById('mgOpen'); if(o) o.onclick=()=>{ document.getElementById('mgPin').style.display='block'; document.getElementById('mgP').focus(); };
@@ -1291,15 +1304,32 @@ function sgShow(s){
       .catch(()=>{ toast('No connection – try again'); g.disabled=false; g.textContent='Unlock'; }); };
   const lk=document.getElementById('mgLock'); if(lk) lk.onclick=()=>{ try{localStorage.removeItem('gvmap.pin');}catch(e){} sgShow(s); };
   const sv=document.getElementById('mgSave'); if(sv) sv.onclick=()=>{
-    const st=document.getElementById('mgS').value, resp=document.getElementById('mgR').value.trim(), due=document.getElementById('mgD').value;
+    const st=document.getElementById('mgS').value, resp=document.getElementById('mgR').value.trim(), due=document.getElementById('mgD').value, rating=document.getElementById('mgRt').value, repairer=document.getElementById('mgRp').value.trim();
     sv.disabled=true; sv.textContent='Saving…';
-    post({action:'update',pin,id:s.id,status:st,response:resp,due}).then(r=>{
+    post({action:'update',pin,id:s.id,status:st,response:resp,due,rating,repairer}).then(r=>{
       if(!r.ok){ toast(r.error||'Could not save'); if(/PIN/.test(r.error||'')){ try{localStorage.removeItem('gvmap.pin');}catch(e){} } sv.disabled=false; sv.textContent='Save'; return; }
-      s.status=st; s.notes=resp; s.due=due?new Date(due+'T00:00:00').toISOString():'';
+      s.status=st; s.notes=resp; s.rating=rating; s.repairer=repairer; s.due=due?new Date(due+'T00:00:00').toISOString():'';
       if(st==='Rejected'){ sgData=sgData.filter(x=>x.id!==s.id); sgDraw(); closeSheet(); toast('Rejected – moved to the Rejected tab'); }
       else { sgDraw(); sgShow(s); toast('Saved'); } })
     .catch(()=>{ toast('Could not save – check your signal'); sv.disabled=false; sv.textContent='Save'; }); };
 }
+const BOARD_URL = SHEET_URL + '#gid=5003';
+const RATE = {Critical:'Must be rectified ASAP', Major:'Must be rectified within 7 days', Minor:'Must be rectified by the agreed date'};
+function boardRows(){ const rk=r=>({Critical:0,Major:1,Minor:2})[r] ?? 3;
+  return sgData.filter(s=>s.status==='New'||s.status==='Actioned').sort((a,b)=>rk(a.rating)-rk(b.rating) || new Date(a.when)-new Date(b.when)); }
+function boardHTML(){ const esc=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+  const fmt=v=>{ if(!v) return ''; const d=new Date(v); return isNaN(d)?esc(v):d.toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}); };
+  const rows=boardRows();
+  return `<div class="mblg"><span style="font-weight:700;grid-column:1/-1;text-align:center">Rating Assessment</span>${Object.entries(RATE).map(([k,v])=>`<span class="mbr-${k}">${k}</span><span>${v}</span>`).join('')}</div>
+  <div class="mbw"><table class="mb"><tr><th>Item</th><th>Required Repair</th><th>Repairer</th><th>Repair Request Date</th><th>Rating</th><th>Agreed Date for Repair</th></tr>
+  ${rows.length?rows.map(s=>`<tr data-id="${esc(s.id)}"><td>${esc(s.cat)}${s.paddock?' (paddock '+esc(s.paddock)+')':''}</td><td>${esc(s.comment)}${s.notes?'. Plan: '+esc(s.notes):''}</td><td>${esc(s.repairer)}</td><td>${fmt(s.when)}</td><td class="mbr-${esc(s.rating)}">${esc(s.rating)}</td><td>${fmt(s.due)}</td></tr>`).join(''):'<tr><td colspan="6">No open jobs</td></tr>'}</table></div>`; }
+document.getElementById('boardBtn').onclick=()=>{ clearSel(); let pin=''; try{ pin=localStorage.getItem('gvmap.pin')||''; }catch(e){}
+  openSheet(`<h2>GV1 Maintenance Board</h2><div class="sub">Open jobs from map suggestions (New and Actioned), most urgent first. Tap a row to see it on the map.</div>${boardHTML()}
+   <div class="btns" style="margin-top:12px"><button class="btn" id="mbPrint">Print</button>${pin?`<a class="btn alt" href="${BOARD_URL}" target="_blank" rel="noopener">Open in Google Sheets</a>`:''}</div>`);
+  body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
+    try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
+  document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#b7b7b7}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body></html>`); w.document.close(); }; };
 function sgLoad(){
   if(!/^https:/.test(SUGGEST_URL)) return;
   fetch(SUGGEST_URL+'?farm='+encodeURIComponent(META.name)).then(r=>r.json()).then(d=>{ sgData=d; sgDraw();
@@ -1534,6 +1564,14 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
   if(!Object.keys(state).length){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; });
     [...GROUPS['Dairy shed & barn services (2019 plan)'],'sbtiles','cables','pond','buildings','cowshed','yards','lanes','farminfo','effpit','effdrain','valve'].forEach(k=>state[k]=true); }
   syncLayers(); map.fitBounds([[-46.17135,168.13400],[-46.16790,168.13560]],{paddingTopLeft:[innerWidth>=760?280:10,70],paddingBottomRight:[70,10]}); sgLoad();
+} else if(HAZ){
+  state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=true; }); syncLayers(); fitFarm(); document.title='GV1 Hazard Map';
+  ['viewsBtn','boardBtn'].forEach(i=>{ const e=document.getElementById(i); if(e) e.style.display='none'; });
+  document.getElementById('farmBtn').textContent='GV1 Hazards ▾';
+} else if(VIEW==='water'){   // website link beside the stock water PDF: paddocks, stock water and the water blocks
+  if(!Object.keys(state).length){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; });
+    ['paddocks','trough','valve','bore',...WL(),'wb0','wb1','wb2','wb3','wb4','wb5','wb6'].forEach(k=>state[k]=true); }
+  syncLayers(); fitFarm(); sgLoad(); document.title='GV1 Stock Water Map';
 } else { syncLayers(); fitFarm(); sgLoad(); }
 let keyPref=null; try{ keyPref=localStorage.getItem('gvmap.key'); }catch(e){}
 toggleKey(VIEW==='shed' ? innerWidth>=760 : keyPref===null ? innerWidth>=760 : keyPref==='1');
