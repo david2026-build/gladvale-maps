@@ -1389,7 +1389,7 @@ function sgForm(){
     <label class="field">Your name<input id="sgName" value="${nm.replace(/"/g,'')}" autocomplete="name"></label>
     <label class="field">What is it?<select id="sgCat">${SG_CATS.map(x=>`<option>${x}</option>`).join('')}</select></label>
     <label class="field">Rating<select id="sgRate"><option value="">— choose —</option><option value="Critical">Critical – must be fixed ASAP</option><option value="Major">Major – fix within 7 days</option><option value="Minor">Minor – fix by the agreed date</option></select></label>
-    <label class="field">Repairer / contractor (optional)<input id="sgRep" maxlength="80" placeholder="e.g. Rob, or Southern Drainage"></label>
+    <label class="field">Repairer / contractor (optional)<input id="sgRep" maxlength="80" placeholder="e.g. Gladvale, or contract milker"></label>
     <label class="field">Agreed date for repair (optional)<input id="sgDue" type="date"></label>
     <label class="field">Photo (optional)<input id="sgPhoto" type="file" accept="image/*"></label><img id="sgPrev" class="sgphoto" style="display:none;max-height:160px" alt=""><label style="display:none"></label>
     <label class="field">Comment<textarea id="sgText" placeholder="e.g. Wet patch every winter – needs a tile drain to the 300 mm main"></textarea></label>
