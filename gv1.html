@@ -769,6 +769,20 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .measbar{position:fixed;z-index:1003;left:10px;right:10px;bottom:calc(16px + env(safe-area-inset-bottom));background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:12px 14px;display:none}
 @media(min-width:760px){.measbar{left:auto;right:70px;width:340px}}
 .measbar b{font-size:20px}.measbar p{margin:0 0 8px;font-size:13px;color:var(--muted)}.mlbl{background:#fff;border:1px solid #333;border-radius:6px;padding:1px 5px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.office #map{left:min(560px,40vw)}
+.ofp{display:none;position:fixed;z-index:1002;left:0;top:0;bottom:0;width:min(560px,40vw);background:#fff;box-shadow:2px 0 14px rgba(0,0,0,.2);overflow-y:auto;font-family:inherit}
+.office .ofp{display:block}.office .top{left:calc(min(560px,40vw) + 10px)}.office .key{display:none!important}
+@media(min-width:760px){.office .sheet{left:auto;right:70px}}
+.ofp .oh{position:sticky;top:0;background:#2e5e2a;color:#fff;padding:14px 16px 10px;z-index:2}.ofp .oh h1{margin:0;font-size:22px}.ofp .oh small{opacity:.85}
+.ofp .lg{display:flex;gap:6px;flex-wrap:wrap;padding:8px 16px;border-bottom:1px solid #eee;font-size:12px}.ofp .lg span{padding:2px 8px;border-radius:10px}
+.ofc{display:flex;gap:12px;padding:12px 16px;border-bottom:1px solid #eee;cursor:pointer;align-items:flex-start}.ofc:hover{background:#f6f8f4}
+.ofc .th{width:84px;height:84px;flex:0 0 84px;border-radius:8px;background:#eef1ea center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#9aa;font-size:11px;text-align:center}
+.ofc .bd{flex:1;min-width:0}.ofc b{display:block;font-size:15px}.ofc .tk{font-size:14px;margin:2px 0 4px}.ofc .mt{font-size:12px;color:#666}
+.ofc .rt{display:inline-block;padding:1px 8px;border-radius:9px;font-size:11px;font-weight:700;margin-right:6px}
+.r-Critical{background:#b7b7b7}.r-Major{background:#ffff00}.r-Minor{background:#00ff00}.r-none{background:#eee}
+.ofc .dn{margin-top:6px;padding:5px 10px;font-size:12px}
+.sgi.rCritical{border-color:#424242!important;border-width:4px;animation:pulse 1.4s infinite}.sgi.rMajor{border-color:#f9a825!important;border-width:4px}.sgi.rMinor{border-color:#00c853!important;border-width:4px}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(66,66,66,.7)}70%{box-shadow:0 0 0 12px rgba(66,66,66,0)}100%{box-shadow:0 0 0 0 rgba(66,66,66,0)}}
 .sgi{width:32px;height:32px;box-sizing:border-box;border-radius:50%;background:#fff;border:3px solid;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);position:relative}
 .sgcam{position:absolute;right:-8px;top:-8px;font-style:normal;font-size:12px}
 .sglg{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin:4px 0 8px;font-size:12px;color:var(--muted)}.sglg span{display:flex;align-items:center;gap:5px}
@@ -820,6 +834,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 <button class="btn alt" id="edUndo">Discard</button><button class="btn" id="edSave">Save</button><button class="btn alt" id="edDone">Close</button></div></div>
 <div class="sheet" id="sheet"><div class="grab"></div><button class="x" id="closeSheet" aria-label="Close">×</button><div id="sheetBody"></div></div>
 <div class="toast" id="toast"></div>
+<div class="ofp" id="ofp"></div>
 <div class="key" id="keyBox"></div>
 <div class="drawbar" id="drawbar"><p id="drawMsg"></p><div class="btns"><button class="btn alt" id="drawUndo">Undo point</button><button class="btn alt" id="drawCancel">Cancel</button><button class="btn" id="drawDone">Next</button></div></div>
 
@@ -1068,7 +1083,8 @@ const LAYERS = [
   const out=[]; groups.forEach(G=>{ out.push(G.g); G.items.sort((a,b)=>a.name.localeCompare(b.name,'en',{numeric:true})); out.push(...G.items); });
   LAYERS.splice(0,LAYERS.length,...out); })();
 const URLVIEW = new URLSearchParams(location.search).get('view') || '';
-const HAZ = URLVIEW==='hazard';   // website "GV1 Interactive Hazard Map": paddocks + health & safety only, nothing else available
+const HAZ = URLVIEW==='hazard';
+const OFFICE = URLVIEW==='office';   // office wall screen: maintenance board docked on the left, refreshes every 10 minutes   // website "GV1 Interactive Hazard Map": paddocks + health & safety only, nothing else available
 if(HAZ){ let g=null; const keep=LAYERS.filter(d=>{ if(d.grp) g=d.grp; return g==='Paddocks' || g==='Health & safety'; }); LAYERS.splice(0,LAYERS.length,...keep); }
 { const OFF=['Buildings & access','Dairy shed & barn services (2019 plan)','Effluent','Map notes','Winter management']; let g=null;
   LAYERS.forEach(d=>{ if(d.grp) g=d.grp; else if(OFF.includes(g)) d.on=false; }); }
@@ -1264,7 +1280,7 @@ const SGI = (()=>{ const sv=(c,p)=>`<svg viewBox="0 0 24 24" width="18" height="
    'Machinery & equipment':['#37474f',sv('#37474f','<circle cx="7" cy="17" r="3"/><circle cx="18" cy="17" r="2"/><path d="M4 14V8h7l2 4h6v5M10 8v6"/>')],
    'Other':[O,sv(O,'<path d="M9 9a3 3 0 1 1 4 2.8c-.8.4-1 .9-1 1.7V15"/><circle cx="12" cy="19" r=".8" fill="'+O+'"/>')]};})();
 const sgIcon = (s) => { const c=SGI[s.cat]||SGI.Other, st=SG_COL[s.status]||SG_COL.New;
-  return L.divIcon({className:'',html:`<div class="sgi" style="border-color:${st}">${c[1]}${s.photo?'<i class="sgcam">📷</i>':''}</div>`,iconSize:[32,32],iconAnchor:[16,16]}); };
+  return L.divIcon({className:'',html:`<div class="sgi${OFFICE&&s.rating&&s.status!=='Completed'&&s.status!=='Rejected'?' r'+s.rating:''}" style="border-color:${st}">${c[1]}${s.photo?'<i class="sgcam">📷</i>':''}</div>`,iconSize:[32,32],iconAnchor:[16,16]}); };
 let sgData = [];
 function sgStyle(s){ return {color:SG_COL[s.status]||SG_COL.New, weight:3, dashArray:'8 6', fillOpacity:.18}; }
 function sgDraw(){
@@ -1303,7 +1319,7 @@ function sgComplete(s){
     fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'complete',farm:META.name,id:s.id,name,pin,note})}).then(r=>r.json()).then(r=>{
       if(!r.ok){ toast(r.error||'Could not save'); if(/code/i.test(r.error||'')){ try{localStorage.removeItem('gvmap.staff');}catch(e){} } b.disabled=false; b.textContent='Mark completed'; return; }
       try{ localStorage.setItem('gvmap.name',name); if(pin!==localStorage.getItem('gvmap.pin')) localStorage.setItem('gvmap.staff',pin); }catch(e){}
-      s.status='Completed'; s.doneby=r.by||name; sgDraw(); closeSheet(); toast('Marked as completed – thanks'); })
+      s.status='Completed'; s.doneby=r.by||name; sgDraw(); if(OFFICE) officeRender(); closeSheet(); toast('Marked as completed – thanks'); })
     .catch(()=>{ toast('Could not save – check your signal'); b.disabled=false; b.textContent='Mark completed'; }); };
 }
 function sgShow(s){
@@ -1373,6 +1389,25 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
     w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#b7b7b7}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body></html>`); w.document.close(); }; };
+function officeRender(){
+  const esc=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+  const fmt=v=>{ if(!v) return ''; const d=new Date(v); return isNaN(d)?esc(v):d.toLocaleDateString('en-NZ',{day:'numeric',month:'short'}); };
+  const rows=boardRows(), now=new Date();
+  document.getElementById('ofp').innerHTML=`<div class="oh"><h1>${esc(META.name)} Maintenance Board</h1><small>${rows.length} open task${rows.length===1?'':'s'} · updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small></div>
+   <div class="lg"><span class="r-Critical">Critical – ASAP</span><span class="r-Major">Major – within 7 days</span><span class="r-Minor">Minor – by agreed date</span></div>
+   ${rows.length?rows.map(s=>{ const ph=s.photo&&/^[\w-]{20,}$/.test(s.photo);
+     return `<div class="ofc" data-id="${esc(s.id)}"><div class="th" style="${ph?`background-image:url(https://drive.google.com/thumbnail?id=${s.photo}&sz=w300)`:''}">${ph?'':'no photo'}</div>
+      <div class="bd"><span class="rt r-${esc(s.rating)||'none'}">${esc(s.rating)||'Not rated'}</span><b>${esc(s.cat)}${s.paddock?' · paddock '+esc(s.paddock):''}</b>
+      <div class="tk">${esc(s.comment)}${s.notes?`<br><i style="color:#555">Plan: ${esc(s.notes)}</i>`:''}</div>
+      <div class="mt">${s.repairer?'Repairer: '+esc(s.repairer)+' · ':''}Reported ${fmt(s.when)}${s.name?' by '+esc(s.name):''}${s.due?' · agreed '+fmt(s.due):''}</div>
+      <button class="btn alt dn" data-done="${esc(s.id)}">✓ Done</button></div></div>`; }).join('') : '<p style="padding:20px 16px;color:#666">No open tasks – nice work.</p>'}`;
+  document.querySelectorAll('#ofp .ofc').forEach(c=>c.onclick=()=>{ const s=sgData.find(x=>x.id===c.dataset.id); if(!s) return;
+    try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} sgShow(s); });
+  document.querySelectorAll('#ofp [data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
+}
+function officeLoad(){
+  fetch(SUGGEST_URL+'?farm='+encodeURIComponent(META.name)).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); officeRender(); }).catch(()=>{ officeRender(); });
+}
 function sgLoad(){
   if(!/^https:/.test(SUGGEST_URL)) return;
   fetch(SUGGEST_URL+'?farm='+encodeURIComponent(META.name)).then(r=>r.json()).then(d=>{ sgData=d; sgDraw();
@@ -1445,7 +1480,7 @@ function sgForm(){
     if(!/^https:/.test(SUGGEST_URL)){ toast('Suggestions are not switched on yet'); return; }
     fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(photo?{...rec,photo:photo.split(',')[1]}:rec)})
       .then(r=>r.json()).then(res=>{ sgData.push({...rec,id:res.id,status:'New',when:new Date().toISOString(),photo:res.photo||'',due:due?new Date(due+'T00:00:00').toISOString():''}); sgDraw();
-        state.sugg=true; syncLayers(); closeSheet(); drawEnd(); toast('Thanks – added to the maintenance board'); })
+        state.sugg=true; syncLayers(); if(OFFICE) officeRender(); closeSheet(); drawEnd(); toast('Thanks – added to the maintenance board'); })
       .catch(()=>{ btn.textContent='Send'; btn.disabled=false; toast('Could not send – check your signal and try again'); });
   };
 }
@@ -1616,6 +1651,12 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
   state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=true; }); syncLayers(); fitFarm(); document.title='GV1 Hazard Map';
   ['viewsBtn','boardBtn'].forEach(i=>{ const e=document.getElementById(i); if(e) e.style.display='none'; });
   { const fb=document.getElementById('farmBtn'); fb.textContent='GV1 Hazard Map'; fb.onclick=null; fb.style.cursor='default'; }
+} else if(OFFICE){
+  document.body.classList.add('office'); document.title='GV1 Maintenance Board – office view';
+  state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); ['paddocks','sugg','lanes','buildings','cowshed','yards','trough'].forEach(k=>state[k]=true);
+  map.invalidateSize(); syncLayers(); fitFarm(); officeLoad(); setInterval(officeLoad, 10*60*1000);
+  let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); }, 3*60*1000); };
+  ['mousedown','touchstart','wheel','keydown'].forEach(ev=>addEventListener(ev,kick,{passive:true})); kick();
 } else if(VIEW==='water'){   // website link beside the stock water PDF: paddocks, stock water and the water blocks
   if(!Object.keys(state).length){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; });
     ['paddocks','trough','valve','bore',...WL(),'wb0','wb1','wb2','wb3','wb4','wb5','wb6'].forEach(k=>state[k]=true); }
