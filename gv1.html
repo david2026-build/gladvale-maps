@@ -1393,7 +1393,7 @@ function officeRender(){
   const esc=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
   const fmt=v=>{ if(!v) return ''; const d=new Date(v); return isNaN(d)?esc(v):d.toLocaleDateString('en-NZ',{day:'numeric',month:'short'}); };
   const rows=boardRows(), now=new Date();
-  document.getElementById('ofp').innerHTML=`<div class="oh"><h1>${esc(META.name)} Maintenance Board</h1><small>${rows.length} open task${rows.length===1?'':'s'} · updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small></div>
+  document.getElementById('ofp').innerHTML=`<div class="oh"><h1>${esc(META.name)} Maintenance Board</h1><small>${rows.length} open task${rows.length===1?'':'s'} · updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a></div>
    <div class="lg"><span class="r-Critical">Critical – ASAP</span><span class="r-Major">Major – within 7 days</span><span class="r-Minor">Minor – by agreed date</span></div>
    ${rows.length?rows.map(s=>{ const ph=s.photo&&/^[\w-]{20,}$/.test(s.photo);
      return `<div class="ofc" data-id="${esc(s.id)}"><div class="th" style="${ph?`background-image:url(https://drive.google.com/thumbnail?id=${s.photo}&sz=w300)`:''}">${ph?'':'no photo'}</div>
@@ -1579,8 +1579,9 @@ function applyView(v){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); [...v
 }
 document.getElementById('viewsBtn').onclick=()=>{ clearSel();
   openSheet(`<h2>Map views</h2><div class="sub">Tap a view to show just the layers for that job – this box stays open so you can flick between them.</div>
-   <div class="views">${VIEWS.map(v=>`<button data-v="${v.k}" class="${v.k===curView?'on':''}"><b>${v.n}</b><small>${v.d}</small></button>`).join('')}</div>`);
-  body.querySelectorAll('.views button').forEach(b=>b.onclick=()=>applyView(VIEWS.find(v=>v.k===b.dataset.v))); };
+   <div class="views">${VIEWS.map(v=>`<button data-v="${v.k}" class="${v.k===curView?'on':''}"><b>${v.n}</b><small>${v.d}</small></button>`).join('')}<button data-office="1"><b>Office view ↗</b><small>Wall screen: maintenance board on the left, refreshes every 10 min</small></button></div>`);
+  body.querySelectorAll('.views button[data-v]').forEach(b=>b.onclick=()=>applyView(VIEWS.find(v=>v.k===b.dataset.v)));
+  const ob=body.querySelector('.views button[data-office]'); if(ob) ob.onclick=()=>{ location.href='?view=office'; }; };
 
 /* ---------- measuring tool ---------- */
 let meas=null; const measbar=document.getElementById('measbar');
