@@ -814,7 +814,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .editbar .btns{flex-wrap:wrap}.editbar .btn{flex:1 1 30%;padding:9px 6px;font-size:13px}.editbar .btn.on{background:#ef6c00;color:#fff}
 .editbar p{margin:0;font-size:12.5px;color:var(--muted)}.editbar h4{margin:0 0 2px;font-size:14px;color:#ef6c00}
 .editing path.leaflet-interactive:not(.ed-on),.editing .leaflet-marker-icon:not(.ed-on):not(.marker-icon):not(.leaflet-pm-draggable){pointer-events:none!important}
-.editing .leaflet-tooltip{display:none}
+.editing .leaflet-tooltip{display:none}.editing .leaflet-tooltip.edlbl{display:block;font-size:11px;padding:1px 5px;background:#fffde7;border:1px solid #f9a825}
 .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;color:#fff}
 .sgpin{width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .sgpin span{display:block;transform:rotate(45deg);color:#fff;font-weight:900;font-size:13px;text-align:center;line-height:18px}
@@ -1150,7 +1150,7 @@ if(URLVIEW==='water'){ delete MINZ.trough; delete MINZ.valve; }
 order.splice(0,order.length,...order.filter(id=>LAYERS.some(d=>d.id===id)));
 function syncLayers(){
   const z=map.getZoom();
-  order.forEach(id=>{ const d=LAYERS.find(x=>x.id===id); const on = (id in state ? state[id] : d.on) && !(MINZ[id] && z<MINZ[id]);
+  order.forEach(id=>{ const d=LAYERS.find(x=>x.id===id); const on = (id in state ? state[id] : d.on) && !(MINZ[id] && z<MINZ[id] && window._edId!==id);
     if(on){ if(!map.hasLayer(d.layer)) d.layer.addTo(map);} else map.removeLayer(d.layer); });
   order.forEach(id=>{ const d=LAYERS.find(x=>x.id===id); if(map.hasLayer(d.layer) && d.layer.bringToFront) d.layer.bringToFront(); });
   updateLabels();
@@ -1591,14 +1591,15 @@ function editStart(){ let pin=''; try{ pin=localStorage.getItem('gvmap.pin')||''
 function edName(d){ let g=''; for(const x of LAYERS){ if(x.grp) g=x.grp; if(x===d) break; } if(g==='Water blocks') return 'Water block – '+d.name; return LAYERS.filter(x=>x.name===d.name).length>1 ? d.name+' ('+g.replace(/ \(.*\)/,'')+')' : d.name; }
 function edLayerObj(d){ return d.layer._lines || d.layer; }
 const edEl = l => l._path || l._icon;
-function edOff(){ if(fiLayer._lines && map.hasLayer(fiLayer._lines)){ map.removeLayer(fiLayer._lines); window._fiEdit=false; fiDraw(); } if(!ed||!ed.d) return; map.pm.disableDraw(); map.pm.disableGlobalRemovalMode(); leaves(edLayerObj(ed.d)).forEach(l=>{ try{ l.pm.disable(); }catch(e){} l.off('pm:edit pm:dragend pm:markerdragend pm:vertexremoved pm:remove'); const el=edEl(l); if(el) el.classList.remove('ed-on'); }); }
-function edPick(id){ edOff(); ed.mode=''; edModes(); if(!id){ ed.d=null; return; }
+function edOff(){ if(ed&&ed.d) leaves(edLayerObj(ed.d)).forEach(l=>{ if(l._edTip){ l.unbindTooltip(); l._edTip=false; } }); if(fiLayer._lines && map.hasLayer(fiLayer._lines)){ map.removeLayer(fiLayer._lines); window._fiEdit=false; fiDraw(); } if(!ed||!ed.d) return; map.pm.disableDraw(); map.pm.disableGlobalRemovalMode(); leaves(edLayerObj(ed.d)).forEach(l=>{ try{ l.pm.disable(); }catch(e){} l.off('pm:edit pm:dragend pm:markerdragend pm:vertexremoved pm:remove'); const el=edEl(l); if(el) el.classList.remove('ed-on'); }); }
+function edPick(id){ edOff(); ed.mode=''; edModes(); window._edId=id||null; if(!id){ ed.d=null; syncLayers(); return; }
   const d=LAYERS.find(x=>x.id===id); ed.d=d; ed.key=edLayerObj(d)._k; state[id]=true; syncLayers();
   if(id==='farminfo'){ window._fiEdit=true; fiLayer.clearLayers(); fiLayer._lines.addTo(map); if(map.getZoom()<18) toast('Zoom in, then drag the label to where it belongs'); }
   if(MINZ[id] && map.getZoom()<MINZ[id]) toast('Zoom in to see this layer');
   document.getElementById('edRev').style.display = ed.key==='wsupp' ? '' : 'none';
   leaves(edLayerObj(d)).forEach(l=>{ L.PM.reInitLayer && !l.pm && L.PM.reInitLayer(l); if(!l.pm) return;
     l.pm.enable({allowSelfIntersection:true, removeVertexOn:'click', draggable:!!l.getLatLng}); const el=edEl(l); if(el) el.classList.add('ed-on');
+    if(l.getLatLng && l.feature.properties.name && id!=='farminfo'){ l._edTip=true; l.bindTooltip(l.feature.properties.name,{permanent:true,direction:'right',offset:[14,0],className:'edlbl'}).openTooltip(); }
     const mark=()=>{ ed.changes[l.feature.properties.fid]={action:l.feature._new?'add':'update', l}; edCount(); };
     l.on('pm:edit pm:dragend pm:markerdragend pm:vertexremoved', mark);
     l.on('click', e=>{ if(ed && ed.mode==='rev' && l.getLatLngs){ L.DomEvent.stopPropagation(e); l.setLatLngs(l.getLatLngs().slice().reverse()); mark(); toast('Direction reversed'); } }); }); }
@@ -1649,7 +1650,7 @@ const VIEWS = [
   {k:'eff', n:'Effluent', d:'Pipes, hydrants, irrigation area, ponds', ids:()=>['paddocks','effpipe','hydrant','effarea','pond','effdrain','effpit','airline','septic','septicinfo']},
   {k:'env', n:'Riparian & environment', d:'Plantings, trees, waterways, CSAs', ids:()=>['paddocks','riparian','trees','fencedww','csa','creek','offal']},
   {k:'hs', n:'Health & safety', d:'Hazards, first aid, assembly point, power', ids:()=>['paddocks','hzhaz','hzemerg','hzarea','hzaddr','power','cables','lanes','buildings','pond']},
-  {k:'shed', n:'Dairy shed', d:'Shed & barn services, levels', ids:()=>['sbwashdown','sbeffpipe','sbdrain','sbtiles','cables','pond','buildings','cowshed','yards','lanes','farminfo','effpit','effdrain','valve','hzhaz','hzemerg']},
+  {k:'shed', n:'Dairy shed', d:'Shed & barn services, levels, cameras', ids:()=>['sbwashdown','sbeffpipe','sbdrain','sbtiles','cables','pond','buildings','cowshed','yards','lanes','farminfo','effpit','effdrain','valve','hzhaz','hzemerg','camera']},
   {k:'winter', n:'Winter', d:'Winter grazing & supplements', ids:()=>['paddocks','wsupp','creek','trough','lanes']},
   {k:'sugg', n:'Suggestions', d:'Just the staff suggestions (open & closed)', ids:()=>['paddocks']},
   {k:'clear', n:'Paddocks only', d:'Start from a clean map', ids:()=>['paddocks'], nosugg:true},
@@ -1736,7 +1737,7 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
   ['viewsBtn','boardBtn'].forEach(i=>{ const e=document.getElementById(i); if(e) e.style.display='none'; });
   { const fb=document.getElementById('farmBtn'); fb.textContent='GV1 Hazard Map'; fb.onclick=null; fb.style.cursor='default'; }
 } else if(OFFICE){
-  document.body.classList.add('office'); document.title='GV1 Maintenance Board – office view';
+  document.body.classList.add('office'); document.title='GV1 Office View';
   state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); ['paddocks','sugg','lanes','buildings','cowshed','yards','trough','farminfo','pond',...GROUPS['Dairy shed & barn services (2019 plan)'],'sbtiles','cables','effpit','effdrain','valve'].forEach(k=>{ if(LAYERS.some(d=>d.id===k)) state[k]=true; });
   map.invalidateSize(); syncLayers(); fitFarm(); officeLoad(); setInterval(officeLoad, 10*60*1000);
   let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); }, 3*60*1000); };
