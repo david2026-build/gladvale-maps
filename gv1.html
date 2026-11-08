@@ -782,11 +782,15 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .r-Critical{background:#b7b7b7}.r-Major{background:#ffff00}.r-Minor{background:#00ff00}.r-none{background:#eee}
 .ofc .dn{margin-top:6px;padding:5px 10px;font-size:12px}
 .ofh{padding:8px 16px 2px;font-weight:800;font-size:12px;letter-spacing:.5px;color:#2e5e2a;cursor:pointer}.ofh span{font-weight:500;color:#888;letter-spacing:0}
-.ofr{display:flex;align-items:flex-start;gap:6px;padding:2px 12px 2px 16px}.ofcat{flex:0 0 62px;font-size:10.5px;font-weight:700;color:#555;padding-top:6px;text-transform:uppercase}
-.ofg{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:4px}
-.ofl{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.ofl span{font-size:11.5px;background:#fff;border-radius:6px;padding:2px 6px}
+.ofr{padding:4px 16px 4px}.ofcat{font-size:10.5px;font-weight:800;color:#5b6b55;letter-spacing:.6px;text-transform:uppercase;margin:2px 0 3px;border-bottom:1px solid #e6ebe2;padding-bottom:2px}
+.ofg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px}
+.ofst{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:10px;background:#efebe9;color:#4e342e}.ofst.gw{background:#c8e6c9;color:#1b5e20}
+.ofl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}.ofl div{background:#fff;border-radius:6px;padding:3px 6px;border:1px solid #eee}.ofl small{display:block;font-size:10px;color:#666}.ofl b{font-size:13px}
+.ofl .on{border-color:#1565c0;background:#e3f2fd}.ofl .on.gw{border-color:#2e7d32;background:#c8e6c9}.ofl .on small{color:#1565c0;font-weight:700}.ofl .on.gw small{color:#1b5e20}
+.oft .lv,.kv .lv{display:block;height:4px;background:#e0e0e0;border-radius:2px;overflow:hidden;margin-top:3px}.oft .lv i,.kv .lv i{display:block;height:100%}
+.ofrt{display:flex;justify-content:space-between;font-size:12px;margin-top:6px}
 .oft{background:#f4f6f1;border-radius:7px;padding:3px 6px;cursor:pointer}.oft small{display:block;font-size:10px;color:#666;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.oft b{font-size:14px}.oft em{display:block;font-style:normal;font-size:11px;color:#1565c0}
-.ofe{margin:2px 0 6px;padding:5px 8px;border:1px solid #d7ccc8;border-radius:10px;background:#faf8f7;cursor:pointer}.ofe small{font-weight:700;color:#5d4037}.ofe .oft{background:#fff}
+.ofe{margin:0 0 4px;padding:6px 8px;border:1px solid #d7ccc8;border-radius:10px;background:#faf8f7;cursor:pointer}.ofe small{font-weight:700;color:#5d4037}.ofe .oft{background:#fff}
 .sgi.rCritical{border-color:#424242!important;border-width:4px;animation:pulse 1.4s infinite}.sgi.rMajor{border-color:#f9a825!important;border-width:4px}.sgi.rMinor{border-color:#00c853!important;border-width:4px}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(66,66,66,.7)}70%{box-shadow:0 0 0 12px rgba(66,66,66,0)}100%{box-shadow:0 0 0 0 rgba(66,66,66,0)}}
 .sgi{width:32px;height:32px;box-sizing:border-box;border-radius:50%;background:#fff;border:3px solid;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);position:relative}
@@ -1085,7 +1089,7 @@ const LAYERS = [
   {grp:'Security cameras'},
   {id:'camera', name:'Security cameras (Nx Witness)', cnt:by('camera').length+' cameras – tap to open the live view', sw:swb('camera'), on:false, layer:camLayer()},
   {grp:'Farm information'},
-  {id:'farminfo', name:'Milk, concentrates, water & effluent levels', cnt:'levels – placeholders until live data is connected', sw:'<i class="box" style="background:#fff;border:2px solid #1565c0;border-radius:50%;width:14px;height:14px"></i>', on:true, layer:fiLayer},
+  {id:'farminfo', name:'Farm information (vat, silo, pond & tank levels)', cnt:'levels – placeholders until live data is connected', sw:'<i class="box" style="background:#fff;border:2px solid #1565c0;border-radius:50%;width:14px;height:14px"></i>', on:true, layer:fiLayer},
   {grp:'Health & safety'},
   {id:'hzhaz', name:'Hazards', cnt:by('hzhaz').length+' – from the GV1 hazard map', sw:HZ_SVG.hazard.replace(/24/g,'18'), on:false, layer:hzLayer('hzhaz')},
   {id:'hzemerg', name:'First aid, fire & assembly point', cnt:'', sw:HZ_SVG.firstaid.replace(/24/g,'18'), on:false, layer:hzLayer('hzemerg')},
@@ -1422,7 +1426,7 @@ function officeFarmInfo(){
   const fs=by('farminfo'), K=k=>{ const v=fs.filter(f=>f.properties.kind===k); return k==='vat'?v.sort((a,b)=>a.properties.name.localeCompare(b.properties.name,'en',{numeric:true})):k==='tank'?v.sort((a,b)=>(/^Dairy/.test(b.properties.name))-(/^Dairy/.test(a.properties.name))):v; };
   const bar=(f,pct)=>`<i class="lv" style="display:block;width:100%;height:4px;margin-top:2px"><i style="width:${pct}%;background:${FI_COL[f.properties.kind]}"></i></i>`;
   const tile=(f,label,extra)=>`<div class="oft" data-fid="${f.properties.fid}"><small>${label||f.properties.name}</small><b>${fiText(f)}</b>${extra||''}${FI_VAL[f.properties.kind].u==='%'?bar(f,fiVal(f)):''}</div>`;
-  const row=(cat,html)=>`<div class="ofr"><span class="ofcat">${cat}</span><div class="ofg">${html}</div></div>`;
+  const row=(cat,html)=>`<div class="ofr">${cat?`<div class="ofcat">${cat}</div>`:''}<div class="ofg">${html}</div></div>`;
   const eff=K('eff')[0], p=eff&&eff.properties;
   let open=true; try{ open=localStorage.getItem('gvmap.ofinfo')!=='0'; }catch(e){}
   return `<div class="ofh" id="ofInfoT">FARM INFORMATION <span>· placeholder readings · ${open?'▾ hide':'▸ show'}</span></div>
@@ -1431,9 +1435,12 @@ function officeFarmInfo(){
    ${row('Concentrates',K('silo').map(f=>tile(f)).join(''))}
    ${row('Water',K('tank').map(f=>tile(f,f.properties.name.replace('Dairy water tank','Dairy tank').replace('381 Boundary Rd water tank','381 Bdy tank'))).join('')+K('meter').map(f=>tile(f,'Water meter')).join(''))}
    ${row('Effluent',K('pond').map(f=>tile(f,f.properties.name.replace('Effluent pond','Pond').replace('Main effluent pond','Main pond'))).join('')+K('sand').map(f=>tile(f,'Sand trap')).join(''))}
-   ${eff?row('',`<div class="ofe" data-fid="${p.fid}" style="grid-column:1/-1"><small style="${p.active==='Green wash'?'color:#2e7d32':''}">Effluent system · ${p.status||''}</small>
-     <div class="ofl">${(p.lines||[]).map(l=>`<span style="${effOn(p,l[0])}">${l[0]} <b>${l[1]}m</b></span>`).join('')}</div>
-     <div style="font-size:12px;margin-top:3px"><b>${hrs(p.remain||0)}</b> to go of ${hrs(p.maxrun||0)} · ${fiVal(eff)} min/hr</div></div>`):''}
+   ${eff?`<div class="ofr"><div class="ofcat">Effluent system</div><div class="ofe" data-fid="${p.fid}">
+     <div class="ofst ${p.active==='Green wash'?'gw':''}">${p.status||'Off'}</div>
+     <div class="ofl">${(p.lines||[]).map(l=>`<div class="${p.active===l[0]?(l[0]==='Green wash'?'on gw':'on'):''}"><small>${l[0]}${p.active===l[0]?' · ON':''}</small><b>${l[1]} min/hr</b></div>`).join('')}</div>
+     <div class="ofrt"><span><b>${hrs(p.remain||0)}</b> to go</span><span>of ${hrs(p.maxrun||0)} run</span></div>
+     <div style="height:7px;margin-top:4px;background:#e0e0e0;border-radius:4px;overflow:hidden"><div style="height:100%;width:${p.maxrun?Math.round((p.maxrun-p.remain)/p.maxrun*100):0}%;background:#6d4c41"></div></div>
+     <div class="ofrt" style="margin-top:4px;color:#666"><span>Runtime per hour (all lines)</span><b>${fiVal(eff)} min</b></div></div></div>`:''}
   </div>`;
 }
 function officeRender(){
@@ -1556,7 +1563,10 @@ function editStart(){ let pin=''; try{ pin=localStorage.getItem('gvmap.pin')||''
   closeSheet(); toggleKey(false); window.EDITING=true; map.getContainer().classList.add('editing'); clearSel(); fabs.style.display='none'; editbar.style.display='block';
   ed={pin, changes:{}, key:null, d:null, mode:''};
   const sel=document.getElementById('edLayer');
-  sel.innerHTML='<option value="">— choose a layer to edit —</option>'+editables().map(d=>({id:d.id,n:edName(d)})).sort((x,y)=>x.n.localeCompare(y.n,'en',{numeric:true,sensitivity:'base'})).map(o=>`<option value="${o.id}">${o.n}</option>`).join('');
+  const grpOf=d=>{ let g=''; for(const x of LAYERS){ if(x.grp) g=x.grp; if(x===d) break; } return g.replace(/ \(2019 plan\)/,''); };
+  const byG={}; editables().forEach(d=>{ const g=grpOf(d); (byG[g]=byG[g]||[]).push(d); });
+  const cmp=(a,b)=>a.localeCompare(b,'en',{numeric:true,sensitivity:'base'});
+  sel.innerHTML='<option value="">— choose a layer to edit —</option>'+Object.keys(byG).sort(cmp).map(g=>`<optgroup label="${g}">${byG[g].map(d=>({id:d.id,n:edName(d)})).sort((x,y)=>cmp(x.n,y.n)).map(o=>`<option value="${o.id}">${o.n}</option>`).join('')}</optgroup>`).join('');
   sel.onchange=()=>edPick(sel.value); edCount(); }
 function edName(d){ let g=''; for(const x of LAYERS){ if(x.grp) g=x.grp; if(x===d) break; } if(g==='Water blocks') return 'Water block – '+d.name; return LAYERS.filter(x=>x.name===d.name).length>1 ? d.name+' ('+g.replace(/ \(.*\)/,'')+')' : d.name; }
 function edLayerObj(d){ return d.layer._lines || d.layer; }
@@ -1600,7 +1610,8 @@ document.getElementById('edSave').onclick=()=>{ if(!ed) return; const list=Objec
   fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'edits',pin:ed.pin,farm:META.name,edits:list})}).then(r=>r.json())
     .then(r=>{ if(!r.ok){ toast(r.error||'Could not save'); b.disabled=false; edCount(); return; }
       try{ const cur=JSON.parse(localStorage.getItem('gvmap.edits.GV1')||'[]'); localStorage.setItem('gvmap.edits.GV1',JSON.stringify(cur.concat(list))); }catch(e){}
-      toast('Saved – everyone will see this next time they open the map'); setTimeout(()=>location.reload(),900); })
+      Object.values(ed.changes).forEach(c=>{ if(c.l&&c.l.feature) c.l.feature._new=false; }); applyEdits(list); ed.changes={}; b.disabled=false; edCount(); fiDraw();
+      toast('Saved – keep editing, pick another layer, or press Close when you\'re done'); })
     .catch(()=>{ toast('Could not save – check your signal'); b.disabled=false; edCount(); }); };
 /* fetch the latest edits; if they've changed since this device last looked, reload once to show them */
 if(/^https:/.test(SUGGEST_URL)) fetch(SUGGEST_URL+'?edits=1&farm='+encodeURIComponent(META.name)).then(r=>r.json()).then(list=>{
