@@ -1288,14 +1288,17 @@ function sgComplete(s){
   const esc = v => String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
   let nm='', code=''; try{ nm=localStorage.getItem('gvmap.name')||''; code=localStorage.getItem('gvmap.staff')||localStorage.getItem('gvmap.pin')||''; }catch(e){}
   openSheet(`<h2>Mark as completed</h2><div class="sub">${esc(s.cat)}${s.paddock?' · Paddock '+esc(s.paddock):''} · ${esc(s.comment)}</div>
-    <label class="field">Your name<input id="cpName" value="${esc(nm)}" autocomplete="name"></label>
-    <label class="field">Staff code<input id="cpCode" type="password" inputmode="numeric" autocomplete="off" value="${esc(code)}"></label>
+    <label class="field">Completed by<select id="cpName"><option value="">Loading names…</option></select></label>
+    <label class="field">Your code (last 4 digits of your phone number)<input id="cpCode" type="password" inputmode="numeric" maxlength="4" autocomplete="off" value="${esc(code)}"></label>
     <label class="field">What was done (optional)<textarea id="cpNote" rows="2" maxlength="1000" placeholder="e.g. Trench filled and rolled"></textarea></label>
     <div class="btns"><button class="btn alt" id="cpBack">Back</button><button class="btn" id="cpGo">Mark completed</button></div>
-    <p class="note" style="margin-top:6px">Dave gets an email and can re-open it if it isn't finished. The staff code is the last 4 digits of the contract milker's phone number.</p>`);
+    <p class="note" style="margin-top:6px">Names and phone numbers come from the Contact Us page on the website. Dave gets an email and can re-open the task if it isn't finished.</p>`);
+  const sel=document.getElementById('cpName'), fill=ppl=>{ sel.innerHTML='<option value="">— choose —</option>'+ppl.map(p=>`<option value="${esc(p.name)}" ${p.name===nm?'selected':''}>${esc(p.name)} (${esc(p.role)})</option>`).join(''); };
+  if(window._ppl) fill(window._ppl); else fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'people',farm:META.name})}).then(r=>r.json())
+    .then(r=>{ window._ppl=r.people||[]; if(!window._ppl.length) sel.innerHTML='<option value="">Names not available – check the Contact Us page</option>'; else fill(window._ppl); }).catch(()=>{ sel.innerHTML='<option value="">No connection</option>'; });
   document.getElementById('cpBack').onclick=()=>sgShow(s);
   document.getElementById('cpGo').onclick=()=>{ const name=document.getElementById('cpName').value.trim(), pin=document.getElementById('cpCode').value.trim(), note=document.getElementById('cpNote').value.trim();
-    if(!name) return toast('Please add your name'); if(!pin) return toast('Please enter the staff code');
+    if(!name) return toast('Please choose who completed it'); if(!pin) return toast('Please enter your code');
     const b=document.getElementById('cpGo'); b.disabled=true; b.textContent='Saving…';
     fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'complete',farm:META.name,id:s.id,name,pin,note})}).then(r=>r.json()).then(r=>{
       if(!r.ok){ toast(r.error||'Could not save'); if(/code/i.test(r.error||'')){ try{localStorage.removeItem('gvmap.staff');}catch(e){} } b.disabled=false; b.textContent='Mark completed'; return; }
