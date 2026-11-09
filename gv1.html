@@ -795,6 +795,12 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .oftabs{display:flex;gap:4px;margin:10px -16px -10px;padding:0 10px}.oftabs button{flex:1;border:0;border-radius:10px 10px 0 0;padding:9px 6px;font:700 13.5px inherit;font-family:inherit;background:rgba(255,255,255,.18);color:#fff;cursor:pointer}.oftabs button.on{background:#fff;color:#2e5e2a}
 .ckb{display:inline-block;font-size:10.5px;font-weight:800;padding:1px 6px;border-radius:9px;background:#e0e0e0;color:#333;vertical-align:1px}.ckb.ok{background:#c8e6c9;color:#1b5e20}.ckb.bad{background:#ffcdd2;color:#b71c1c}
 .ofnote{margin:8px 16px 0;font-size:11px;color:#888}
+.ckl.wrn{background:#fff3e0;color:#e65100;border:1px solid #ffb74d}.ckb.wrn{background:#ffe0b2;color:#e65100}
+.flasho{animation:flasho 1s infinite}@keyframes flasho{50%{background:#ffcc80;box-shadow:0 0 10px 2px rgba(239,108,0,.6)}}
+.lkph{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0}.lkph img{width:72px;height:54px;object-fit:cover;border-radius:6px}.lkph small{color:#666;font-size:11.5px}.phb{padding:6px 12px;font-size:13px;cursor:pointer}
+.phg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.phc{border:2px solid #c8e6c9;border-radius:10px;padding:8px;background:#fff;display:flex;flex-direction:column;gap:4px}.phc.crit{border-color:#ef5350}.phc.wrn{border-color:#ffb74d}.phc img,.phc .phn{width:100%;height:90px;object-fit:cover;border-radius:6px;background:#eef1ea;display:flex;align-items:center;justify-content:center;color:#999;font-size:12px}.phc small{color:#666;font-size:11px}
+.ebg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-items:start}.eb{width:100%;border-collapse:collapse;font-size:12px}.eb th,.eb td{border:1px solid #bbb;padding:3px 4px;text-align:center}.eb th{background:#eee;font-size:11px}.eb th small{display:block;font-weight:500;color:#1565c0}.eb .pd{font-weight:800;background:#f6f6f6}.ebc{cursor:pointer;min-width:34px;height:20px}.ebc:hover{background:#e3f2fd}.ebc.set{background:#efebe9;font-weight:700;color:#4e342e}.eb tr.now td{box-shadow:inset 0 0 0 1px #1565c0}.eb tr.now .pd{background:#bbdefb}
+@media(max-width:1300px){.ebg{grid-template-columns:repeat(2,1fr)}}
 .ckl{margin:2px 0 6px;padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700}.ckl.ok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}.ckl.bad{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}
 .envg{display:grid;grid-template-columns:150px 1fr;gap:6px;align-items:start}.bcn{display:flex;gap:8px;align-items:flex-start;border:2px solid;border-radius:10px;padding:7px;text-decoration:none;color:#333;background:#fff}.bcn i{flex:0 0 22px;height:22px;border-radius:50%;margin-top:2px}.bcn b{display:block;font-size:20px}.bcn small{display:block;font-size:10.5px;color:#666;line-height:1.25}
 .rain{width:100%;border-collapse:collapse;font-size:12px}.rain th{text-align:left;font-size:10.5px;color:#666;font-weight:700;padding:0 4px 2px}.rain td{padding:2px 4px;border-top:1px solid #eee}.rain td:nth-child(2),.rain td:nth-child(3),.rain th:nth-child(n+2){text-align:right}.rain td:nth-child(3){color:#555}.rain td:nth-child(4){text-align:right;width:44px}.rain td small{display:block;font-size:9.5px;color:#888;white-space:nowrap}.rain td:nth-child(n+2){white-space:nowrap}.rain .rn{font-size:10px;color:#999;border:0}
@@ -1449,7 +1455,7 @@ function sgShow(s){
   const lk=document.getElementById('mgLock'); if(lk) lk.onclick=()=>{ try{localStorage.removeItem('gvmap.pin');}catch(e){} sgShow(s); };
   const sv=document.getElementById('mgSave'); if(sv) sv.onclick=()=>{
     const st=document.getElementById('mgS').value, resp=document.getElementById('mgR').value.trim(), due=document.getElementById('mgD').value, rating=document.getElementById('mgRt').value, repairer=document.getElementById('mgRp').value.trim();
-    sv.disabled=true; sv.textContent='Saving…';
+    sv.disabled=true; sv.textContent='Saving…'; setTimeout(()=>{ if(sv.isConnected&&sv.textContent==='Saving…'){ sv.disabled=false; sv.textContent='Save'; toast('Still saving – the sheet is slow. Check again in a minute before re-saving.'); } },40000);
     post({action:'update',pin,id:s.id,status:st,response:resp,due,rating,repairer}).then(r=>{
       if(!r.ok){ toast(r.error||'Could not save'); if(/PIN/.test(r.error||'')){ try{localStorage.removeItem('gvmap.pin');}catch(e){} } sv.disabled=false; sv.textContent='Save'; return; }
       s.status=st; s.notes=resp; s.rating=rating; s.repairer=repairer; s.due=due?new Date(due+'T00:00:00').toISOString():'';
@@ -1525,7 +1531,7 @@ function officeFarmInfo(){
    ${row('Concentrates',K('silo').map(f=>tile(f)).join(''))}
    ${row('Water',K('tank').map(f=>tile(f,f.properties.name.replace('Dairy water tank','Dairy tank').replace('381 Boundary Rd water tank','381 Bdy tank'))).join('')+K('meter').map(f=>tile(f,'Water meter',`<em style="color:${f.properties.pumping?'#2e7d32':'#777'}">${f.properties.pumping?'Pumping '+f.properties.flow+' L/s':'Not pumping'}</em>`)).join(''))}
    ${row('Effluent',K('pond').map(f=>tile(f,f.properties.name.replace('Effluent pond','Pond').replace('Main effluent pond','Main pond'))).join('')+K('sand').map(f=>tile(f,'Sand trap')).join(''))}
-   ${eff?`<div class="ofr"><div class="ofcat">Effluent system</div>${effCkLine(p)}<div class="ofe" data-fid="${p.fid}">
+   ${eff?`<div class="ofr"><div class="ofcat">Effluent system</div>${effCkLine(p)}${leakState&&ENV&&leakState().al!=='ok'?leakLine():''}<div class="ofe" data-fid="${p.fid}">
      <div class="ofst ${p.greenwash?'gw':''}">${p.status||'Off'}</div>
      <div class="ofl">${(p.lines||[]).filter(l=>!/green/i.test(l[0])).map(l=>{ const d=effDepth(p).per.find(x=>x.n===l[0]); return `<div class="${p.active===l[0]?'on':''}"><small>${l[0]}${p.active===l[0]?' · ON':''}</small><b>${l[1]} min/hr</b><small style="color:#5d4037">${mm(d.so)} of ${mm(d.plan)}</small></div>`; }).join('')}<div class="${p.greenwash?'on gw':''}"><small>Green wash</small><b>${p.greenwash?'ON':'OFF'}</b></div></div>
      <div class="ofrt"><span>Cycle: <b>${hrs(p.remain||0)}</b> left</span><span>of ${hrs(p.maxrun||0)} max run time</span></div>
@@ -1541,7 +1547,66 @@ function officeBoard(){   // the full maintenance board, same columns as the Goo
   return `<div class="ofbd">${boardHTML(true)}<p class="note" style="margin:8px 0">Tap a row for the full details, photo and location. Use <b>Mark complete</b> once the job is finished.</p>
    <div class="btns"><button class="btn alt" id="ofPrint">Print board</button><a class="btn alt" href="${BOARD_URL}" target="_blank" rel="noopener">Open in Google Sheets</a></div></div>`;
 }
-const SIGNERS=['Caleb Lusty'];   // effluent checklist sign-off list (plus "Other")
+// ---- shared helpers for the effluent tabs ----
+function signers(){ const p=(window._ppl||[]).filter(x=>/milker/i.test(x.role)).map(x=>x.name); return p.length?p:['Caleb Lusty']; }   // contract milker(s) from the Contact Us page
+function signerSel(id){ let last=''; try{ last=localStorage.getItem('gvmap.signer')||''; }catch(e){}
+  const s=signers(); return `<select id="${id}">${s.map(n=>`<option ${n===last?'selected':''}>${ESC(n)}</option>`).join('')}<option value="__other" ${last&&s.indexOf(last)<0?'selected':''}>Other…</option></select>`; }
+function signerName(id,oth){ const s=document.getElementById(id); if(!s) return ''; const n=s.value==='__other'?(document.getElementById(oth)||{}).value||'':s.value; return n.trim(); }
+function loadPeople(cb){ if(window._ppl) return cb&&cb(); fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'people',farm:META.name})}).then(r=>r.json()).then(r=>{ window._ppl=r.people||[]; cb&&cb(); }).catch(()=>{}); }
+function shrinkPhoto(file){ return new Promise((ok,bad)=>{ const img=new Image(), url=URL.createObjectURL(file);
+  img.onload=()=>{ const m=1600, k=Math.min(1,m/Math.max(img.width,img.height)), cv=document.createElement('canvas'); cv.width=Math.round(img.width*k); cv.height=Math.round(img.height*k);
+    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height); URL.revokeObjectURL(url); ok(cv.toDataURL('image/jpeg',0.8)); };
+  img.onerror=()=>bad(); img.src=url; }); }
+const daysSince=d=>{ if(!d) return null; const t=new Date(d+'T00:00:00'); return isNaN(t)?null:Math.floor((Date.now()-t)/864e5); };
+function leakState(){ const cal=(ENV&&ENV.calc)||{}, n=daysSince(cal.leak), ph=cal.leakPhoto&&cal.leakPhotoDate===cal.leak;
+  if(n==null) return {al:'crit',txt:'No pond leak detection check recorded',n};
+  if(n>30) return {al:'crit',txt:`Pond leak check overdue – last done ${n} days ago`,n,ph};
+  if(n>21) return {al:'warn',txt:`Pond leak check due soon – last done ${n} days ago`,n,ph};
+  if(!ph) return {al:'warn',txt:`Pond leak check ${n} days ago – no photo taken`,n,ph};
+  return {al:'ok',txt:`Pond leak check done ${n} day${n===1?'':'s'} ago ✓ (photo on file)`,n,ph}; }
+const leakLine=()=>{ if(!ENV) return ''; const l=leakState(); return `<div class="ckl ${l.al==='ok'?'ok':l.al==='warn'?'wrn flasho':'bad flash'}">${l.al==='ok'?'':'⚠ '}${l.txt}${l.al!=='ok'?' <button class="btn" data-tab="ck" style="padding:3px 10px;font-size:12px;margin-left:4px">Record check</button>':''}</div>`; };
+const PH_KINDS=[['ponds','Effluent pond levels'],['sand','Sand traps'],['solids','Solids ponds / storage areas']];
+function phState(k){ const p=((ENV&&ENV.photos)||{})[k], n=p?daysSince(p.date):null; return {p,n,al:n==null||n>14?'crit':n>7?'warn':'ok'}; }
+
+// ---- Effluent application board (from the "Effluent/Irrigation/Cultivation Board Templates" GV1 tab) ----
+const EB_LINES=[['Line 1',[2,3,4,5,18,19,34,35,36,37,44,45,46,47,48,49,50]],['Line 2',[21,22,23,24,30,31,32,33,52,53,54,55,56]],['Line 3',[25,26,65,66,67,68,70,78,79,80,81,82,84,86]]];
+const EB_SOLIDS=[1,6,7,8,9,10,11,12,14,15,16,17,20,27,28,29,38,39,40,41,42,43,51,52,54,57,58,59,60,71,72,73,74,75,76,77];
+const ebGet=(line,pd)=>(((ENV&&ENV.board)||{})[line+'|'+pd])||['','','',''];
+const dshort=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short'}):'';
+function ebLatest(line,pads){ let best=null; pads.forEach(pd=>ebGet(line,pd).forEach((d,i)=>{ if(d&&(!best||d>best.d)) best={d,pd,i}; })); return best; }
+function officeEffBoard(){
+  const card=([k,lab])=>{ const s=phState(k); return `<div class="phc ${s.al==='crit'?'crit flash':s.al==='warn'?'wrn flasho':''}">
+     ${s.p?`<a href="https://drive.google.com/file/d/${s.p.id}/view" target="_blank" rel="noopener"><img src="https://drive.google.com/thumbnail?id=${s.p.id}&sz=w300" alt=""></a>`:'<div class="phn">no photo yet</div>'}
+     <b>${lab}</b><small>${s.p?`${dshort(s.p.date)} · ${s.n} day${s.n===1?'':'s'} ago · ${ESC(s.p.by)}`:'Weekly photo needed'}</small>
+     <label class="btn alt phb">📷 Take photo<input type="file" accept="image/*" capture="environment" data-ph="${k}" hidden></label></div>`; };
+  const tbl=([line,pads])=>{ const lt=ebLatest(line,pads); return `<div class="ebt"><table class="eb"><tr><th colspan="5">Effluent ${line}${lt?`<small>pods now: paddock ${lt.pd} (since ${dshort(lt.d)})</small>`:''}</th></tr><tr><th>Pdk</th><th>Shift 1</th><th>Shift 2</th><th>Shift 3</th><th>Shift 4</th></tr>
+     ${pads.map(pd=>{ const r=ebGet(line,pd); return `<tr class="${lt&&lt.pd===pd?'now':''}"><td class="pd">${pd}</td>${r.map((d,i)=>`<td class="ebc ${d?'set':''}" data-l="${line}" data-p="${pd}" data-s="${i}">${dshort(d)}</td>`).join('')}</tr>`; }).join('')}</table></div>`; };
+  const sol=`<div class="ebt"><table class="eb"><tr><th colspan="3">Solid effluent paddocks</th></tr><tr><th>Pdk</th><th>Date</th><th>Person spreading</th></tr>
+     ${EB_SOLIDS.map(pd=>{ const r=ebGet('Solids',pd); return `<tr><td class="pd">${pd}</td><td class="ebc ${r[0]?'set':''}" data-l="Solids" data-p="${pd}" data-s="0">${dshort(r[0])}</td><td class="ebc" data-l="Solids" data-p="${pd}" data-s="0">${ESC(r[1])}</td></tr>`; }).join('')}</table></div>`;
+  return `<div class="ofbd"><div class="ckh">Recording as</div><div style="display:flex;gap:8px">${signerSel('ebName')}<input id="ebOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
+   <div class="ckh">Weekly photos <small>(replaces posting to the GV effluent group – orange after 7 days, red after 14)</small></div><div class="phg">${PH_KINDS.map(card).join('')}</div>
+   <div class="ckh">Effluent application board <small>tap a box to record the date the pods were shifted onto that paddock</small></div>
+   <div class="ebg">${EB_LINES.map(tbl).join('')}${sol}</div>
+   <p class="note">Saved to the "Effluent application log" and "Effluent photos" tabs of the GV1 Map Suggestions sheet; photos go in the Effluent photos folder.</p></div>`;
+}
+function ebWire(){
+  const sel=document.getElementById('ebName'); if(!sel) return; const oth=document.getElementById('ebOther');
+  const so=()=>{ oth.style.display=sel.value==='__other'?'':'none'; try{ if(sel.value!=='__other') localStorage.setItem('gvmap.signer',sel.value); }catch(e){} }; sel.onchange=so; so();
+  const who=()=>{ const n=signerName('ebName','ebOther'); if(!n) toast('Choose who is recording first'); return n; };
+  const post=b=>fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(x=>x.json());
+  document.querySelectorAll('[data-ph]').forEach(inp=>inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const name=who(); if(!name) return;
+    toast('Uploading photo…'); shrinkPhoto(f).then(ph=>post({action:'effphoto',farm:META.name,kind:inp.dataset.ph,photo:ph,name})).then(x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.photos=x.photos; officeRender(); toast('Photo saved'); }).catch(()=>toast('Could not upload the photo')); });
+  document.querySelectorAll('.ebc').forEach(td=>td.onclick=()=>{ const name=who(); if(!name) return; const line=td.dataset.l, pd=td.dataset.p, sh=+td.dataset.s, cur=ebGet(line,pd), sol=line==='Solids';
+    const today=new Date(), ymd=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    openSheet(`<h2>${sol?'Solid effluent':line} · paddock ${pd}</h2><div class="sub">${sol?'Date spread and who spread it':'Shift '+(sh+1)+' – date the pods went onto this paddock'}</div>
+      <label class="field">Date<input id="ebD" type="date" value="${ESC(cur[sh]||ymd)}"></label>${sol?`<label class="field">Person spreading<input id="ebP" maxlength="40" value="${ESC(cur[1]||name)}"></label>`:''}
+      <div class="btns"><button class="btn alt" id="ebClr">Clear</button><button class="btn" id="ebOk">Save</button></div>`);
+    const save=clear=>{ const date=clear?'':document.getElementById('ebD').value; const calls=[post({action:'effboard',farm:META.name,line,paddock:pd,shift:sh,date,name})];
+      if(sol) calls.push(post({action:'effboard',farm:META.name,line,paddock:pd,shift:1,date:clear?'':document.getElementById('ebP').value.trim(),name}));
+      document.getElementById('ebOk').disabled=true;
+      Promise.all(calls).then(rs=>{ const x=rs[rs.length-1]; if(!x.ok) return toast(x.error||'Could not save'); ENV.board=x.board; closeSheet(); officeRender(); toast(clear?'Cleared':'Saved'); }).catch(()=>toast('No connection – not saved')); };
+    document.getElementById('ebOk').onclick=()=>save(false); document.getElementById('ebClr').onclick=()=>save(true); });
+}
 const CALC_F=[  // pond calculator – rows 40–60 of the old Effluent Daily Checklist sheet
   ['A','rate','Application rate from the bucket test','mm/hr'],
   ['B','maxdepth','Maximum application depth allowed by consent','mm'],
@@ -1580,7 +1645,8 @@ function officeChecklist(){
   else if(c.today) st=`<div class="ckst ${c.today['Permitted to start']==='Yes'?'ok':'bad'}">${c.today['Permitted to start']==='Yes'?'✓ Checklist completed today':'✕ Checklist completed today – NOT permitted to start'}<small>by ${ESC(c.today['Operator today'])} (signed ${ESC(c.today['Signed by'])}, ${ESC(String(c.today['Submitted']).slice(11))}) · beacon ${ESC(c.today['Beacon colour'])} · pod run ${ESC(c.today['Pod run time (min)'])} min · max run ${ESC(c.today['Max run time (h)'])} h · rain forecast ${ESC(c.today['Rain forecast today (mm)'])} mm</small><small>You can submit it again below if something changes.</small></div>`;
   else st=`<div class="ckst bad">⚠ Not completed today<small>Must be completed before Lines 1–3 are started. Green wash can run without it.${c.last?` Last done ${ESC(c.last['Date'])} by ${ESC(c.last['Operator today'])}.`:''}</small></div>`;
   const fmt=v=>v==null||!isFinite(v)?'–':(Math.round(v*10)/10).toLocaleString('en-NZ');
-  return `${st}<form id="ckF" class="ckf" autocomplete="off">
+  const lk=ENV?leakState():null;
+  return `${st}${lk&&lk.al!=='ok'?`<div style="margin:0 16px">${leakLine()}</div>`:''}<form id="ckF" class="ckf" autocomplete="off">
    <div class="ckh">Today's conditions</div>
    <div class="bcbox" style="border-color:${BCOL[b]||'#ccc'}"><div class="bctop"><i style="background:${BCOL[b]||'#999'}"></i><div><small>Beacon soil moisture · Isla Bank (Environment Southland, live)</small><b style="color:${BCOL[b]||'#333'}">${b||'Not available'}${ENV&&ENV.sm!=null?` <span>${ENV.sm}% soil moisture</span>`:''}</b><small>${ESC((ENV&&ENV.smAt)||'')} · <a href="https://envdata.es.govt.nz/?tab=graph" target="_blank" rel="noopener">open ES graph ↗</a></small></div></div>
      ${smGraph()}<div class="smk">Last 30 days · shading shows the beacon colour bands (Green under ${BEACON_T.orange}%, Orange ${BEACON_T.orange}–${BEACON_T.red}%, Red ${BEACON_T.red}% and over)</div>
@@ -1600,12 +1666,16 @@ function officeChecklist(){
    <div id="ckWarn" class="ckl bad" style="display:none">If you answered No to any of these, or the PIC has not approved you, you are <b>not permitted</b> to start the irrigation system.</div>
    <label class="field">Notes (optional)<textarea name="notes" rows="2" maxlength="500"></textarea></label>
    <div class="ckh">Sign off</div>
-   <label class="field">Signed off by<select id="ckName">${SIGNERS.map(n=>`<option>${n}</option>`).join('')}<option value="__other">Other…</option></select></label>
+   <label class="field">Signed off by${signerSel('ckName')}</label>
    <label class="field" id="ckOtherL" style="display:none">Your name<input id="ckOther" maxlength="80"></label>
    <button class="btn" id="ckGo" type="submit" style="width:100%;margin:8px 0 4px">Submit today's checklist</button>
    <p class="note">Saved to the "Effluent checklist" tab of the GV1 Map Suggestions sheet. Dave is emailed if the answers mean the system must not be started.</p>
    <div class="ckh" style="margin-top:22px;font-size:13px;color:#2e5e2a">System checks &amp; pond calculator <small>(saved with each checklist – only change when re-tested)</small></div>
+   ${leakLine()}
    <label class="field">Date of last effluent pond leak detection check (monthly)<input name="leak" type="date" value="${ESC(cal.leak||L['Last pond leak check'])}"></label>
+   <div class="lkph">${cal.leakPhoto?`<a href="https://drive.google.com/file/d/${cal.leakPhoto}/view" target="_blank" rel="noopener"><img src="https://drive.google.com/thumbnail?id=${cal.leakPhoto}&sz=w200" alt=""></a><small>Photo for the check on ${dshort(cal.leakPhotoDate)}</small>`:'<small>No leak check photo yet</small>'}
+     <label class="btn alt phb">📷 Photo of the leak check<input type="file" accept="image/*" capture="environment" id="lkPh" hidden></label><img id="lkPrev" style="display:none"></div>
+   <p class="note" style="margin-top:2px">When you change the leak check date, a photo of the leak detection check is needed before it will save.</p>
    <label class="field">Date of last application-rate bucket test<input name="bucket" type="date" value="${ESC(cal.bucket||L['Last bucket test'])}"></label>
    <table class="calc">${CALC_F.map(([l,k,lab,u,f])=>`<tr class="${k?'':'out'}"><td class="cl">${l}</td><td>${lab}${f?`<small>${f}</small>`:''}</td><td>${k?`<input name="c_${k}" type="number" inputmode="decimal" step="any" value="${ESC(cal[k]??(k==='rate'?4.5:k==='lines'?3:''))}" placeholder="${k==='podrate'?'= A':''}">`:`<b data-calc="${l}">${fmt(cv[l])}</b>`}</td><td class="cu">${u}</td></tr>`).join('')}</table>
    <button class="btn alt" id="ckSave" type="button" style="width:100%;margin:8px 0 4px">Save system details only</button></form>`;
@@ -1617,36 +1687,43 @@ function ckWire(){
   const warn=()=>{ document.getElementById('ckWarn').style.display=[...f.querySelectorAll('input[type=radio]:checked')].some(x=>x.value==='No')?'':'none'; };
   const calc=()=>{ const c={}; CALC_F.forEach(([l,k])=>{ if(k) c[k]=f['c_'+k].value.trim(); }); c.leak=f.leak.value; c.bucket=f.bucket.value; return c; };
   const recalc=()=>{ const v=calcVals(calc()); f.querySelectorAll('[data-calc]').forEach(b=>{ const x=v[b.dataset.calc==='undefined'?'':b.dataset.calc]; b.textContent=x==null||!isFinite(x)?'–':(Math.round(x*10)/10).toLocaleString('en-NZ'); }); };
-  const sel=document.getElementById('ckName'), oth=()=>{ document.getElementById('ckOtherL').style.display=sel.value==='__other'?'':'none'; };
+  const sel=document.getElementById('ckName'), oth=()=>{ document.getElementById('ckOtherL').style.display=sel.value==='__other'?'':'none'; try{ if(sel.value!=='__other') localStorage.setItem('gvmap.signer',sel.value); }catch(e){} };
+  if(!window._ppl) loadPeople(()=>{ if(OFTAB==='ck'&&!window._ckDirty) officeRender(); });
+  let leakPh=''; const lkIn=document.getElementById('lkPh'); if(lkIn) lkIn.onchange=()=>{ const fl=lkIn.files[0]; if(!fl) return; shrinkPhoto(fl).then(d=>{ leakPh=d; const pv=document.getElementById('lkPrev'); pv.src=d; pv.style.display='block'; window._ckDirty=true; }).catch(()=>toast('Could not read that photo')); };
+  const leakOld=((ENV&&ENV.calc)||{}).leak||'';
+  const needPh=()=>f.leak.value&&f.leak.value!==leakOld&&!leakPh;
   const upd=()=>{ window._ckDirty=true; guide(); warn(); recalc(); oth(); };
   f.addEventListener('input',upd); f.addEventListener('change',upd); guide(); recalc();
   const post=b=>fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(x=>x.json());
-  document.getElementById('ckSave').onclick=()=>{ const c=calc(); post({action:'effcalc',farm:META.name,calc:c}).then(x=>{ if(!x.ok) return toast(x.error||'Could not save'); if(ENV) ENV.calc=c; toast('System details saved'); }).catch(()=>toast('No connection – not saved')); };
+  document.getElementById('ckSave').onclick=()=>{ const c=calc(); if(needPh()) return toast('Please take a photo of the pond leak check first');
+    const name=signerName('ckName','ckOther')||'office'; const b=document.getElementById('ckSave'); b.disabled=true; b.textContent='Saving…';
+    post({action:'effcalc',farm:META.name,calc:c,name,leakPhoto:leakPh||undefined}).then(x=>{ b.disabled=false; b.textContent='Save system details only'; if(!x.ok) return toast(x.error||'Could not save'); if(ENV) ENV.calc=x.calc||c; window._ckDirty=false; officeRender(); toast('System details saved'); }).catch(()=>{ b.disabled=false; b.textContent='Save system details only'; toast('No connection – not saved'); }); };
   f.onsubmit=e=>{ e.preventDefault();
     const v=n=>(f[n]&&f[n].value||'').trim(), r=n=>(f.querySelector(`input[name=${n}]:checked`)||{}).value||'';
     const d={beacon:v('beacon'),sm:ENV&&ENV.sm!=null?String(ENV.sm):'',pod:v('pod'),maxrun:v('maxrun'),rain:v('rain'),pic:v('pic'),relief:v('relief'),op:v('op'),
              training:r('training'),quiz:r('quiz'),pods:r('pods'),leak:v('leak'),bucket:v('bucket'),notes:v('notes')};
     const miss=[['beacon','beacon colour'],['pod','pod run time'],['maxrun','max run time'],['rain','rain forecast'],['pic','PIC'],['op','operator']].filter(x=>!d[x[0]]).map(x=>x[1]);
     if(miss.length) return toast('Please fill in: '+miss.join(', '));
+    if(needPh()) return toast('Please take a photo of the pond leak check (System checks section)');
     const name=sel.value==='__other'?document.getElementById('ckOther').value.trim():sel.value; if(!name) return toast('Please type your name');
     const b=document.getElementById('ckGo'); b.disabled=true; b.textContent='Saving…'; const c=calc();
-    post({action:'checklist',farm:META.name,name,f:d,calc:c}).then(x=>{
+    post({action:'checklist',farm:META.name,name,f:d,calc:c,leakPhoto:leakPh||undefined}).then(x=>{
       if(!x.ok){ b.disabled=false; b.textContent='Submit today\'s checklist'; return toast(x.error||'Could not save'); }
-      if(ENV){ ENV.eff=x.eff; ENV.calc=c; } window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
+      if(ENV){ ENV.eff=x.eff; ENV.calc=Object.assign({},ENV.calc,c,leakPh?{leakPhoto:'pending',leakPhotoDate:c.leak}:{}); if(leakPh) setTimeout(officeLoad,4000); } window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
      .catch(()=>{ b.disabled=false; b.textContent='Submit today\'s checklist'; toast('No connection – not saved'); }); };
 }
 function officeRender(){
   const rows=boardRows(), now=new Date(), crit=rows.filter(s=>s.rating==='Critical').length;
-  const tabs=[['info','Farm information',''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['ck','Effluent checklist',ckBadge()]];
+  const tabs=[['info','Farm information',''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['ck','Effluent checklist',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')],['eb','Effluent board',ENV&&PH_KINDS.some(([k])=>phState(k).al!=='ok')?`<span class="ckb ${PH_KINDS.some(([k])=>phState(k).al==='crit')?'bad':'wrn'}">photos due</span>`:'']];
   const panel=document.getElementById('ofp');
   if(OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')){   // don't wipe a half-filled checklist on the 10-minute refresh
     const tb=panel.querySelector('.oftabs'); if(tb) tb.querySelectorAll('button').forEach((b,i)=>b.innerHTML=tabs[i][1]+' '+tabs[i][2]); return; }
   panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><small>updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
     <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
-   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():officeFarmInfo()}</div>`;
+   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():OFTAB==='eb'?officeEffBoard():officeFarmInfo()}</div>`;
   panel.querySelectorAll('[data-tab]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); if(OFTAB==='ck'&&b.dataset.tab!=='ck') window._ckDirty=false; OFTAB=b.dataset.tab; try{ localStorage.setItem('gvmap.oftab',OFTAB); }catch(e){} officeRender(); panel.scrollTop=0; });
   panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
-  document.body.classList.toggle('wide',OFTAB==='board'); setTimeout(()=>map.invalidateSize(),50);
+  document.body.classList.toggle('wide',OFTAB==='board'||OFTAB==='eb'); setTimeout(()=>map.invalidateSize(),50);
   panel.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   panel.querySelectorAll('.mbdone').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.id); if(s) sgComplete(s); });
@@ -1655,6 +1732,7 @@ function officeRender(){
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} sgShow(s); });
   panel.querySelectorAll('[data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
   if(OFTAB==='ck') ckWire();
+  if(OFTAB==='eb'){ ebWire(); if(!window._ppl) loadPeople(()=>{ if(OFTAB==='eb') officeRender(); }); }
 }
 function officeLoad(){
   const q='?farm='+encodeURIComponent(META.name);
