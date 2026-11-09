@@ -690,7 +690,7 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .herelbl{background:#d50000;color:#fff;border:0;font-size:12px;padding:2px 7px}.herelbl:before{display:none}
 @media print{.top,.fabs,.sheet,.toast,.measbar,.drawbar,.editbar,.leaflet-control-zoom{display:none!important}}
 .mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}.mb th,.mb td{border:1px solid #999;padding:6px;text-align:center;vertical-align:middle}.mb th{background:#eee}
-.mbr-Critical{background:#b7b7b7}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.mblg{display:grid;grid-template-columns:auto 1fr;gap:0;margin:6px 0 2px;font-size:12px;max-width:340px}.mblg span{border:1px solid #999;padding:3px 6px}
+.mbr-Critical{background:#ff1744;color:#fff;animation:crflash 1s infinite}@keyframes crflash{50%{background:#b71c1c}}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.mblg{display:grid;grid-template-columns:auto 1fr;gap:0;margin:6px 0 2px;font-size:12px;max-width:340px}.mblg span{border:1px solid #999;padding:3px 6px}
 .fab.on svg{fill:#1a73e8}
 #keyBtn.on{background:#1e40c8;color:#fff}
 .sheet{position:fixed;z-index:1001;left:0;right:0;bottom:0;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.2);
@@ -779,7 +779,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .ofc .th{width:84px;height:84px;flex:0 0 84px;border-radius:8px;background:#eef1ea center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#9aa;font-size:11px;text-align:center}
 .ofc .bd{flex:1;min-width:0}.ofc b{display:block;font-size:15px}.ofc .tk{font-size:14px;margin:2px 0 4px}.ofc .mt{font-size:12px;color:#666}
 .ofc .rt{display:inline-block;padding:1px 8px;border-radius:9px;font-size:11px;font-weight:700;margin-right:6px}
-.r-Critical{background:#b7b7b7}.r-Major{background:#ffff00}.r-Minor{background:#00ff00}.r-none{background:#eee}
+.r-Critical{background:#ff1744;color:#fff;animation:crflash 1s infinite}.r-Major{background:#ffff00}.r-Minor{background:#00ff00}.r-none{background:#eee}
 .ofc .dn{margin-top:6px;padding:5px 10px;font-size:12px}
 .ofh{padding:8px 16px 2px;font-weight:800;font-size:12px;letter-spacing:.5px;color:#2e5e2a;cursor:pointer}.ofh span{font-weight:500;color:#888;letter-spacing:0}
 .ofr{padding:4px 16px 4px}.ofcat{font-size:10.5px;font-weight:800;color:#5b6b55;letter-spacing:.6px;text-transform:uppercase;margin:2px 0 3px;border-bottom:1px solid #e6ebe2;padding-bottom:2px}
@@ -788,9 +788,20 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .ofl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}.ofl div{background:#fff;border-radius:6px;padding:3px 6px;border:1px solid #eee}.ofl small{display:block;font-size:10px;color:#666}.ofl b{font-size:13px}
 .ofl .on{border-color:#1565c0;background:#e3f2fd}.ofl .on.gw{border-color:#2e7d32;background:#c8e6c9}.ofl .on small{color:#1565c0;font-weight:700}.ofl .on.gw small{color:#1b5e20}
 .oft .lv,.kv .lv{display:block;height:4px;background:#e0e0e0;border-radius:2px;overflow:hidden;margin-top:3px}.oft .lv i,.kv .lv i{display:block;height:100%}
-.oft.warn{background:#fff3e0;box-shadow:inset 0 0 0 2px #ef6c00}.oft.crit{background:#ffebee;box-shadow:inset 0 0 0 2px #d50000}
+.oft.warn{background:#fff3e0;box-shadow:inset 0 0 0 2px #ef6c00}.oft.yel{background:#fffde7;box-shadow:inset 0 0 0 2px #f9a825}.oft.okp{background:#e8f5e9;box-shadow:inset 0 0 0 2px #2e7d32}.oft.crit{background:#ffebee;box-shadow:inset 0 0 0 2px #d50000}
 .flash{animation:flashred 1s infinite}@keyframes flashred{0%,100%{box-shadow:inset 0 0 0 2px #d50000}50%{box-shadow:inset 0 0 0 2px #d50000,0 0 10px 2px rgba(213,0,0,.7);background:#ffcdd2}}
 .fi.flash{animation:flashfi 1s infinite}@keyframes flashfi{50%{background:#ffcdd2}}
+.oftabs{display:flex;gap:4px;margin:10px -16px -10px;padding:0 10px}.oftabs button{flex:1;border:0;border-radius:10px 10px 0 0;padding:9px 6px;font:700 13.5px inherit;font-family:inherit;background:rgba(255,255,255,.18);color:#fff;cursor:pointer}.oftabs button.on{background:#fff;color:#2e5e2a}
+.ckb{display:inline-block;font-size:10.5px;font-weight:800;padding:1px 6px;border-radius:9px;background:#e0e0e0;color:#333;vertical-align:1px}.ckb.ok{background:#c8e6c9;color:#1b5e20}.ckb.bad{background:#ffcdd2;color:#b71c1c}
+.ofnote{margin:8px 16px 0;font-size:11px;color:#888}
+.ckl{margin:2px 0 6px;padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700}.ckl.ok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}.ckl.bad{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}
+.envg{display:grid;grid-template-columns:150px 1fr;gap:6px;align-items:start}.bcn{display:flex;gap:8px;align-items:flex-start;border:2px solid;border-radius:10px;padding:7px;text-decoration:none;color:#333;background:#fff}.bcn i{flex:0 0 22px;height:22px;border-radius:50%;margin-top:2px}.bcn b{display:block;font-size:20px}.bcn small{display:block;font-size:10.5px;color:#666;line-height:1.25}
+.rain{width:100%;border-collapse:collapse;font-size:12px}.rain th{text-align:left;font-size:10.5px;color:#666;font-weight:700;padding:0 4px 2px}.rain td{padding:2px 4px;border-top:1px solid #eee}.rain td:nth-child(2){text-align:right}.rain td:nth-child(3){text-align:right;width:44px}.rain .rn{font-size:10px;color:#999;border:0}
+.rpc{display:inline-block;padding:0 5px;border-radius:7px;font-weight:700;background:#e3f2fd;color:#0d47a1}.rpc.hi{background:#bbdefb}.rpc.lo{background:#fff3e0;color:#e65100}
+.ckst{margin:10px 16px;padding:10px 12px;border-radius:10px;font-weight:800;font-size:15px}.ckst small{display:block;font-weight:500;font-size:12px;margin-top:3px}.ckst.ok{background:#e8f5e9;color:#1b5e20;border:2px solid #66bb6a}.ckst.bad{background:#ffebee;color:#b71c1c;border:2px solid #ef5350}
+.ckf{padding:0 16px 20px}.ckf .field small{font-weight:400;color:#666}.ckh{font-size:11px;font-weight:800;color:#5b6b55;letter-spacing:.6px;text-transform:uppercase;margin:12px 0 4px;border-bottom:1px solid #e6ebe2;padding-bottom:2px}.ckh small{text-transform:none;letter-spacing:0;font-weight:500}
+.ckq{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13.5px}.ckq span{flex:1}.ckq label{white-space:nowrap;font-weight:700}.ckq input{transform:scale(1.3);margin-right:4px}
+.ofc.crit{background:#fff5f5;box-shadow:inset 4px 0 0 #d50000}
 .ofsec{display:flex;align-items:baseline;justify-content:space-between;margin:10px 16px 2px;padding:6px 0 4px;border-bottom:2px solid #2e5e2a;cursor:pointer}.ofsec h2{margin:0;font-size:17px;color:#2e5e2a}.ofsec small{color:#777}
 .tr{font-size:12px;font-weight:700}
 .ofk{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:6px}.ofk div{background:#fff;border:1px solid #eee;border-radius:6px;padding:3px 6px;font-size:10.5px;color:#666}.ofk b{display:block;font-size:13px;color:#222}.ofk .sw{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
@@ -804,8 +815,8 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .ofrt{display:flex;justify-content:space-between;font-size:12px;margin-top:6px}
 .oft{background:#f4f6f1;border-radius:7px;padding:3px 6px;cursor:pointer}.oft small{display:block;font-size:10px;color:#666;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.oft b{font-size:14px}.oft em{display:block;font-style:normal;font-size:11px;color:#1565c0}
 .ofe{margin:0 0 4px;padding:6px 8px;border:1px solid #d7ccc8;border-radius:10px;background:#faf8f7;cursor:pointer}.ofe small{font-weight:700;color:#5d4037}.ofe .oft{background:#fff}
-.sgi.rCritical{border-color:#424242!important;border-width:4px;animation:pulse 1.4s infinite}.sgi.rMajor{border-color:#f9a825!important;border-width:4px}.sgi.rMinor{border-color:#00c853!important;border-width:4px}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(66,66,66,.7)}70%{box-shadow:0 0 0 12px rgba(66,66,66,0)}100%{box-shadow:0 0 0 0 rgba(66,66,66,0)}}
+.sgi.rCritical{border-color:#d50000!important;border-width:4px;animation:pulse 1.4s infinite}.sgi.rMajor{border-color:#f9a825!important;border-width:4px}.sgi.rMinor{border-color:#00c853!important;border-width:4px}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(213,0,0,.7)}70%{box-shadow:0 0 0 12px rgba(213,0,0,0)}100%{box-shadow:0 0 0 0 rgba(213,0,0,0)}}
 .sgi{width:32px;height:32px;box-sizing:border-box;border-radius:50%;background:#fff;border:3px solid;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);position:relative}
 .sgcam{position:absolute;right:-8px;top:-8px;font-style:normal;font-size:12px}
 .sglg{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin:4px 0 8px;font-size:12px;color:var(--muted)}.sglg span{display:flex;align-items:center;gap:5px}
@@ -950,15 +961,17 @@ const hrs = h => { const H=Math.floor(h), M=Math.round((h-H)*60); return (H?H+' 
 const fiAlert = f => { const p=f.properties;
   if(p.kind==='silo'){ const v=fiVal(f); return v<20?'crit':v<40?'warn':'ok'; }
   if(p.kind==='vat' && p.temp!=null) return p.temp>10?'crit':p.temp>6?'warn':'ok';
+  if(p.kind==='pond'){ const v=fiVal(f); return v>85?'crit':v>=75?'warn':v>=50?'yel':'ok'; }   // effluent ponds: >85 red, 75–85 orange, 50–75 yellow, <50 green
   return ''; };
-const ALC = {ok:'#2e7d32', warn:'#ef6c00', crit:'#d50000'};
+const ALC = {ok:'#2e7d32', yel:'#f9a825', warn:'#ef6c00', crit:'#d50000'};
+const alBorder = (f,al) => al && (al!=='ok' || f.properties.kind==='pond') ? ALC[al] : FI_COL[f.properties.kind];
 // trend arrows: water tanks over the last 6 h (rising = green), effluent ponds over the last 7 days (rising = red)
 const fiTrend = (f,txt) => { const p=f.properties, t=p.trend; if(t==null||t===0) return '';
   const up=t>0, good = p.kind==='pond' ? !up : up, col = good?'#2e7d32':'#d50000', per = p.kind==='pond'?'7 days':'6 h';
   return `<span class="tr" style="color:${col}" title="${up?'Rising':'Falling'} ${Math.abs(t)}% over ${per}">${up?'▲':'▼'}${txt?` ${up?'+':'−'}${Math.abs(t)}% / ${per}`:''}</span>`; };
 const fiVal = f => { const k=f.properties.kind; if(k==='eff') return (f.properties.lines||[]).filter(l=>!/green/i.test(l[0])).reduce((t,l)=>t+l[1],0); return f.properties.val!=null ? f.properties.val : FI_VAL[k].v; };
 const fiText = (f,v) => { const k=f.properties.kind, x=v!=null?v:fiVal(f); return (k==='meter'?x.toLocaleString('en-NZ',{minimumFractionDigits:1,maximumFractionDigits:1}):Math.round(x).toLocaleString('en-NZ')) + FI_VAL[k].u; };
-const fiIcon = (k,label,pct,al) => L.divIcon({className:'fiw',html:`<div class="fi ${al==='crit'?'flash':''}" style="border-color:${al&&al!=='ok'?ALC[al]:FI_COL[k]}">${FI_SVG[k]}<b>${label}</b>${FI_VAL[k].u==='%'?`<i class="lv"><i style="width:${pct!=null?pct:FI_VAL[k].v}%;background:${k==='silo'&&al?ALC[al]:FI_COL[k]}"></i></i>`:''}</div>`,iconSize:null,iconAnchor:[14,14]});
+const fiIcon = (k,label,pct,al) => L.divIcon({className:'fiw',html:`<div class="fi ${al==='crit'?'flash':''}" style="border-color:${al&&(al!=='ok'||k==='pond')?ALC[al]:FI_COL[k]}">${FI_SVG[k]}<b>${label}</b>${FI_VAL[k].u==='%'?`<i class="lv"><i style="width:${pct!=null?pct:FI_VAL[k].v}%;background:${k==='silo'&&al?ALC[al]:FI_COL[k]}"></i></i>`:''}</div>`,iconSize:null,iconAnchor:[14,14]});
 const fiLayer = L.layerGroup();
 const effDepth = p => { const ln=(p.lines||[]).filter(l=>!/green/i.test(l[0])), rate=p.rate||4.5, done=Math.max(0,(p.maxrun||0)-(p.remain||0));
   const per=ln.map(l=>({n:l[0], so:done*l[1]/60*rate, plan:(p.maxrun||0)*l[1]/60*rate}));
@@ -997,11 +1010,11 @@ function fiDraw(){ fiLayer.clearLayers(); if(window._fiEdit) return; const z=map
         .on('click',e=>{L.DomEvent.stopPropagation(e); map.setView([lat,lng],20.5);}).addTo(fiLayer); return; }
     // close up: a numbered dot on each item + one card listing them, set off to the side so nothing overlaps
     v.forEach((f,i)=>{ const c=f.geometry.coordinates, al=fiAlert(f);
-      L.marker([c[1],c[0]],{icon:L.divIcon({className:'fiw',html:`<div class="find ${al==='crit'?'flash':''}" style="border-color:${al&&al!=='ok'?ALC[al]:FI_COL[k]}">${i+1}</div>`,iconSize:[20,20],iconAnchor:[10,10]}),zIndexOffset:650})
+      L.marker([c[1],c[0]],{icon:L.divIcon({className:'fiw',html:`<div class="find ${al==='crit'?'flash':''}" style="border-color:${alBorder(f,al)}">${i+1}</div>`,iconSize:[20,20],iconAnchor:[10,10]}),zIndexOffset:650})
         .on('click',e=>{L.DomEvent.stopPropagation(e);fiSheet(f);}).addTo(fiLayer); });
     const up = g!=='silos';   // vats & tanks: card above; silos: card below
     const rows = v.map((f,i)=>{ const al=fiAlert(f), pct=FI_VAL[k].u==='%'?fiVal(f):null;
-      return `<div class="fcr ${al==='crit'?'flash':''}" data-fid="${f.properties.fid}"><i class="fcn" style="border-color:${al&&al!=='ok'?ALC[al]:FI_COL[k]}">${i+1}</i><span class="fin">${fiShort(f)}</span><b>${fiLine(f)}</b>${pct!=null?`<i class="fcb"><i style="width:${pct}%;background:${k==='silo'&&al?ALC[al]:FI_COL[k]}"></i></i>`:''}</div>`; }).join('');
+      return `<div class="fcr ${al==='crit'?'flash':''}" data-fid="${f.properties.fid}"><i class="fcn" style="border-color:${alBorder(f,al)}">${i+1}</i><span class="fin">${fiShort(f)}</span><b>${fiLine(f)}</b>${pct!=null?`<i class="fcb"><i style="width:${pct}%;background:${k==='silo'&&al?ALC[al]:FI_COL[k]}"></i></i>`:''}</div>`; }).join('');
     const card = L.marker([lat,lng],{icon:L.divIcon({className:'fiw',html:`<div class="fcard" style="border-color:${FI_COL[k]}"><div class="fch">${FI_SVG[k]}${({vats:'Milk vats',silos:'Concentrate silos','dairy tanks':'Dairy water tanks','yard tanks':'381 Boundary water tanks'})[g]||g}</div>${rows}</div>`,iconSize:null,iconAnchor:up?[90,-14]:[90,-14]}),zIndexOffset:700});
     card.on('add',()=>{ const el=card.getElement(); if(!el) return; const h=el.firstChild.offsetHeight; el.style.marginTop=(up?-(h+28):18)+'px'; el.style.marginLeft='-90px';
       el.querySelectorAll('[data-fid]').forEach(r=>r.onclick=ev=>{ ev.stopPropagation(); const f=fs.find(x=>x.properties.fid===r.dataset.fid); if(f) fiSheet(f); }); });
@@ -1466,21 +1479,48 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#b7b7b7}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body></html>`); w.document.close(); }; };
+// ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
+let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){}
+const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
+const ESC=v=>String(v==null?'':v).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+function ckState(){ const e=ENV&&ENV.eff; return { today:e&&e.today, last:e&&e.last, loaded:!!ENV }; }
+function ckBadge(){ const c=ckState(); if(!c.loaded) return ''; if(!c.today) return '<span class="ckb bad">⚠ not done today</span>';
+  return c.today['Permitted to start']==='Yes'?'<span class="ckb ok">✓ done</span>':'<span class="ckb bad">✕ not permitted</span>'; }
+function effCkLine(p){   // shown in the Effluent system box on the farm info tab
+  const c=ckState(), lines=(p.lines||[]).some(l=>!/green/i.test(l[0])&&p.active===l[0]);
+  if(!c.loaded) return '';
+  if(c.today&&c.today['Permitted to start']==='Yes') return `<div class="ckl ok">✓ Daily effluent checklist done today by ${ESC(c.today['Operator today'])} – Lines 1–3 may run (pod run ${ESC(c.today['Pod run time (min)'])} min, beacon ${ESC(c.today['Beacon colour'])})</div>`;
+  if(c.today) return `<div class="ckl bad flash">✕ Today's checklist says NOT permitted to start – Lines 1–3 must stay off (green wash is OK)</div>`;
+  return `<div class="ckl bad ${lines?'flash':''}">⚠ Daily effluent checklist not done today – complete it before starting Lines 1–3 (green wash is OK) <button class="btn" data-tab="ck" style="padding:3px 10px;font-size:12px;margin-left:4px">Open checklist</button></div>`;
+}
+function envBlock(){
+  if(!ENV) return `<div class="ofr"><div class="ofcat">Effluent spreading conditions</div><div class="ofg"><div class="oft"><small>Loading Environment Southland data…</small></div></div></div>`;
+  const r=ENV.rain||{}, b=ENV.beacon, pc=v=>v==null?'':`<span class="rpc ${v>=120?'hi':v<=70?'lo':''}">${v}%</span>`, g=BEACON_GUIDE[b];
+  return `<div class="ofr"><div class="ofcat">Effluent spreading conditions · Isla Bank</div>
+   <div class="envg"><a class="bcn" href="https://envdata.es.govt.nz/?tab=map&f=soil-moisture.xml" target="_blank" rel="noopener" style="border-color:${BCOL[b]||'#999'}">
+      <i style="background:${BCOL[b]||'#999'}" class="${b==='Red'?'flash':''}"></i><div><small>Beacon soil moisture (ES)</small><b style="color:${BCOL[b]||'#333'}">${b||'No data'}</b>
+      <small>${ENV.sm!=null?ENV.sm+'% soil moisture':''}${g?` · pod run ${g[0]}–${g[1]} min`:''}</small><small style="color:#999">${ESC(ENV.smAt||'')}</small></div></a>
+    <table class="rain"><tr><th colspan="3">Rainfall (Otahuti gauge, 3 km from Isla Bank)</th></tr>
+     <tr><td>Today</td><td><b>${r.today??'–'} mm</b></td><td></td></tr>
+     <tr><td>${ESC(r.month||'This month')} to date</td><td><b>${r.mtd??'–'} mm</b></td><td>${pc(r.mtdPct)}</td></tr>
+     <tr><td>${ESC(r.prevMonth||'Last month')}</td><td><b>${r.prev??'–'} mm</b></td><td>${pc(r.prevPct)}</td></tr>
+     <tr><td>Season to date <small>(from ${ESC(r.seasonFrom||'1 June')})</small></td><td><b>${r.season??'–'} mm</b></td><td>${pc(r.seasonPct)}</td></tr>
+     <tr><td colspan="3" class="rn">% = compared with the long-term average for the same period</td></tr></table></div></div>`;
+}
 function officeFarmInfo(){
   const fs=by('farminfo'), K=k=>{ const v=fs.filter(f=>f.properties.kind===k); return k==='vat'?v.sort((a,b)=>a.properties.name.localeCompare(b.properties.name,'en',{numeric:true})):k==='tank'?v.sort((a,b)=>(/^Dairy/.test(b.properties.name))-(/^Dairy/.test(a.properties.name))):v; };
   const bar=(f,pct,col)=>`<i class="lv" style="display:block;width:100%;height:4px;margin-top:2px"><i style="width:${pct}%;background:${col||FI_COL[f.properties.kind]}"></i></i>`;
-  const tile=(f,label,extra)=>{ const al=fiAlert(f); return `<div class="oft ${al==='crit'?'flash crit':al==='warn'?'warn':''}" data-fid="${f.properties.fid}"><small>${label||f.properties.name}</small><b>${fiText(f)}</b> ${fiTrend(f)}${extra||''}${FI_VAL[f.properties.kind].u==='%'?bar(f,fiVal(f),f.properties.kind==='silo'?ALC[al]:null):''}</div>`; };
+  const tile=(f,label,extra)=>{ const al=fiAlert(f); return `<div class="oft ${al==='crit'?'flash crit':al==='warn'?'warn':al==='yel'?'yel':f.properties.kind==='pond'&&al==='ok'?'okp':''}" data-fid="${f.properties.fid}"><small>${label||f.properties.name}</small><b>${fiText(f)}</b> ${fiTrend(f)}${extra||''}${FI_VAL[f.properties.kind].u==='%'?bar(f,fiVal(f),/silo|pond/.test(f.properties.kind)?ALC[al]:null):''}</div>`; };
   const row=(cat,html)=>`<div class="ofr">${cat?`<div class="ofcat">${cat}</div>`:''}<div class="ofg">${html}</div></div>`;
   const eff=K('eff')[0], p=eff&&eff.properties;
-  let open=true; try{ open=localStorage.getItem('gvmap.ofinfo')!=='0'; }catch(e){}
-  return `<div class="ofsec" id="ofInfoT"><h2>Farm Information</h2><small>placeholder readings · <span>${open?'▾ hide':'▸ show'}</span></small></div>
-  <div id="ofInfo" style="${open?'':'display:none'}">
+  return `<div class="ofnote">Vat, silo, tank, pond &amp; effluent readings are placeholders until the sensors are connected. Soil moisture &amp; rainfall are live from Environment Southland.</div>
+   ${envBlock()}
    ${row('Milk',K('vat').map(f=>tile(f,f.properties.name.replace('Milk vat','Vat'),f.properties.temp!=null?`<em style="color:${ALC[fiAlert(f)]}">${f.properties.temp.toFixed(1)} °C</em>`:'')).join(''))}
    ${row('Concentrates',K('silo').map(f=>tile(f)).join(''))}
    ${row('Water',K('tank').map(f=>tile(f,f.properties.name.replace('Dairy water tank','Dairy tank').replace('381 Boundary Rd water tank','381 Bdy tank'))).join('')+K('meter').map(f=>tile(f,'Water meter',`<em style="color:${f.properties.pumping?'#2e7d32':'#777'}">${f.properties.pumping?'Pumping '+f.properties.flow+' L/s':'Not pumping'}</em>`)).join(''))}
    ${row('Effluent',K('pond').map(f=>tile(f,f.properties.name.replace('Effluent pond','Pond').replace('Main effluent pond','Main pond'))).join('')+K('sand').map(f=>tile(f,'Sand trap')).join(''))}
-   ${eff?`<div class="ofr"><div class="ofcat">Effluent system</div><div class="ofe" data-fid="${p.fid}">
+   ${eff?`<div class="ofr"><div class="ofcat">Effluent system</div>${effCkLine(p)}<div class="ofe" data-fid="${p.fid}">
      <div class="ofst ${p.greenwash?'gw':''}">${p.status||'Off'}</div>
      <div class="ofl">${(p.lines||[]).filter(l=>!/green/i.test(l[0])).map(l=>{ const d=effDepth(p).per.find(x=>x.n===l[0]); return `<div class="${p.active===l[0]?'on':''}"><small>${l[0]}${p.active===l[0]?' · ON':''}</small><b>${l[1]} min/hr</b><small style="color:#5d4037">${mm(d.so)} of ${mm(d.plan)}</small></div>`; }).join('')}<div class="${p.greenwash?'on gw':''}"><small>Green wash</small><b>${p.greenwash?'ON':'OFF'}</b></div></div>
      <div class="ofrt"><span>Cycle: <b>${hrs(p.remain||0)}</b> left</span><span>of ${hrs(p.maxrun||0)} max run time</span></div>
@@ -1489,31 +1529,97 @@ function officeFarmInfo(){
        return `<div class="ofk"><div>Cycle time run<b>${hrs(done)}</b></div><div>Pumping time so far<b>${hrs(pumped)}</b></div><div>Total pumping planned<b>${hrs(total)}</b></div></div>
        <div class="ofrt" style="margin-top:2px;color:#666"><span>${hrs(p.maxrun||0)} max run time × ${per} min per hour = ${hrs(total)} pumping</span><span>(${nl} lines × ${(p.lines||[])[0]?p.lines[0][1]:0} min)</span></div>
        ${(()=>{ const d=effDepth(p); return `<div class="ofk"><div>Applied so far<b>${mm(d.so)}</b></div><div>Planned this cycle<b>${mm(d.plan)}</b></div><div>Application rate<b>${d.rate} mm/hr</b></div></div>
-       <div class="ofrt" style="margin-top:2px;color:#666"><span>Each line puts on ${d.rate} mm per hour of pumping; totals are all ${nl} lines added together</span></div>`; })()}`; })()}</div></div>`:''}
-  </div>`;
+       <div class="ofrt" style="margin-top:2px;color:#666"><span>Each line puts on ${d.rate} mm per hour of pumping; totals are all ${nl} lines added together</span></div>`; })()}`; })()}</div></div>`:''}`;
+}
+function officeBoard(){
+  const fmt=v=>{ if(!v) return ''; const d=new Date(v); return isNaN(d)?ESC(v):d.toLocaleDateString('en-NZ',{day:'numeric',month:'short'}); };
+  const rows=boardRows();
+  return `<div class="lg"><span class="r-Critical">Critical – ASAP</span><span class="r-Major">Major – within 7 days</span><span class="r-Minor">Minor – by agreed date</span></div>
+   ${rows.length?rows.map(s=>{ const ph=s.photo&&/^[\w-]{20,}$/.test(s.photo);
+     return `<div class="ofc ${s.rating==='Critical'?'crit':''}" data-id="${ESC(s.id)}"><div class="th" style="${ph?`background-image:url(https://drive.google.com/thumbnail?id=${s.photo}&sz=w300)`:''}">${ph?'':'no photo'}</div>
+      <div class="bd"><span class="rt r-${ESC(s.rating)||'none'}">${ESC(s.rating)||'Not rated'}</span><b>${ESC(s.cat)}${s.paddock?' · paddock '+ESC(s.paddock):''}</b>
+      <div class="tk">${ESC(s.comment)}${s.notes?`<br><i style="color:#555">Plan: ${ESC(s.notes)}</i>`:''}</div>
+      <div class="mt">${s.repairer?'Repairer: '+ESC(s.repairer)+' · ':''}Reported ${fmt(s.when)}${s.name?' by '+ESC(s.name):''}${s.due?' · agreed '+fmt(s.due):''}</div>
+      <button class="btn alt dn" data-done="${ESC(s.id)}">✓ Done</button></div></div>`; }).join('') : '<p style="padding:20px 16px;color:#666">No open tasks – nice work.</p>'}`;
+}
+function officeChecklist(){
+  const c=ckState(), L=c.last||{}, b=(ENV&&ENV.beacon)||'', eff=by('farminfo').find(f=>f.properties.kind==='eff'), mx=eff?eff.properties.maxrun:'';
+  const yn=(id,q)=>`<div class="ckq"><span>${q}</span><label><input type="radio" name="${id}" value="Yes"> Yes</label><label><input type="radio" name="${id}" value="No"> No</label></div>`;
+  let st;
+  if(!c.loaded) st='<div class="ckst">Loading…</div>';
+  else if(c.today) st=`<div class="ckst ${c.today['Permitted to start']==='Yes'?'ok':'bad'}">${c.today['Permitted to start']==='Yes'?'✓ Checklist completed today':'✕ Checklist completed today – NOT permitted to start'}<small>by ${ESC(c.today['Operator today'])} (signed ${ESC(c.today['Signed by'])}, ${ESC(String(c.today['Submitted']).slice(11))}) · beacon ${ESC(c.today['Beacon colour'])} · pod run ${ESC(c.today['Pod run time (min)'])} min · max run ${ESC(c.today['Max run time (h)'])} h · rain forecast ${ESC(c.today['Rain forecast today (mm)'])} mm</small><small>You can submit it again below if something changes.</small></div>`;
+  else st=`<div class="ckst bad">⚠ Not completed today<small>Must be completed before Lines 1–3 are started. Green wash can run without it.${c.last?` Last done ${ESC(c.last['Date'])} by ${ESC(c.last['Operator today'])}.`:''}</small></div>`;
+  return `${st}<form id="ckF" class="ckf" autocomplete="off">
+   <div class="ckh">Today's conditions</div>
+   <label class="field">Current beacon soil moisture colour <small>(Isla Bank, live from ES: <b style="color:${BCOL[b]||'#333'}">${b||'not available'}</b>${ENV&&ENV.sm!=null?' · '+ENV.sm+'%':''})</small>
+     <select name="beacon"><option value="">— choose —</option>${['Red','Orange','Green'].map(x=>`<option ${x===b?'selected':''}>${x}</option>`).join('')}</select></label>
+   <label class="field">Pod run time setpoint (minutes) <small id="ckGuide"></small><input name="pod" type="number" inputmode="decimal" min="0" max="30" step="0.5"></label>
+   <label class="field">Max run time setpoint (hours)<input name="maxrun" type="number" inputmode="decimal" min="0" max="24" step="0.5" value="${ESC(mx)}"></label>
+   <label class="field">Rain forecast (total) today (mm)<input name="rain" type="number" inputmode="decimal" min="0" step="0.5"></label>
+   <div class="ckh">People</div>
+   <label class="field">Person in charge (PIC) who has approved the operator<input name="pic" maxlength="80" value="${ESC(L['Person in charge (PIC)'])}"></label>
+   <label class="field">Relief PIC (fully trained)<input name="relief" maxlength="80" value="${ESC(L['Relief PIC'])}"></label>
+   <label class="field">Person operating the system today<input name="op" maxlength="80" value="${ESC(L['Operator today'])}"></label>
+   <div class="ckh">Operator questions <small>(all three must be Yes)</small></div>
+   ${yn('training','Have you completed the effluent training course and the training form?')}
+   ${yn('quiz','Have you completed and passed the effluent training quiz?')}
+   ${yn('pods','Have you checked the location of the pods so over-application will not occur (or moved them today)?')}
+   <div id="ckWarn" class="ckl bad" style="display:none">If you answered No to any of these, or the PIC has not approved you, you are <b>not permitted</b> to start the irrigation system.</div>
+   <div class="ckh">System checks</div>
+   <label class="field">Date of last pond leak detection check (monthly)<input name="leak" type="date" value="${ESC(L['Last pond leak check'])}"></label>
+   <label class="field">Date of last application-rate bucket test<input name="bucket" type="date" value="${ESC(L['Last bucket test'])}"></label>
+   <label class="field">Notes (optional)<textarea name="notes" rows="2" maxlength="500"></textarea></label>
+   <div class="ckh">Sign off</div>
+   <label class="field">Signed off by<select id="ckName"><option value="">Loading names…</option></select></label>
+   <label class="field">Code (last 4 digits of that person's phone number)<input id="ckCode" type="password" inputmode="numeric" maxlength="8" autocomplete="off"></label>
+   <button class="btn" id="ckGo" type="submit" style="width:100%;margin:6px 0 4px">Submit today's checklist</button>
+   <p class="note">Saved to the "Effluent checklist" tab of the GV1 Map Suggestions sheet – this replaces the daily photo to the effluent group chat. Dave is emailed if the answers mean the system must not be started.</p></form>`;
+}
+function ckWire(){
+  const f=document.getElementById('ckF'); if(!f) return;
+  const guide=()=>{ const b=f.beacon.value, g=BEACON_GUIDE[b], el=document.getElementById('ckGuide'), v=parseFloat(f.pod.value);
+    el.innerHTML=g?`guide for ${b}: <b>${g[0]}–${g[1]} min</b>${!isNaN(v)&&(v<g[0]||v>g[1])?' <b style="color:#d50000">– outside the guide</b>':''}`:'Red 2–5 · Orange 5–10 · Green 10–20 min'; };
+  const warn=()=>{ document.getElementById('ckWarn').style.display=[...f.querySelectorAll('input[type=radio]:checked')].some(x=>x.value==='No')?'':'none'; };
+  f.addEventListener('input',()=>{ window._ckDirty=true; guide(); warn(); }); f.addEventListener('change',()=>{ window._ckDirty=true; guide(); warn(); }); guide();
+  const sel=document.getElementById('ckName'), nm=(()=>{ try{ return localStorage.getItem('gvmap.name')||''; }catch(e){ return ''; } })();
+  const fill=ppl=>{ sel.innerHTML='<option value="">— choose —</option>'+ppl.map(p=>`<option value="${ESC(p.name)}" ${p.name===nm?'selected':''}>${ESC(p.name)} (${ESC(p.role)})</option>`).join(''); };
+  if(window._ppl) fill(window._ppl); else fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'people',farm:META.name})}).then(r=>r.json())
+    .then(r=>{ window._ppl=r.people||[]; window._ppl.length?fill(window._ppl):sel.innerHTML='<option value="">Names not available</option>'; }).catch(()=>{ sel.innerHTML='<option value="">No connection</option>'; });
+  f.onsubmit=e=>{ e.preventDefault();
+    const v=n=>(f[n]&&f[n].value||'').trim(), r=n=>(f.querySelector(`input[name=${n}]:checked`)||{}).value||'';
+    const d={beacon:v('beacon'),sm:ENV&&ENV.sm!=null?String(ENV.sm):'',pod:v('pod'),maxrun:v('maxrun'),rain:v('rain'),pic:v('pic'),relief:v('relief'),op:v('op'),
+             training:r('training'),quiz:r('quiz'),pods:r('pods'),leak:v('leak'),bucket:v('bucket'),notes:v('notes')};
+    const miss=[['beacon','beacon colour'],['pod','pod run time'],['maxrun','max run time'],['rain','rain forecast'],['pic','PIC'],['op','operator'],['training','training question'],['quiz','quiz question'],['pods','pods question']].filter(x=>!d[x[0]]).map(x=>x[1]);
+    if(miss.length) return toast('Please fill in: '+miss.join(', '));
+    const name=sel.value, pin=document.getElementById('ckCode').value.trim(); if(!name) return toast('Choose who is signing off'); if(!pin) return toast('Enter the code');
+    const b=document.getElementById('ckGo'); b.disabled=true; b.textContent='Saving…';
+    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'checklist',farm:META.name,name,pin,f:d})}).then(x=>x.json()).then(x=>{
+      if(!x.ok){ b.disabled=false; b.textContent='Submit today\'s checklist'; return toast(x.error||'Could not save'); }
+      try{ localStorage.setItem('gvmap.name',name); }catch(e){}
+      if(ENV) ENV.eff=x.eff; window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
+     .catch(()=>{ b.disabled=false; b.textContent='Submit today\'s checklist'; toast('No connection – not saved'); }); };
 }
 function officeRender(){
-  const esc=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
-  const fmt=v=>{ if(!v) return ''; const d=new Date(v); return isNaN(d)?esc(v):d.toLocaleDateString('en-NZ',{day:'numeric',month:'short'}); };
-  const rows=boardRows(), now=new Date();
-  document.getElementById('ofp').innerHTML=`<div class="oh"><h1>${esc(META.name)} Office View</h1><small>Farm information &amp; maintenance board · updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a></div>
-   ${officeFarmInfo()}
-   <div class="ofsec"><h2>${esc(META.name)} Maintenance Board</h2><small>${rows.length} open task${rows.length===1?'':'s'} &amp; hazard${rows.length===1?'':'s'}</small></div>
-   <div class="lg"><span class="r-Critical">Critical – ASAP</span><span class="r-Major">Major – within 7 days</span><span class="r-Minor">Minor – by agreed date</span></div>
-   ${rows.length?rows.map(s=>{ const ph=s.photo&&/^[\w-]{20,}$/.test(s.photo);
-     return `<div class="ofc" data-id="${esc(s.id)}"><div class="th" style="${ph?`background-image:url(https://drive.google.com/thumbnail?id=${s.photo}&sz=w300)`:''}">${ph?'':'no photo'}</div>
-      <div class="bd"><span class="rt r-${esc(s.rating)||'none'}">${esc(s.rating)||'Not rated'}</span><b>${esc(s.cat)}${s.paddock?' · paddock '+esc(s.paddock):''}</b>
-      <div class="tk">${esc(s.comment)}${s.notes?`<br><i style="color:#555">Plan: ${esc(s.notes)}</i>`:''}</div>
-      <div class="mt">${s.repairer?'Repairer: '+esc(s.repairer)+' · ':''}Reported ${fmt(s.when)}${s.name?' by '+esc(s.name):''}${s.due?' · agreed '+fmt(s.due):''}</div>
-      <button class="btn alt dn" data-done="${esc(s.id)}">✓ Done</button></div></div>`; }).join('') : '<p style="padding:20px 16px;color:#666">No open tasks – nice work.</p>'}`;
-  const it=document.getElementById('ofInfoT'); if(it) it.onclick=()=>{ const el=document.getElementById('ofInfo'), open=el.style.display==='none'; el.style.display=open?'':'none'; it.querySelector('small span').textContent=(open?'▾ hide':'▸ show'); try{ localStorage.setItem('gvmap.ofinfo',open?'1':'0'); }catch(e){} };
-  document.querySelectorAll('#ofp [data-fid]').forEach(t=>t.onclick=()=>{ const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
-  document.querySelectorAll('#ofp .ofc').forEach(c=>c.onclick=()=>{ const s=sgData.find(x=>x.id===c.dataset.id); if(!s) return;
+  const rows=boardRows(), now=new Date(), crit=rows.filter(s=>s.rating==='Critical').length;
+  const tabs=[['info','Farm information',''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['ck','Effluent checklist',ckBadge()]];
+  const panel=document.getElementById('ofp');
+  if(OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')){   // don't wipe a half-filled checklist on the 10-minute refresh
+    const tb=panel.querySelector('.oftabs'); if(tb) tb.querySelectorAll('button').forEach((b,i)=>b.innerHTML=tabs[i][1]+' '+tabs[i][2]); return; }
+  panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><small>updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
+    <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
+   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():officeFarmInfo()}</div>`;
+  panel.querySelectorAll('[data-tab]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); if(OFTAB==='ck'&&b.dataset.tab!=='ck') window._ckDirty=false; OFTAB=b.dataset.tab; try{ localStorage.setItem('gvmap.oftab',OFTAB); }catch(e){} officeRender(); panel.scrollTop=0; });
+  panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
+  panel.querySelectorAll('.ofc').forEach(c=>c.onclick=()=>{ const s=sgData.find(x=>x.id===c.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} sgShow(s); });
-  document.querySelectorAll('#ofp [data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
+  panel.querySelectorAll('[data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
+  if(OFTAB==='ck') ckWire();
 }
 function officeLoad(){
-  fetch(SUGGEST_URL+'?farm='+encodeURIComponent(META.name)).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); officeRender(); }).catch(()=>{ officeRender(); });
+  const q='?farm='+encodeURIComponent(META.name);
+  Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); }).catch(()=>{}),
+               fetch(SUGGEST_URL+q+'&env=1').then(r=>r.json()).then(d=>{ ENV=d; }).catch(()=>{})]).then(()=>officeRender());
+  officeRender();
 }
 function sgLoad(){
   if(!/^https:/.test(SUGGEST_URL)) return;
@@ -1769,7 +1875,7 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
   document.body.classList.add('office'); document.title='GV1 Office View';
   state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); ['paddocks','sugg','lanes','buildings','cowshed','yards','trough','farminfo','pond',...GROUPS['Dairy shed & barn services (2019 plan)'],'sbtiles','cables','effpit','effdrain','valve'].forEach(k=>{ if(LAYERS.some(d=>d.id===k)) state[k]=true; });
   map.invalidateSize(); syncLayers(); fitFarm(); officeLoad(); setInterval(officeLoad, 10*60*1000);
-  let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); }, 3*60*1000); };
+  let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); if(OFTAB!=='info' && !window._ckDirty){ OFTAB='info'; try{ localStorage.setItem('gvmap.oftab','info'); }catch(e){} officeRender(); } }, 3*60*1000); };
   ['mousedown','touchstart','wheel','keydown'].forEach(ev=>addEventListener(ev,kick,{passive:true})); kick();
 } else if(VIEW==='water'){   // website link beside the stock water PDF: paddocks, stock water and the water blocks
   if(!Object.keys(state).length){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; });
