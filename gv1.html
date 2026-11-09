@@ -822,6 +822,11 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
  .envg{grid-template-columns:1fr}
  .ofbd{padding-bottom:70px}.ofbody{padding-bottom:60px}
 }
+.wsoil{cursor:pointer}.wsoil:hover{box-shadow:inset 0 0 0 2px #6d4c41}
+.sgr{display:flex;gap:6px;margin:6px 0}.sgr .btn{padding:5px 10px;font-size:12.5px}.sgsvg{width:100%;height:auto}.sgsvg text{font-size:13px;fill:#666}.sgleg{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;margin-top:4px}.sgleg i{display:inline-block;width:16px;height:4px;vertical-align:middle;margin-right:5px;border-radius:2px}.sgtip{font-size:12px;color:#555;margin-top:6px;min-height:18px}
+#camBox{position:fixed;z-index:1500;right:10px;top:calc(68px + env(safe-area-inset-top));width:320px;background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.3);padding:10px 12px;font-size:13px}
+.cbh{display:flex;justify-content:space-between;align-items:center}.cbx{border:0;background:#eee;border-radius:50%;width:26px;height:26px;cursor:pointer}
+.cbn{display:flex;gap:6px;margin-top:8px}.cbn select{flex:1;font:inherit;padding:6px;border-radius:8px;border:1px solid #ccc}.cbn .btn{padding:4px 10px}.cbt{color:#666;font-size:11.5px;margin-top:4px}.cbnote{color:#888;font-size:11px;margin-top:6px}
 .ckl{margin:2px 0 6px;padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700}.ckl.ok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}.ckl.bad{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}
 .envg{display:grid;grid-template-columns:150px 1fr;gap:6px;align-items:start}.bcn{display:flex;gap:8px;align-items:flex-start;border:2px solid;border-radius:10px;padding:7px;text-decoration:none;color:#333;background:#fff}.bcn i{flex:0 0 22px;height:22px;border-radius:50%;margin-top:2px}.bcn b{display:block;font-size:20px}.bcn small{display:block;font-size:10.5px;color:#666;line-height:1.25}
 .rain{width:100%;border-collapse:collapse;font-size:12px}.rain th{text-align:left;font-size:10.5px;color:#666;font-weight:700;padding:0 4px 2px}.rain td{padding:2px 4px;border-top:1px solid #eee}.rain td:nth-child(2),.rain td:nth-child(3),.rain th:nth-child(n+2){text-align:right}.rain td:nth-child(3){color:#555}.rain td:nth-child(4){text-align:right;width:44px}.rain td small{display:block;font-size:9.5px;color:#888;white-space:nowrap}.rain td:nth-child(n+2){white-space:nowrap}.rain .rn{font-size:10px;color:#999;border:0}
@@ -965,6 +970,7 @@ const cowIco = () => { const g=gj('cowshed',{style:{color:'#8e24aa',weight:1.5,f
   g.getLayers().forEach(l=>{ const m=L.marker(l.getBounds().getCenter(),{icon:L.divIcon({className:'ico',html:badge(ICO.rotary,'#8e24aa'),iconSize:[32,32],iconAnchor:[16,16]})}); m.on('click',e=>{L.DomEvent.stopPropagation(e);shedSheet();}); g.addLayer(m); }); return g; };
 const camLayer = () => gj('camera',{pointToLayer:(f,ll)=>L.marker(ll,{icon:L.divIcon({className:'ico',html:badge(ICO.camera,'#263238'),iconSize:[32,32],iconAnchor:[16,16]})}),
   onEachFeature:(f,l)=>l.on('click',e=>{L.DomEvent.stopPropagation(e); clearSel(); const p=f.properties;
+    if(innerWidth>820&&!/Mobi|Android/i.test(navigator.userAgent)) return camShow(f);   // desktop / office screen: camera viewer + pop-up
     openSheet(`<h2>${p.name}</h2><div class="sub">Security camera · ${p.site||''}</div>
      <div class="btns"><a class="btn" href="${p.nx||LINKS.nx}" target="_blank" rel="noopener">Open live view in Nx Witness ↗</a></div>
      <p class="note">${p.nx?'Opens this camera in Nx Cloud – sign in with your Nx Witness account if asked.':'Opens the GV1 system in Nx Cloud (sign in if asked) – a direct link to this camera hasn\'t been added yet.'}</p>`); })});
@@ -1569,6 +1575,60 @@ function officeBoard(){   // the full maintenance board, same columns as the Goo
   return `<div class="ofbd">${boardHTML(true)}<p class="note" style="margin:8px 0">Tap a row for the full details, photo and location. Use <b>Mark complete</b> once the job is finished.</p>
    <div class="btns"><button class="btn alt" id="ofPrint">Print board</button><a class="btn alt" href="${BOARD_URL}" target="_blank" rel="noopener">Open in Google Sheets</a></div></div>`;
 }
+// ---- Soil temperature graph (Environment Southland, daily mean with min–max band) ----
+function soilGraph(days){
+  days=days||30; openSheet(`<h2>Soil temperature (10 cm)</h2><div class="sub">Environment Southland soil monitoring sites · Isla Bank (nearest) and Heddon Bush (as on the Gladvale weather page)</div>
+    <div class="sgr">${[30,90,180,365].map(d=>`<button class="btn ${d===days?'':'alt'}" data-sd="${d}">${d===365?'1 year':d+' days'}</button>`).join('')}</div><div id="sgBox" style="min-height:220px;display:flex;align-items:center;justify-content:center;color:#888">Loading…</div>`);
+  document.querySelectorAll('[data-sd]').forEach(b=>b.onclick=()=>soilGraph(+b.dataset.sd));
+  fetch(SUGGEST_URL+'?series=soilT&days='+days).then(r=>r.json()).then(r=>{ const box=document.getElementById('sgBox'); if(!box) return;
+    const S=(r.sites||[]).filter(s=>s.pts&&s.pts.length); if(!S.length){ box.textContent='No data available right now'; return; }
+    const all=S.flatMap(s=>s.pts), dates=[...new Set(all.map(p=>p[0]))].sort(), lo=Math.floor(Math.min(...all.map(p=>p[2]))-1), hi=Math.ceil(Math.max(...all.map(p=>p[3]))+1);
+    const W=520,H=230,x=d=>dates.indexOf(d)/(dates.length-1||1)*W, y=v=>H-(v-lo)/(hi-lo)*H, COL=['#6d4c41','#1565c0'];
+    const step=Math.max(1,Math.round(dates.length/6)), ticks=dates.filter((d,i)=>i%step===0);
+    const grid=[]; for(let v=Math.ceil(lo/2)*2; v<=hi; v+=2) grid.push(v);
+    box.style.display='block'; box.style.minHeight='';
+    box.innerHTML=`<svg viewBox="-30 -6 ${W+40} ${H+26}" class="sgsvg">
+      ${grid.map(v=>`<line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="${v===10?'#2e7d32':'#e6e6e6'}" stroke-width="${v===10?1.2:.7}" ${v===10?'stroke-dasharray="4 3"':''}/><text x="-5" y="${y(v)+3}" text-anchor="end">${v}°</text>`).join('')}
+      ${ticks.map(d=>`<text x="${x(d)}" y="${H+15}" text-anchor="middle">${new Date(d+'T00:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short'})}</text>`).join('')}
+      ${S.map((s,i)=>`${i===0?`<polygon fill="${COL[0]}" opacity=".15" points="${s.pts.map(p=>x(p[0]).toFixed(1)+','+y(p[3]).toFixed(1)).join(' ')} ${s.pts.slice().reverse().map(p=>x(p[0]).toFixed(1)+','+y(p[2]).toFixed(1)).join(' ')}"/>`:''}
+        <polyline fill="none" stroke="${COL[i]}" stroke-width="${i===0?2.2:1.6}" ${i?'stroke-dasharray="5 3"':''} points="${s.pts.map(p=>x(p[0]).toFixed(1)+','+y(p[1]).toFixed(1)).join(' ')}"/>`).join('')}
+      <line id="sgCur" y1="0" y2="${H}" stroke="#333" stroke-width=".8" style="display:none"/><rect id="sgHit" x="0" y="0" width="${W}" height="${H}" fill="transparent"/></svg>
+      <div class="sgleg">${S.map((s,i)=>`<span><i style="background:${COL[i]}"></i>${ESC(s.name)}${s.latest?` – now <b>${(+s.latest[1]).toFixed(1)}°C</b>`:''}</span>`).join('')}<span><i style="background:#2e7d32;height:2px"></i>10 °C</span></div>
+      <div id="sgTip" class="sgtip">Tap or hover the graph to read a day · shaded band = Isla Bank daily low–high</div>`;
+    const svg=box.querySelector('svg'), hit=svg.getElementById('sgHit'), cur=svg.getElementById('sgCur'), tip=document.getElementById('sgTip');
+    const show=ev=>{ const pt=svg.createSVGPoint(), t=ev.touches?ev.touches[0]:ev; pt.x=t.clientX; pt.y=t.clientY; const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+      const i=Math.max(0,Math.min(dates.length-1,Math.round(p.x/W*(dates.length-1)))), d=dates[i]; cur.setAttribute('x1',x(d)); cur.setAttribute('x2',x(d)); cur.style.display='';
+      tip.innerHTML=`<b>${new Date(d+'T00:00:00').toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}</b> · `+S.map(s=>{ const q=s.pts.find(p=>p[0]===d); return q?`${ESC(s.name)} ${q[1]}°C (${q[2]}–${q[3]})`:''; }).filter(Boolean).join(' · '); };
+    hit.addEventListener('mousemove',show); hit.addEventListener('touchstart',show,{passive:true}); hit.addEventListener('touchmove',show,{passive:true});
+  }).catch(()=>{ const b=document.getElementById('sgBox'); if(b) b.textContent='Could not load the graph'; });
+}
+
+// ---- Security cameras: picture-in-picture style viewer ----
+// Nx Cloud refuses to be shown inside another web page, so the live video opens in a small pop-up window
+// (top right of the screen) that is re-used as you flick between cameras. Zoom inside it with the Nx player.
+const camList=()=>by('camera').slice().sort((a,b)=>String(a.properties.name).localeCompare(String(b.properties.name),'en',{numeric:true}));
+let camWin=null, camIdx=0;
+function camOpenWin(f){ const u=f.properties.nx||LINKS.nx, w=Math.min(720,Math.round(screen.availWidth*.42)), h=Math.round(w*0.62);
+  const left=(screen.availLeft||0)+screen.availWidth-w-16, top=(screen.availTop||0)+110;
+  try{ camWin=window.open(u,'gv1cam',`popup=yes,width=${w},height=${h},left=${left},top=${top}`); if(camWin) camWin.focus(); }catch(e){ camWin=null; }
+  if(!camWin) toast('Allow pop-ups for this site to watch cameras'); }
+function camShow(f,open){ const L=camList(); camIdx=Math.max(0,L.findIndex(x=>x.properties.fid===f.properties.fid)); camBox(); if(open!==false) camOpenWin(L[camIdx]); }
+function camBox(){
+  const L=camList(); if(!L.length) return; const f=L[camIdx], p=f.properties; let el=document.getElementById('camBox');
+  if(!el){ el=document.createElement('div'); el.id='camBox'; document.body.appendChild(el); }
+  el.innerHTML=`<div class="cbh"><b>📹 GV1 cameras</b><button class="cbx" title="Close">✕</button></div>
+    <div class="cbn"><button class="btn alt cbp" title="Previous camera">◀</button><select id="cbSel">${L.map((x,i)=>`<option value="${i}" ${i===camIdx?'selected':''}>${ESC(x.properties.name)}</option>`).join('')}</select><button class="btn alt cbq" title="Next camera">▶</button></div>
+    <div class="cbt">${ESC(p.site||'')}${p.nx?'':' · <i>no direct camera link yet – opens the GV1 system</i>'}</div>
+    <div class="btns" style="margin-top:6px"><button class="btn cbw">▶ Watch live</button><button class="btn alt cbm">Show on map</button></div>
+    <div class="cbnote">Live video opens in the small window at the top right – leave it open and use ◀ ▶ to flick between cameras. Zoom with the Nx player (scroll or pinch).</div>`;
+  const go=i=>{ camIdx=(i+L.length)%L.length; camBox(); camOpenWin(L[camIdx]); };
+  el.querySelector('.cbx').onclick=()=>{ el.remove(); try{ if(camWin&&!camWin.closed) camWin.close(); }catch(e){} };
+  el.querySelector('.cbp').onclick=()=>go(camIdx-1); el.querySelector('.cbq').onclick=()=>go(camIdx+1);
+  el.querySelector('#cbSel').onchange=e=>go(+e.target.value);
+  el.querySelector('.cbw').onclick=()=>camOpenWin(L[camIdx]);
+  el.querySelector('.cbm').onclick=()=>{ const c=f.geometry.coordinates; map.setView([c[1],c[0]],20); if(innerWidth<=820) document.body.classList.add('mapmode'); };
+}
+
 // ---- Weather (Farm dashboard) ----
 const WSYM={clearsky:'☀️',fair:'🌤️',partlycloudy:'⛅',cloudy:'☁️',fog:'🌫️'};
 const wsym=s=>WSYM[s]||(/thunder/.test(s)?'⛈️':/snow/.test(s)?'❄️':/sleet/.test(s)?'🌨️':/showers/.test(s)?'🌦️':/rain/.test(s)?'🌧️':s?'☁️':'');
@@ -1577,7 +1637,7 @@ function weatherBlock(){
   return `<div class="ofr"><div class="ofcat">Weather · <a href="https://www.gladvalefarms.co.nz/weather.html" target="_blank" rel="noopener">Gladvale weather page ↗</a></div>
    <iframe class="wwarn" src="https://southland-weather-warnings.dave-7b9.workers.dev/" title="MetService warnings" loading="lazy"></iframe>
    ${days.length?`<div class="wdays">${days.map((d,i)=>`<div><small>${i===0?'Today':new Date(d.d+'T00:00:00').toLocaleDateString('en-NZ',{weekday:'short',day:'numeric'})}</small><i>${wsym(d.sym)}</i><b>${d.max}°</b><span>${d.min}°</span><em>${d.rain} mm</em><em>${d.wind} km/h</em></div>`).join('')}
-     ${ENV.soilT!=null?`<div class="wsoil"><small>Soil temp</small><i>🌱</i><b>${ENV.soilT}°</b><span>Isla Bank 10 cm</span></div>`:''}</div><div class="wsrc">Forecast: Yr (met.no) for the farm · warnings: MetService · soil temperature: Environment Southland</div>`:'<div class="wsrc">Forecast loading…</div>'}
+     ${ENV.soilT!=null?`<div class="wsoil" id="soilTile" title="Open the soil temperature graph"><small>Soil temp</small><i>🌱</i><b>${ENV.soilT}°</b><span>Isla Bank 10 cm</span><em style="color:#1565c0">📈 graph</em></div>`:''}</div><div class="wsrc">Forecast: Yr (met.no) for the farm · warnings: MetService · soil temperature: Environment Southland</div>`:'<div class="wsrc">Forecast loading…</div>'}
    <a href="https://www.yr.no/en/forecast/daily-table/2-2185446" target="_blank" rel="noopener"><img class="wmet" src="https://www.yr.no/en/content/2-2185446/meteogram.svg" alt="Yr meteogram" loading="lazy"></a></div>`;
 }
 
@@ -1867,6 +1927,7 @@ function officeRender(){
   panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><small>updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
     <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
    <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():officeFarmInfo()}</div>`;
+  const st=document.getElementById('soilTile'); if(st) st.onclick=()=>{ if(innerWidth<=820){ document.body.classList.add('mapmode'); } soilGraph(30); };
   panel.querySelectorAll('[data-tab]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); if(OFTAB==='ck'&&b.dataset.tab!=='ck') window._ckDirty=false; OFTAB=b.dataset.tab; try{ localStorage.setItem('gvmap.oftab',OFTAB); }catch(e){} officeRender(); panel.scrollTop=0; });
   const toMap=()=>{ if(innerWidth<=820){ document.body.classList.add('mapmode'); setTimeout(()=>map.invalidateSize(),60); } };
   panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ toMap(); const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
@@ -2142,7 +2203,7 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
   { const fb=document.getElementById('farmBtn'); fb.textContent='GV1 Hazard Map'; fb.onclick=null; fb.style.cursor='default'; }
 } else if(OFFICE){
   document.body.classList.add('office'); document.title='GV1 Office View';
-  state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); ['paddocks','sugg','lanes','buildings','cowshed','yards','trough','farminfo','pond',...GROUPS['Dairy shed & barn services (2019 plan)'],'sbtiles','cables','effpit','effdrain','valve'].forEach(k=>{ if(LAYERS.some(d=>d.id===k)) state[k]=true; });
+  state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); ['paddocks','sugg','lanes','buildings','cowshed','yards','trough','farminfo','pond',...GROUPS['Dairy shed & barn services (2019 plan)'],'sbtiles','cables','effpit','effdrain','valve','camera'].forEach(k=>{ if(LAYERS.some(d=>d.id===k)) state[k]=true; });
   { const tg=document.createElement('button'); tg.id='ofToggle'; document.body.appendChild(tg);   // phone: switch between the office panel and the map
     const lab=()=>{ tg.textContent=document.body.classList.contains('mapmode')?'📋 Back to office view':'🗺️ Show map'; };
     tg.onclick=()=>{ document.body.classList.toggle('mapmode'); if(!document.body.classList.contains('mapmode')) closeSheet(); lab(); setTimeout(()=>map.invalidateSize(),60); };
