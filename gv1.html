@@ -1981,7 +1981,7 @@ function officeRender(){
 }
 function officeLoad(){
   const q='?farm='+encodeURIComponent(META.name);
-  Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); }).catch(()=>{}),
+  Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); if(!(OFTAB==='ck'&&window._ckDirty)) officeRender(); }).catch(()=>{}),
                fetch(SUGGEST_URL+q+'&env=1').then(r=>r.json()).then(d=>{ ENV=d; }).catch(()=>{})]).then(()=>{ officeRender();
     if(ENV&&!window._mpShown){ window._mpShown=true; const td=ymdL(new Date()); let k=''; try{ k=localStorage.getItem('gvmap.mprompt')||''; }catch(e){}
       if(k!==td){ try{ localStorage.setItem('gvmap.mprompt',td); }catch(e){} loadPeople(()=>mtPrompt()); } } });
