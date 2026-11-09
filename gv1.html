@@ -769,7 +769,8 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .measbar{position:fixed;z-index:1003;left:10px;right:10px;bottom:calc(16px + env(safe-area-inset-bottom));background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:12px 14px;display:none}
 @media(min-width:760px){.measbar{left:auto;right:70px;width:340px}}
 .measbar b{font-size:20px}.measbar p{margin:0 0 8px;font-size:13px;color:var(--muted)}.mlbl{background:#fff;border:1px solid #333;border-radius:6px;padding:1px 5px;font-size:11.5px;font-weight:700;white-space:nowrap}
-.office #map{left:min(560px,40vw)}
+.office #map{left:min(560px,40vw)}.office.wide #map{left:min(940px,62vw)}.office.wide .ofp{width:min(940px,62vw)}.office.wide .top{left:calc(min(940px,62vw) + 10px)}
+.ofbd{padding:4px 12px 16px}.ofbd .mb{font-size:12.5px}.ofbd .mb td{padding:5px}.ofbd .mb tr[data-id]{cursor:pointer}.ofbd .mb tr[data-id]:hover td{background:#f6f8f4}.ofbd .mb tr[data-id]:hover td[class^=mbr-]{filter:brightness(.95)}.mbth{width:56px;height:42px;object-fit:cover;border-radius:4px;display:block;margin:auto}.ofbd .mblg{margin:6px 0 4px}
 .ofp{display:none;position:fixed;z-index:1002;left:0;top:0;bottom:0;width:min(560px,40vw);background:#fff;box-shadow:2px 0 14px rgba(0,0,0,.2);overflow-y:auto;font-family:inherit}
 .office .ofp{display:block}.office .top{left:calc(min(560px,40vw) + 10px)}.office .key{display:none!important}
 @media(min-width:760px){.office .sheet{left:auto;right:70px}}
@@ -796,7 +797,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .ofnote{margin:8px 16px 0;font-size:11px;color:#888}
 .ckl{margin:2px 0 6px;padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700}.ckl.ok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}.ckl.bad{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}
 .envg{display:grid;grid-template-columns:150px 1fr;gap:6px;align-items:start}.bcn{display:flex;gap:8px;align-items:flex-start;border:2px solid;border-radius:10px;padding:7px;text-decoration:none;color:#333;background:#fff}.bcn i{flex:0 0 22px;height:22px;border-radius:50%;margin-top:2px}.bcn b{display:block;font-size:20px}.bcn small{display:block;font-size:10.5px;color:#666;line-height:1.25}
-.rain{width:100%;border-collapse:collapse;font-size:12px}.rain th{text-align:left;font-size:10.5px;color:#666;font-weight:700;padding:0 4px 2px}.rain td{padding:2px 4px;border-top:1px solid #eee}.rain td:nth-child(2){text-align:right}.rain td:nth-child(3){text-align:right;width:44px}.rain .rn{font-size:10px;color:#999;border:0}
+.rain{width:100%;border-collapse:collapse;font-size:12px}.rain th{text-align:left;font-size:10.5px;color:#666;font-weight:700;padding:0 4px 2px}.rain td{padding:2px 4px;border-top:1px solid #eee}.rain td:nth-child(2),.rain td:nth-child(3),.rain th:nth-child(n+2){text-align:right}.rain td:nth-child(3){color:#555}.rain td:nth-child(4){text-align:right;width:44px}.rain td small{display:block;font-size:9.5px;color:#888;white-space:nowrap}.rain td:nth-child(n+2){white-space:nowrap}.rain .rn{font-size:10px;color:#999;border:0}
 .rpc{display:inline-block;padding:0 5px;border-radius:7px;font-weight:700;background:#e3f2fd;color:#0d47a1}.rpc.hi{background:#bbdefb}.rpc.lo{background:#fff3e0;color:#e65100}
 .ckst{margin:10px 16px;padding:10px 12px;border-radius:10px;font-weight:800;font-size:15px}.ckst small{display:block;font-weight:500;font-size:12px;margin-top:3px}.ckst.ok{background:#e8f5e9;color:#1b5e20;border:2px solid #66bb6a}.ckst.bad{background:#ffebee;color:#b71c1c;border:2px solid #ef5350}
 .bcbox{border:2px solid;border-radius:10px;padding:8px 10px;margin:4px 0 6px;background:#fff}.bctop{display:flex;gap:10px;align-items:flex-start}.bctop i{flex:0 0 28px;height:28px;border-radius:50%;margin-top:2px}.bctop small{display:block;font-size:11px;color:#666}.bctop b{display:block;font-size:22px}.bctop b span{font-size:13px;color:#333;font-weight:600}
@@ -1438,7 +1439,7 @@ function sgShow(s){
    <div class="kv"><div style="grid-column:1/-1">Task to be completed<b style="font-weight:500">${esc(s.comment)||'—'}</b></div>
    <div style="grid-column:1/-1">Response / plan<b style="font-weight:500">${esc(s.notes)||'— not yet —'}</b></div>
    <div>Agreed date<b>${s.due?esc(fmt(s.due)):'—'}</b></div>${s.doneby?`<div style="grid-column:1/-1">Completed by<b style="font-weight:500">${esc(s.doneby)}</b></div>`:''}<div>Rating<b class="mbr-${esc(s.rating)}" style="padding:0 4px">${esc(s.rating)||'—'}</b></div><div>Repairer<b>${esc(s.repairer)||'—'}</b></div><div>Ref<b style="font-size:12px">${esc(s.id)}</b></div></div>
-   ${(s.status==='New'||s.status==='Actioned'||s.status==='Deferred')?`<div class="btns"><button class="btn" id="sgDone">✓ Mark as completed</button></div>`:''}${s.photo&&/^[\w-]{20,}$/.test(s.photo)?`<a href="https://drive.google.com/file/d/${s.photo}/view" target="_blank" rel="noopener"><img class="sgphoto" src="https://drive.google.com/thumbnail?id=${s.photo}&sz=w1000" alt="Photo"></a>`:''}${mg}`);
+   ${(s.status==='New'||s.status==='Actioned'||s.status==='Deferred')?`<div class="btns"><button class="btn" id="sgDone">Mark as completed</button></div>`:''}${s.photo&&/^[\w-]{20,}$/.test(s.photo)?`<a href="https://drive.google.com/file/d/${s.photo}/view" target="_blank" rel="noopener"><img class="sgphoto" src="https://drive.google.com/thumbnail?id=${s.photo}&sz=w1000" alt="Photo"></a>`:''}${mg}`);
   const dn=document.getElementById('sgDone'); if(dn) dn.onclick=()=>sgComplete(s);
   const post = body => fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}).then(r=>r.json());
   const o=document.getElementById('mgOpen'); if(o) o.onclick=()=>{ document.getElementById('mgPin').style.display='block'; document.getElementById('mgP').focus(); };
@@ -1460,18 +1461,18 @@ const BOARD_URL = SHEET_URL + '#gid=5003';
 const RATE = {Critical:'Must be rectified ASAP', Major:'Must be rectified within 7 days', Minor:'Must be rectified by the agreed date'};
 function boardRows(){ const rk=r=>({Critical:0,Major:1,Minor:2})[r] ?? 3;
   return sgData.filter(s=>s.status==='New'||s.status==='Actioned').sort((a,b)=>rk(a.rating)-rk(b.rating) || new Date(a.when)-new Date(b.when)); }
-function boardHTML(){ const esc=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+function boardHTML(big){ const esc=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
   const fmt=v=>{ if(!v) return ''; const d=new Date(v); return isNaN(d)?esc(v):d.toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}); };
   const rows=boardRows();
   return `<div class="mblg"><span style="font-weight:700;grid-column:1/-1;text-align:center">Rating Assessment</span>${Object.entries(RATE).map(([k,v])=>`<span class="mbr-${k}">${k}</span><span>${v}</span>`).join('')}</div>
-  <div class="mbw"><table class="mb"><tr><th>Item</th><th>Required Repair</th><th>Repairer</th><th>Repair Request Date</th><th>Rating</th><th>Agreed Date for Repair</th><th>Photo</th><th class="np">Done?</th></tr>
-  ${rows.length?rows.map(s=>`<tr data-id="${esc(s.id)}"><td>${esc(s.cat)}${s.paddock?' (paddock '+esc(s.paddock)+')':''}</td><td>${esc(s.comment)}${s.notes?'. Plan: '+esc(s.notes):''}</td><td>${esc(s.repairer)}</td><td>${fmt(s.when)}</td><td class="mbr-${esc(s.rating)}">${esc(s.rating)}</td><td>${fmt(s.due)}</td><td>${s.photo&&/^[\w-]{20,}$/.test(s.photo)?`<a href="https://drive.google.com/file/d/${s.photo}/view" target="_blank" rel="noopener" onclick="event.stopPropagation()">Photo</a>`:''}</td><td class="np"><button class="btn alt mbdone" data-id="${esc(s.id)}" style="padding:6px 10px;font-size:12px">✓ Done</button></td></tr>`).join(''):'<tr><td colspan="8">No open jobs</td></tr>'}</table></div>`; }
+  <div class="mbw"><table class="mb"><tr><th>Item</th><th>Required Repair</th><th>Repairer</th><th>Repair Request Date</th><th>Rating</th><th>Agreed Date for Repair</th><th>Photo</th><th class="np">Close off</th></tr>
+  ${rows.length?rows.map(s=>`<tr data-id="${esc(s.id)}"><td>${esc(s.cat)}${s.paddock?' (paddock '+esc(s.paddock)+')':''}</td><td>${esc(s.comment)}${s.notes?'. Plan: '+esc(s.notes):''}</td><td>${esc(s.repairer)}</td><td>${fmt(s.when)}</td><td class="mbr-${esc(s.rating)}">${esc(s.rating)}</td><td>${fmt(s.due)}</td><td>${s.photo&&/^[\w-]{20,}$/.test(s.photo)?(big?`<a href="https://drive.google.com/file/d/${s.photo}/view" target="_blank" rel="noopener" onclick="event.stopPropagation()"><img class="mbth" src="https://drive.google.com/thumbnail?id=${s.photo}&sz=w200" alt="Photo"></a>`:`<a href="https://drive.google.com/file/d/${s.photo}/view" target="_blank" rel="noopener" onclick="event.stopPropagation()">Photo</a>`):''}</td><td class="np"><button class="btn alt mbdone" data-id="${esc(s.id)}" style="padding:6px 10px;font-size:12px">Mark complete</button></td></tr>`).join(''):'<tr><td colspan="8">No open jobs</td></tr>'}</table></div>`; }
 document.getElementById('boardBtn').onclick=()=>{ clearSel();
   if(!window._mbFresh){ openSheet(`<h2>GV1 Maintenance Board</h2><div class="sub">Loading the latest jobs…</div>`);
     fetch(SUGGEST_URL+'?farm='+encodeURIComponent(META.name)).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); window._mbFresh=true; document.getElementById('boardBtn').click(); window._mbFresh=false; })
       .catch(()=>{ window._mbFresh=true; document.getElementById('boardBtn').click(); window._mbFresh=false; toast('No connection – showing the last jobs loaded'); });
     return; } let pin=''; try{ pin=localStorage.getItem('gvmap.pin')||''; }catch(e){}
-  openSheet(`<h2>GV1 Maintenance Board</h2><div class="sub">Open tasks and hazards reported on the map (New and Actioned), most urgent first. Tap a row to see it on the map, or ✓ Done to close it off.</div>${boardHTML()}
+  openSheet(`<h2>GV1 Maintenance Board</h2><div class="sub">Open tasks and hazards reported on the map (New and Actioned), most urgent first. Tap a row to see it on the map, or Mark complete once the job is finished.</div>${boardHTML()}
    <div class="note" id="mbNotify" style="margin-top:10px">Task emails to the contract milker &amp; workshop: <b>checking…</b></div>
    <div class="btns" style="margin-top:12px"><button class="btn" id="mbPrint">Print</button><a class="btn alt" href="${BOARD_URL}" target="_blank" rel="noopener">Open in Google Sheets</a></div>`);
   const nb=document.getElementById('mbNotify'), npost=b=>fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(r=>r.json());
@@ -1505,12 +1506,12 @@ function envBlock(){
    <div class="envg"><a class="bcn" href="https://envdata.es.govt.nz/?tab=map&f=soil-moisture.xml" target="_blank" rel="noopener" style="border-color:${BCOL[b]||'#999'}">
       <i style="background:${BCOL[b]||'#999'}" class="${b==='Red'?'flash':''}"></i><div><small>Beacon soil moisture (ES)</small><b style="color:${BCOL[b]||'#333'}">${b||'No data'}</b>
       <small>${ENV.sm!=null?ENV.sm+'% soil moisture':''}${g?` · pod run ${g[0]}–${g[1]} min`:''}</small><small style="color:#999">${ESC(ENV.smAt||'')}</small></div></a>
-    <table class="rain"><tr><th colspan="3">Rainfall (Otahuti gauge, 3 km from Isla Bank)</th></tr>
-     <tr><td>Today</td><td><b>${r.today??'–'} mm</b></td><td></td></tr>
-     <tr><td>${ESC(r.month||'This month')} to date</td><td><b>${r.mtd??'–'} mm</b></td><td>${pc(r.mtdPct)}</td></tr>
-     <tr><td>${ESC(r.prevMonth||'Last month')}</td><td><b>${r.prev??'–'} mm</b></td><td>${pc(r.prevPct)}</td></tr>
-     <tr><td>Season to date <small>(from ${ESC(r.seasonFrom||'1 June')})</small></td><td><b>${r.season??'–'} mm</b></td><td>${pc(r.seasonPct)}</td></tr>
-     <tr><td colspan="3" class="rn">% = compared with the long-term average for the same period</td></tr></table></div></div>`;
+    <table class="rain"><tr><th>Rainfall</th><th>Actual</th><th>Normal</th><th>%</th></tr>
+     <tr><td>Today</td><td><b>${r.today??'–'} mm</b></td><td></td><td></td></tr>
+     <tr><td>${ESC(r.month||'This month')} to date <small>(${r.day||''} days)</small></td><td><b>${r.mtd??'–'} mm</b></td><td>${r.mtdNorm!=null?`${r.mtdNorm} mm<small>(month avg ${r.monthAvg})</small>`:''}</td><td>${pc(r.mtdPct)}</td></tr>
+     <tr><td>${ESC(r.prevMonth||'Last month')}</td><td><b>${r.prev??'–'} mm</b></td><td>${r.prevAvg!=null?r.prevAvg+' mm':''}</td><td>${pc(r.prevPct)}</td></tr>
+     <tr><td>Season to date <small>(from ${ESC(r.seasonFrom||'1 June')})</small></td><td><b>${r.season??'–'} mm</b></td><td>${r.seasonNorm!=null?Math.round(r.seasonNorm)+' mm':''}</td><td>${pc(r.seasonPct)}</td></tr>
+     <tr><td colspan="4" class="rn">Otahuti rain gauge (3 km from Isla Bank). Normal = ES long-term average for the same period; month to date is pro-rata</td></tr></table></div></div>`;
 }
 function officeFarmInfo(){
   const fs=by('farminfo'), K=k=>{ const v=fs.filter(f=>f.properties.kind===k); return k==='vat'?v.sort((a,b)=>a.properties.name.localeCompare(b.properties.name,'en',{numeric:true})):k==='tank'?v.sort((a,b)=>(/^Dairy/.test(b.properties.name))-(/^Dairy/.test(a.properties.name))):v; };
@@ -1535,16 +1536,10 @@ function officeFarmInfo(){
        ${(()=>{ const d=effDepth(p); return `<div class="ofk"><div>Applied so far<b>${mm(d.so)}</b></div><div>Planned this cycle<b>${mm(d.plan)}</b></div><div>Application rate<b>${d.rate} mm/hr</b></div></div>
        <div class="ofrt" style="margin-top:2px;color:#666"><span>Each line puts on ${d.rate} mm per hour of pumping; totals are all ${nl} lines added together</span></div>`; })()}`; })()}</div></div>`:''}`;
 }
-function officeBoard(){
-  const fmt=v=>{ if(!v) return ''; const d=new Date(v); return isNaN(d)?ESC(v):d.toLocaleDateString('en-NZ',{day:'numeric',month:'short'}); };
+function officeBoard(){   // the full maintenance board, same columns as the Google Sheet / printed board
   const rows=boardRows();
-  return `<div class="lg"><span class="r-Critical">Critical – ASAP</span><span class="r-Major">Major – within 7 days</span><span class="r-Minor">Minor – by agreed date</span></div>
-   ${rows.length?rows.map(s=>{ const ph=s.photo&&/^[\w-]{20,}$/.test(s.photo);
-     return `<div class="ofc ${s.rating==='Critical'?'crit':''}" data-id="${ESC(s.id)}"><div class="th" style="${ph?`background-image:url(https://drive.google.com/thumbnail?id=${s.photo}&sz=w300)`:''}">${ph?'':'no photo'}</div>
-      <div class="bd"><span class="rt r-${ESC(s.rating)||'none'}">${ESC(s.rating)||'Not rated'}</span><b>${ESC(s.cat)}${s.paddock?' · paddock '+ESC(s.paddock):''}</b>
-      <div class="tk">${ESC(s.comment)}${s.notes?`<br><i style="color:#555">Plan: ${ESC(s.notes)}</i>`:''}</div>
-      <div class="mt">${s.repairer?'Repairer: '+ESC(s.repairer)+' · ':''}Reported ${fmt(s.when)}${s.name?' by '+ESC(s.name):''}${s.due?' · agreed '+fmt(s.due):''}</div>
-      <button class="btn alt dn" data-done="${ESC(s.id)}">✓ Done</button></div></div>`; }).join('') : '<p style="padding:20px 16px;color:#666">No open tasks – nice work.</p>'}`;
+  return `<div class="ofbd">${boardHTML(true)}<p class="note" style="margin:8px 0">Tap a row for the full details, photo and location. Use <b>Mark complete</b> once the job is finished.</p>
+   <div class="btns"><button class="btn alt" id="ofPrint">Print board</button><a class="btn alt" href="${BOARD_URL}" target="_blank" rel="noopener">Open in Google Sheets</a></div></div>`;
 }
 const SIGNERS=['Caleb Lusty'];   // effluent checklist sign-off list (plus "Other")
 const CALC_F=[  // pond calculator – rows 40–60 of the old Effluent Daily Checklist sheet
@@ -1651,6 +1646,11 @@ function officeRender(){
    <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():officeFarmInfo()}</div>`;
   panel.querySelectorAll('[data-tab]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); if(OFTAB==='ck'&&b.dataset.tab!=='ck') window._ckDirty=false; OFTAB=b.dataset.tab; try{ localStorage.setItem('gvmap.oftab',OFTAB); }catch(e){} officeRender(); panel.scrollTop=0; });
   panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
+  document.body.classList.toggle('wide',OFTAB==='board'); setTimeout(()=>map.invalidateSize(),50);
+  panel.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
+    try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
+  panel.querySelectorAll('.mbdone').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.id); if(s) sgComplete(s); });
+  const opr=document.getElementById('ofPrint'); if(opr) opr.onclick=()=>{ document.getElementById('boardBtn').click(); setTimeout(()=>{ const p=document.getElementById('mbPrint'); if(p) p.click(); },1500); };
   panel.querySelectorAll('.ofc').forEach(c=>c.onclick=()=>{ const s=sgData.find(x=>x.id===c.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} sgShow(s); });
   panel.querySelectorAll('[data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
