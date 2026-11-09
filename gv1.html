@@ -799,6 +799,10 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .rain{width:100%;border-collapse:collapse;font-size:12px}.rain th{text-align:left;font-size:10.5px;color:#666;font-weight:700;padding:0 4px 2px}.rain td{padding:2px 4px;border-top:1px solid #eee}.rain td:nth-child(2){text-align:right}.rain td:nth-child(3){text-align:right;width:44px}.rain .rn{font-size:10px;color:#999;border:0}
 .rpc{display:inline-block;padding:0 5px;border-radius:7px;font-weight:700;background:#e3f2fd;color:#0d47a1}.rpc.hi{background:#bbdefb}.rpc.lo{background:#fff3e0;color:#e65100}
 .ckst{margin:10px 16px;padding:10px 12px;border-radius:10px;font-weight:800;font-size:15px}.ckst small{display:block;font-weight:500;font-size:12px;margin-top:3px}.ckst.ok{background:#e8f5e9;color:#1b5e20;border:2px solid #66bb6a}.ckst.bad{background:#ffebee;color:#b71c1c;border:2px solid #ef5350}
+.bcbox{border:2px solid;border-radius:10px;padding:8px 10px;margin:4px 0 6px;background:#fff}.bctop{display:flex;gap:10px;align-items:flex-start}.bctop i{flex:0 0 28px;height:28px;border-radius:50%;margin-top:2px}.bctop small{display:block;font-size:11px;color:#666}.bctop b{display:block;font-size:22px}.bctop b span{font-size:13px;color:#333;font-weight:600}
+.smg{width:100%;height:auto;margin-top:6px}.smg text{font-size:9px;fill:#777}.smk{font-size:10.5px;color:#888;margin:-2px 0 6px}
+.bgd{width:100%;border-collapse:collapse;font-size:12.5px}.bgd th{text-align:left;font-size:10.5px;color:#666;padding:2px 6px}.bgd td{padding:4px 6px;border-top:1px solid #eee}.bgd td i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}.bgd tr.cur td{background:#fff8e1;font-weight:800}
+.calc{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}.calc td{padding:4px 4px;border-top:1px solid #eee;vertical-align:middle}.calc .cl{width:18px;font-weight:800;color:#5b6b55}.calc small{display:block;color:#888;font-size:10.5px}.calc input{width:86px;padding:5px 6px;border:1px solid #ccc;border-radius:6px;font:inherit;text-align:right}.calc b{display:inline-block;width:86px;text-align:right;font-size:14px}.calc .cu{width:48px;color:#666;font-size:11px}.calc tr.out{background:#f4f8f1}.calc tr:last-child{background:#e8f5e9}.calc tr:last-child b{font-size:16px;color:#1b5e20}
 .ckf{padding:0 16px 20px}.ckf .field small{font-weight:400;color:#666}.ckh{font-size:11px;font-weight:800;color:#5b6b55;letter-spacing:.6px;text-transform:uppercase;margin:12px 0 4px;border-bottom:1px solid #e6ebe2;padding-bottom:2px}.ckh small{text-transform:none;letter-spacing:0;font-weight:500}
 .ckq{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13.5px}.ckq span{flex:1}.ckq label{white-space:nowrap;font-weight:700}.ckq input{transform:scale(1.3);margin-right:4px}
 .ofc.crit{background:#fff5f5;box-shadow:inset 4px 0 0 #d50000}
@@ -1542,21 +1546,55 @@ function officeBoard(){
       <div class="mt">${s.repairer?'Repairer: '+ESC(s.repairer)+' · ':''}Reported ${fmt(s.when)}${s.name?' by '+ESC(s.name):''}${s.due?' · agreed '+fmt(s.due):''}</div>
       <button class="btn alt dn" data-done="${ESC(s.id)}">✓ Done</button></div></div>`; }).join('') : '<p style="padding:20px 16px;color:#666">No open tasks – nice work.</p>'}`;
 }
+const SIGNERS=['Caleb Lusty'];   // effluent checklist sign-off list (plus "Other")
+const CALC_F=[  // pond calculator – rows 40–60 of the old Effluent Daily Checklist sheet
+  ['A','rate','Application rate from the bucket test','mm/hr'],
+  ['B','maxdepth','Maximum application depth allowed by consent','mm'],
+  ['C','','Continuous application allowed per line','hours','B ÷ A'],
+  ['D','lines','Number of lines',''],
+  ['E','','Total run time allowed','hours','C × D'],
+  ['F','pond','Pond size','m³'],
+  ['G','podrate','Each pod will apply','m³/hr','= A unless changed'],
+  ['H','pods','Number of pods on each line',''],
+  ['I','','Amount applied per hour of run time','m³/hr','G × H'],
+  ['J','','Hours of run time to empty the pond','hours','F ÷ I'],
+  ['K','avghrs','Average run time hours per day (8–12)','hours'],
+  ['','','Days to empty the pond (not counting effluent added)','days','J ÷ K']];
+function calcVals(c){ const n=k=>{ const x=parseFloat(c[k]); return isNaN(x)?null:x; }, A=n('rate'), B=n('maxdepth'), D=n('lines'), F=n('pond'), G=n('podrate')??A, H=n('pods'), K=n('avghrs');
+  const dv=(a,b)=>a!=null&&b?a/b:null, ml=(a,b)=>a!=null&&b!=null?a*b:null, C=dv(B,A), E=ml(C,D), I=ml(G,H), J=dv(F,I), days=dv(J,K);
+  return {A,B,C,D,E,F,G,H,I,J,K,'':days}; }
+function smGraph(){
+  const s=(ENV&&ENV.smSeries)||[]; if(s.length<2) return '';
+  const W=330,H=92,lo=Math.min(60,...s.map(p=>p[1]))-2,hi=100,t0=s[0][0],t1=s[s.length-1][0],x=t=>(t-t0)/(t1-t0)*W,y=v=>H-(v-lo)/(hi-lo)*H;
+  const band=(a,b,c)=>`<rect x="0" y="${y(Math.min(b,hi))}" width="${W}" height="${Math.max(0,y(Math.max(a,lo))-y(Math.min(b,hi)))}" fill="${c}" opacity=".16"/>`;
+  const days=[]; for(let t=Math.ceil(t0/864e5/7)*864e5*7;t<t1;t+=7*864e5) days.push(t);
+  return `<svg viewBox="-28 -4 ${W+34} ${H+20}" class="smg" role="img" aria-label="Isla Bank soil moisture, last 30 days">
+   ${band(lo,BEACON_T.orange,'#2e7d32')}${band(BEACON_T.orange,BEACON_T.red,'#ef6c00')}${band(BEACON_T.red,hi,'#d50000')}
+   ${[lo,BEACON_T.orange,BEACON_T.red,100].map(v=>`<text x="-4" y="${y(v)+3}" text-anchor="end">${Math.round(v)}%</text><line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#ddd" stroke-width=".6"/>`).join('')}
+   ${days.map(t=>`<text x="${x(t)}" y="${H+13}" text-anchor="middle">${new Date(t).toLocaleDateString('en-NZ',{day:'numeric',month:'short'})}</text>`).join('')}
+   <polyline fill="none" stroke="#1565c0" stroke-width="2" points="${s.map(p=>x(p[0]).toFixed(1)+','+y(p[1]).toFixed(1)).join(' ')}"/>
+   <circle cx="${W}" cy="${y(s[s.length-1][1])}" r="3.5" fill="#1565c0"/></svg>`;
+}
+const BEACON_T={red:90,orange:80};   // must match BEACON in the Apps Script
 function officeChecklist(){
-  const c=ckState(), L=c.last||{}, b=(ENV&&ENV.beacon)||'', eff=by('farminfo').find(f=>f.properties.kind==='eff'), mx=eff?eff.properties.maxrun:'';
-  const yn=(id,q)=>`<div class="ckq"><span>${q}</span><label><input type="radio" name="${id}" value="Yes"> Yes</label><label><input type="radio" name="${id}" value="No"> No</label></div>`;
+  const c=ckState(), L=c.last||{}, b=(ENV&&ENV.beacon)||'', fc=ENV&&ENV.fc, cal=(ENV&&ENV.calc)||{}, eff=by('farminfo').find(f=>f.properties.kind==='eff');
+  const mx=L['Max run time (h)']||(eff?eff.properties.maxrun:''), cv=calcVals(cal);
+  const yn=(id,q)=>`<div class="ckq"><span>${q}</span><label><input type="radio" name="${id}" value="Yes" checked> Yes</label><label><input type="radio" name="${id}" value="No"> No</label></div>`;
   let st;
   if(!c.loaded) st='<div class="ckst">Loading…</div>';
   else if(c.today) st=`<div class="ckst ${c.today['Permitted to start']==='Yes'?'ok':'bad'}">${c.today['Permitted to start']==='Yes'?'✓ Checklist completed today':'✕ Checklist completed today – NOT permitted to start'}<small>by ${ESC(c.today['Operator today'])} (signed ${ESC(c.today['Signed by'])}, ${ESC(String(c.today['Submitted']).slice(11))}) · beacon ${ESC(c.today['Beacon colour'])} · pod run ${ESC(c.today['Pod run time (min)'])} min · max run ${ESC(c.today['Max run time (h)'])} h · rain forecast ${ESC(c.today['Rain forecast today (mm)'])} mm</small><small>You can submit it again below if something changes.</small></div>`;
   else st=`<div class="ckst bad">⚠ Not completed today<small>Must be completed before Lines 1–3 are started. Green wash can run without it.${c.last?` Last done ${ESC(c.last['Date'])} by ${ESC(c.last['Operator today'])}.`:''}</small></div>`;
+  const fmt=v=>v==null||!isFinite(v)?'–':(Math.round(v*10)/10).toLocaleString('en-NZ');
   return `${st}<form id="ckF" class="ckf" autocomplete="off">
    <div class="ckh">Today's conditions</div>
-   <label class="field">Current beacon soil moisture colour <small>(Isla Bank, live from ES: <b style="color:${BCOL[b]||'#333'}">${b||'not available'}</b>${ENV&&ENV.sm!=null?' · '+ENV.sm+'%':''})</small>
-     <select name="beacon"><option value="">— choose —</option>${['Red','Orange','Green'].map(x=>`<option ${x===b?'selected':''}>${x}</option>`).join('')}</select></label>
-   <label class="field">Pod run time setpoint (minutes) <small id="ckGuide"></small><input name="pod" type="number" inputmode="decimal" min="0" max="30" step="0.5"></label>
+   <div class="bcbox" style="border-color:${BCOL[b]||'#ccc'}"><div class="bctop"><i style="background:${BCOL[b]||'#999'}"></i><div><small>Beacon soil moisture · Isla Bank (Environment Southland, live)</small><b style="color:${BCOL[b]||'#333'}">${b||'Not available'}${ENV&&ENV.sm!=null?` <span>${ENV.sm}% soil moisture</span>`:''}</b><small>${ESC((ENV&&ENV.smAt)||'')} · <a href="https://envdata.es.govt.nz/?tab=graph" target="_blank" rel="noopener">open ES graph ↗</a></small></div></div>
+     ${smGraph()}<div class="smk">Last 30 days · shading shows the beacon colour bands (Green under ${BEACON_T.orange}%, Orange ${BEACON_T.orange}–${BEACON_T.red}%, Red ${BEACON_T.red}% and over)</div>
+     <table class="bgd"><tr><th>Beacon colour</th><th>Pod run time setpoint guide</th></tr>${['Red','Orange','Green'].map(x=>`<tr class="${x===b?'cur':''}"><td><i style="background:${BCOL[x]}"></i>${x}</td><td>${BEACON_GUIDE[x][0]}–${BEACON_GUIDE[x][1]} min${x===b?' ← today':''}</td></tr>`).join('')}</table></div>
+   <label class="field">Current beacon soil moisture colour<select name="beacon"><option value="">— choose —</option>${['Red','Orange','Green'].map(x=>`<option ${x===b?'selected':''}>${x}</option>`).join('')}</select></label>
+   <label class="field">Pod run time setpoint (minutes) <small id="ckGuide"></small><input name="pod" type="number" inputmode="decimal" min="0" max="30" step="0.5" value="${ESC(L['Pod run time (min)'])}"></label>
    <label class="field">Max run time setpoint (hours)<input name="maxrun" type="number" inputmode="decimal" min="0" max="24" step="0.5" value="${ESC(mx)}"></label>
-   <label class="field">Rain forecast (total) today (mm)<input name="rain" type="number" inputmode="decimal" min="0" step="0.5"></label>
-   <div class="ckh">People</div>
+   <label class="field">Rain forecast (total) today (mm) <small>${fc?`– filled in from ${ESC(fc.src)} for the rest of today, updated ${ESC(fc.at)} · tomorrow ${fc.tomorrow} mm`:'– forecast not available, please enter it'}</small><input name="rain" type="number" inputmode="decimal" min="0" step="0.1" value="${fc?fc.today:''}"></label>
+   <div class="ckh">People <small>(filled in from the last checklist – change if needed)</small></div>
    <label class="field">Person in charge (PIC) who has approved the operator<input name="pic" maxlength="80" value="${ESC(L['Person in charge (PIC)'])}"></label>
    <label class="field">Relief PIC (fully trained)<input name="relief" maxlength="80" value="${ESC(L['Relief PIC'])}"></label>
    <label class="field">Person operating the system today<input name="op" maxlength="80" value="${ESC(L['Operator today'])}"></label>
@@ -1565,38 +1603,41 @@ function officeChecklist(){
    ${yn('quiz','Have you completed and passed the effluent training quiz?')}
    ${yn('pods','Have you checked the location of the pods so over-application will not occur (or moved them today)?')}
    <div id="ckWarn" class="ckl bad" style="display:none">If you answered No to any of these, or the PIC has not approved you, you are <b>not permitted</b> to start the irrigation system.</div>
-   <div class="ckh">System checks</div>
-   <label class="field">Date of last pond leak detection check (monthly)<input name="leak" type="date" value="${ESC(L['Last pond leak check'])}"></label>
-   <label class="field">Date of last application-rate bucket test<input name="bucket" type="date" value="${ESC(L['Last bucket test'])}"></label>
    <label class="field">Notes (optional)<textarea name="notes" rows="2" maxlength="500"></textarea></label>
    <div class="ckh">Sign off</div>
-   <label class="field">Signed off by<select id="ckName"><option value="">Loading names…</option></select></label>
-   <label class="field">Code (last 4 digits of that person's phone number)<input id="ckCode" type="password" inputmode="numeric" maxlength="8" autocomplete="off"></label>
-   <button class="btn" id="ckGo" type="submit" style="width:100%;margin:6px 0 4px">Submit today's checklist</button>
-   <p class="note">Saved to the "Effluent checklist" tab of the GV1 Map Suggestions sheet – this replaces the daily photo to the effluent group chat. Dave is emailed if the answers mean the system must not be started.</p></form>`;
+   <label class="field">Signed off by<select id="ckName">${SIGNERS.map(n=>`<option>${n}</option>`).join('')}<option value="__other">Other…</option></select></label>
+   <label class="field" id="ckOtherL" style="display:none">Your name<input id="ckOther" maxlength="80"></label>
+   <button class="btn" id="ckGo" type="submit" style="width:100%;margin:8px 0 4px">Submit today's checklist</button>
+   <p class="note">Saved to the "Effluent checklist" tab of the GV1 Map Suggestions sheet. Dave is emailed if the answers mean the system must not be started.</p>
+   <div class="ckh" style="margin-top:22px;font-size:13px;color:#2e5e2a">System checks &amp; pond calculator <small>(saved with each checklist – only change when re-tested)</small></div>
+   <label class="field">Date of last effluent pond leak detection check (monthly)<input name="leak" type="date" value="${ESC(cal.leak||L['Last pond leak check'])}"></label>
+   <label class="field">Date of last application-rate bucket test<input name="bucket" type="date" value="${ESC(cal.bucket||L['Last bucket test'])}"></label>
+   <table class="calc">${CALC_F.map(([l,k,lab,u,f])=>`<tr class="${k?'':'out'}"><td class="cl">${l}</td><td>${lab}${f?`<small>${f}</small>`:''}</td><td>${k?`<input name="c_${k}" type="number" inputmode="decimal" step="any" value="${ESC(cal[k]??(k==='rate'?4.5:k==='lines'?3:''))}" placeholder="${k==='podrate'?'= A':''}">`:`<b data-calc="${l}">${fmt(cv[l])}</b>`}</td><td class="cu">${u}</td></tr>`).join('')}</table>
+   <button class="btn alt" id="ckSave" type="button" style="width:100%;margin:8px 0 4px">Save system details only</button></form>`;
 }
 function ckWire(){
   const f=document.getElementById('ckF'); if(!f) return;
   const guide=()=>{ const b=f.beacon.value, g=BEACON_GUIDE[b], el=document.getElementById('ckGuide'), v=parseFloat(f.pod.value);
     el.innerHTML=g?`guide for ${b}: <b>${g[0]}–${g[1]} min</b>${!isNaN(v)&&(v<g[0]||v>g[1])?' <b style="color:#d50000">– outside the guide</b>':''}`:'Red 2–5 · Orange 5–10 · Green 10–20 min'; };
   const warn=()=>{ document.getElementById('ckWarn').style.display=[...f.querySelectorAll('input[type=radio]:checked')].some(x=>x.value==='No')?'':'none'; };
-  f.addEventListener('input',()=>{ window._ckDirty=true; guide(); warn(); }); f.addEventListener('change',()=>{ window._ckDirty=true; guide(); warn(); }); guide();
-  const sel=document.getElementById('ckName'), nm=(()=>{ try{ return localStorage.getItem('gvmap.name')||''; }catch(e){ return ''; } })();
-  const fill=ppl=>{ sel.innerHTML='<option value="">— choose —</option>'+ppl.map(p=>`<option value="${ESC(p.name)}" ${p.name===nm?'selected':''}>${ESC(p.name)} (${ESC(p.role)})</option>`).join(''); };
-  if(window._ppl) fill(window._ppl); else fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'people',farm:META.name})}).then(r=>r.json())
-    .then(r=>{ window._ppl=r.people||[]; window._ppl.length?fill(window._ppl):sel.innerHTML='<option value="">Names not available</option>'; }).catch(()=>{ sel.innerHTML='<option value="">No connection</option>'; });
+  const calc=()=>{ const c={}; CALC_F.forEach(([l,k])=>{ if(k) c[k]=f['c_'+k].value.trim(); }); c.leak=f.leak.value; c.bucket=f.bucket.value; return c; };
+  const recalc=()=>{ const v=calcVals(calc()); f.querySelectorAll('[data-calc]').forEach(b=>{ const x=v[b.dataset.calc==='undefined'?'':b.dataset.calc]; b.textContent=x==null||!isFinite(x)?'–':(Math.round(x*10)/10).toLocaleString('en-NZ'); }); };
+  const sel=document.getElementById('ckName'), oth=()=>{ document.getElementById('ckOtherL').style.display=sel.value==='__other'?'':'none'; };
+  const upd=()=>{ window._ckDirty=true; guide(); warn(); recalc(); oth(); };
+  f.addEventListener('input',upd); f.addEventListener('change',upd); guide(); recalc();
+  const post=b=>fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(x=>x.json());
+  document.getElementById('ckSave').onclick=()=>{ const c=calc(); post({action:'effcalc',farm:META.name,calc:c}).then(x=>{ if(!x.ok) return toast(x.error||'Could not save'); if(ENV) ENV.calc=c; toast('System details saved'); }).catch(()=>toast('No connection – not saved')); };
   f.onsubmit=e=>{ e.preventDefault();
     const v=n=>(f[n]&&f[n].value||'').trim(), r=n=>(f.querySelector(`input[name=${n}]:checked`)||{}).value||'';
     const d={beacon:v('beacon'),sm:ENV&&ENV.sm!=null?String(ENV.sm):'',pod:v('pod'),maxrun:v('maxrun'),rain:v('rain'),pic:v('pic'),relief:v('relief'),op:v('op'),
              training:r('training'),quiz:r('quiz'),pods:r('pods'),leak:v('leak'),bucket:v('bucket'),notes:v('notes')};
-    const miss=[['beacon','beacon colour'],['pod','pod run time'],['maxrun','max run time'],['rain','rain forecast'],['pic','PIC'],['op','operator'],['training','training question'],['quiz','quiz question'],['pods','pods question']].filter(x=>!d[x[0]]).map(x=>x[1]);
+    const miss=[['beacon','beacon colour'],['pod','pod run time'],['maxrun','max run time'],['rain','rain forecast'],['pic','PIC'],['op','operator']].filter(x=>!d[x[0]]).map(x=>x[1]);
     if(miss.length) return toast('Please fill in: '+miss.join(', '));
-    const name=sel.value, pin=document.getElementById('ckCode').value.trim(); if(!name) return toast('Choose who is signing off'); if(!pin) return toast('Enter the code');
-    const b=document.getElementById('ckGo'); b.disabled=true; b.textContent='Saving…';
-    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'checklist',farm:META.name,name,pin,f:d})}).then(x=>x.json()).then(x=>{
+    const name=sel.value==='__other'?document.getElementById('ckOther').value.trim():sel.value; if(!name) return toast('Please type your name');
+    const b=document.getElementById('ckGo'); b.disabled=true; b.textContent='Saving…'; const c=calc();
+    post({action:'checklist',farm:META.name,name,f:d,calc:c}).then(x=>{
       if(!x.ok){ b.disabled=false; b.textContent='Submit today\'s checklist'; return toast(x.error||'Could not save'); }
-      try{ localStorage.setItem('gvmap.name',name); }catch(e){}
-      if(ENV) ENV.eff=x.eff; window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
+      if(ENV){ ENV.eff=x.eff; ENV.calc=c; } window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
      .catch(()=>{ b.disabled=false; b.textContent='Submit today\'s checklist'; toast('No connection – not saved'); }); };
 }
 function officeRender(){
