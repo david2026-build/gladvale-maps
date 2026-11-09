@@ -801,6 +801,27 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .phg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.phc{border:2px solid #c8e6c9;border-radius:10px;padding:8px;background:#fff;display:flex;flex-direction:column;gap:4px}.phc.crit{border-color:#ef5350}.phc.wrn{border-color:#ffb74d}.phc img,.phc .phn{width:100%;height:90px;object-fit:cover;border-radius:6px;background:#eef1ea;display:flex;align-items:center;justify-content:center;color:#999;font-size:12px}.phc small{color:#666;font-size:11px}
 .ebg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-items:start}.eb{width:100%;border-collapse:collapse;font-size:12px}.eb th,.eb td{border:1px solid #bbb;padding:3px 4px;text-align:center}.eb th{background:#eee;font-size:11px}.eb th small{display:block;font-weight:500;color:#1565c0}.eb .pd{font-weight:800;background:#f6f6f6}.ebc{cursor:pointer;min-width:34px;height:20px}.ebc:hover{background:#e3f2fd}.ebc.set{background:#efebe9;font-weight:700;color:#4e342e}.eb tr.now td{box-shadow:inset 0 0 0 1px #1565c0}.eb tr.now .pd{background:#bbdefb}
 @media(max-width:1300px){.ebg{grid-template-columns:repeat(2,1fr)}}
+.wwarn{width:100%;height:96px;border:0;border-radius:8px;background:#f4f6f1}.wdays{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:6px}.wdays>div{background:#f4f6f1;border-radius:8px;padding:4px 6px;text-align:center;font-size:11px}.wdays small{display:block;color:#666}.wdays i{display:block;font-style:normal;font-size:20px}.wdays b{font-size:15px}.wdays span{color:#1565c0;margin-left:4px}.wdays em{display:block;font-style:normal;color:#555}.wdays .wsoil{background:#efebe9}.wdays .wsoil span{display:block;margin:0;color:#6d4c41}.wsrc{font-size:10px;color:#999;margin-top:3px}.wmet{width:100%;margin-top:6px;border-radius:6px;background:#fff}
+.mth{display:flex;gap:10px;align-items:stretch;margin-top:8px}.mtsc{flex:0 0 230px;border-radius:12px;padding:10px 12px;background:#f4f6f1;border:2px solid #ccc}.mtsc b{display:block;font-size:34px;line-height:1.1}.mtsc small{display:block;color:#555;font-size:11.5px}.mtsc.ok{border-color:#66bb6a;background:#e8f5e9}.mtsc.ok b{color:#1b5e20}.mtsc.wrn{border-color:#ffb74d;background:#fff3e0}.mtsc.wrn b{color:#e65100}.mtsc.bad{border-color:#ef5350;background:#ffebee}.mtsc.bad b{color:#b71c1c}
+.mtbar{display:block;position:relative;height:8px;background:#e0e0e0;border-radius:4px;margin-top:6px}.mtbar>i{display:block;height:100%;border-radius:4px;background:currentColor}.mtsc.ok .mtbar{color:#43a047}.mtsc.wrn .mtbar{color:#fb8c00}.mtsc.bad .mtbar{color:#e53935}.mtbar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:#333}
+.mthist{flex:1;display:flex;gap:6px;flex-wrap:wrap;align-content:flex-start}.mthist div{background:#f4f6f1;border-radius:8px;padding:6px 10px;text-align:center}.mthist small{display:block;color:#666;font-size:11px}.mthist b{font-size:18px}
+b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
+.mtt{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}.mtt th{text-align:left;background:#2e5e2a;color:#fff;padding:5px 6px;font-size:12px}.mtt td{padding:5px 6px;border-bottom:1px solid #eee;vertical-align:middle}.mtt td:nth-child(3),.mtt td:nth-child(4){white-space:nowrap}.mtt a{text-decoration:none}
+.mts{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:9px;background:#eee;color:#555;white-space:nowrap}.mts.ok{background:#c8e6c9;color:#1b5e20}.mts.wrn{background:#ffe0b2;color:#e65100}.mts.bad{background:#ffcdd2;color:#b71c1c}.mta{color:#888;font-size:10px;border:1px solid #ccc;border-radius:6px;padding:0 4px}
+.mtact{white-space:nowrap;text-align:right}.mtb{padding:4px 9px!important;font-size:12px!important;margin-left:3px;cursor:pointer;display:inline-block}
+#mtPrompt{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:12px}.mpw{background:#fff;border-radius:16px;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.4)}.mpw h2{margin:0 0 4px;color:#2e5e2a}.mpw p{margin:0 0 10px;font-size:13px;color:#555}
+.mpr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eee}.mpr b{display:block;font-size:14px}.mpr small{margin-top:2px}
+#ofToggle{display:none}
+@media(max-width:820px){
+ .office .ofp,.office.wide .ofp{width:100vw!important}.office #map,.office.wide #map{left:0!important}.office .top,.office.wide .top{left:10px!important}
+ .office.mapmode .ofp{display:none}
+ .office #ofToggle{display:block;position:fixed;z-index:2500;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));background:#2e5e2a;color:#fff;border:0;border-radius:22px;padding:11px 18px;font:700 14px system-ui,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.35)}
+ .oftabs{overflow-x:auto;scrollbar-width:none}.oftabs button{flex:0 0 auto;padding:9px 12px}
+ .ofp .oh h1{font-size:18px}.ebg{grid-template-columns:1fr}.mth{flex-direction:column}.mtsc{flex:none}.wdays{grid-template-columns:repeat(3,1fr)}
+ .mtt,.mtt tbody{display:block}.mtt tr{display:grid;grid-template-columns:auto auto 1fr;gap:3px 8px;align-items:center;padding:6px 0;border-bottom:1px solid #eee}.mtt tr:first-child{display:block;padding:0;border:0}.mtt tr:first-child th:not(:first-child){display:none}.mtt th{display:block}.mtt td{border:0;padding:0 6px}.mtt td:nth-child(1){grid-column:1/-1;font-weight:600}.mtt td:nth-child(3){display:none}.mtt td.mtact{text-align:right}
+ .envg{grid-template-columns:1fr}
+ .ofbd{padding-bottom:70px}.ofbody{padding-bottom:60px}
+}
 .ckl{margin:2px 0 6px;padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700}.ckl.ok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}.ckl.bad{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}
 .envg{display:grid;grid-template-columns:150px 1fr;gap:6px;align-items:start}.bcn{display:flex;gap:8px;align-items:flex-start;border:2px solid;border-radius:10px;padding:7px;text-decoration:none;color:#333;background:#fff}.bcn i{flex:0 0 22px;height:22px;border-radius:50%;margin-top:2px}.bcn b{display:block;font-size:20px}.bcn small{display:block;font-size:10.5px;color:#666;line-height:1.25}
 .rain{width:100%;border-collapse:collapse;font-size:12px}.rain th{text-align:left;font-size:10.5px;color:#666;font-weight:700;padding:0 4px 2px}.rain td{padding:2px 4px;border-top:1px solid #eee}.rain td:nth-child(2),.rain td:nth-child(3),.rain th:nth-child(n+2){text-align:right}.rain td:nth-child(3){color:#555}.rain td:nth-child(4){text-align:right;width:44px}.rain td small{display:block;font-size:9.5px;color:#888;white-space:nowrap}.rain td:nth-child(n+2){white-space:nowrap}.rain .rn{font-size:10px;color:#999;border:0}
@@ -1526,6 +1547,7 @@ function officeFarmInfo(){
   const row=(cat,html)=>`<div class="ofr">${cat?`<div class="ofcat">${cat}</div>`:''}<div class="ofg">${html}</div></div>`;
   const eff=K('eff')[0], p=eff&&eff.properties;
   return `<div class="ofnote">Vat, silo, tank, pond &amp; effluent readings are placeholders until the sensors are connected. Soil moisture &amp; rainfall are live from Environment Southland.</div>
+   ${weatherBlock()}
    ${envBlock()}
    ${row('Milk',K('vat').map(f=>tile(f,f.properties.name.replace('Milk vat','Vat'),f.properties.temp!=null?`<em style="color:${ALC[fiAlert(f)]}">${f.properties.temp.toFixed(1)} °C</em>`:'')).join(''))}
    ${row('Concentrates',K('silo').map(f=>tile(f)).join(''))}
@@ -1547,6 +1569,125 @@ function officeBoard(){   // the full maintenance board, same columns as the Goo
   return `<div class="ofbd">${boardHTML(true)}<p class="note" style="margin:8px 0">Tap a row for the full details, photo and location. Use <b>Mark complete</b> once the job is finished.</p>
    <div class="btns"><button class="btn alt" id="ofPrint">Print board</button><a class="btn alt" href="${BOARD_URL}" target="_blank" rel="noopener">Open in Google Sheets</a></div></div>`;
 }
+// ---- Weather (Farm dashboard) ----
+const WSYM={clearsky:'☀️',fair:'🌤️',partlycloudy:'⛅',cloudy:'☁️',fog:'🌫️'};
+const wsym=s=>WSYM[s]||(/thunder/.test(s)?'⛈️':/snow/.test(s)?'❄️':/sleet/.test(s)?'🌨️':/showers/.test(s)?'🌦️':/rain/.test(s)?'🌧️':s?'☁️':'');
+function weatherBlock(){
+  const fc=ENV&&ENV.fc, days=(fc&&fc.days)||[];
+  return `<div class="ofr"><div class="ofcat">Weather · <a href="https://www.gladvalefarms.co.nz/weather.html" target="_blank" rel="noopener">Gladvale weather page ↗</a></div>
+   <iframe class="wwarn" src="https://southland-weather-warnings.dave-7b9.workers.dev/" title="MetService warnings" loading="lazy"></iframe>
+   ${days.length?`<div class="wdays">${days.map((d,i)=>`<div><small>${i===0?'Today':new Date(d.d+'T00:00:00').toLocaleDateString('en-NZ',{weekday:'short',day:'numeric'})}</small><i>${wsym(d.sym)}</i><b>${d.max}°</b><span>${d.min}°</span><em>${d.rain} mm</em><em>${d.wind} km/h</em></div>`).join('')}
+     ${ENV.soilT!=null?`<div class="wsoil"><small>Soil temp</small><i>🌱</i><b>${ENV.soilT}°</b><span>Isla Bank 10 cm</span></div>`:''}</div><div class="wsrc">Forecast: Yr (met.no) for the farm · warnings: MetService · soil temperature: Environment Southland</div>`:'<div class="wsrc">Forecast loading…</div>'}
+   <a href="https://www.yr.no/en/forecast/daily-table/2-2185446" target="_blank" rel="noopener"><img class="wmet" src="https://www.yr.no/en/content/2-2185446/meteogram.svg" alt="Yr meteogram" loading="lazy"></a></div>`;
+}
+
+// ---- Management tasks (from "Gladvale Farms Ltd Dairy Management Tasks") ----
+const MT_START='2026-11-09', MT_TARGET=95;
+const MT=[  // id, task, freq D/W/M/A, how: photo | done | auto, tab (for auto), months (seasonal)
+ ['grazing','Photo of the pasture grazing board','D','photo'],
+ ['jobs','Photo of jobs to do / roster','D','photo'],
+ ['fertmap','Photo of the fertiliser maps','D','photo'],
+ ['effck','Effluent daily checklist (or "system not run today")','D','auto','ck'],
+ ['roster','Photo of the roster','W','photo'],
+ ['feedbudget','Photo of the feed budget board','W','photo'],
+ ['wedges','Photo of completed feed wedges incl. growth rates','W','photo'],
+ ['ph_ponds','Photo of effluent pond levels','W','photo'],
+ ['ph_sand','Photo of sand traps','W','photo'],
+ ['ph_solids','Photo of solids ponds / storage areas','W','photo'],
+ ['effboard','Effluent application board up to date','W','auto','eb'],
+ ['fertdone','Photo of completed fertiliser map for the week','W','photo'],
+ ['workboard','Photo of the paddock workboard (Nov–Dec)','W','photo',null,[11,12]],
+ ['trev','Trev reports completed (Tue expected, Thu final)','W','done'],
+ ['wsr','Weekly Summary Report downloaded (PDF) & circulated','W','done'],
+ ['monthend','Trev Month End Report downloaded & circulated','M','done'],
+ ['hs','Health & Safety meeting','M','done'],
+ ['leak','Check effluent pond leak detection system (photo)','M','auto','ck'],
+ ['quiz','Effluent training quiz (all dairy staff)','M','done'],
+ ['hygiene','Monthly hygiene check of dairy shed','M','done'],
+ ['cams','Clean security cameras','M','done'],
+ ['asd','ASD uploaded for stock movements','A','done']];
+const MTF={D:'Daily',W:'Weekly',M:'Monthly',A:'As required'};
+const ymdL=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const pd=s=>new Date(s+'T00:00:00');
+const monKey=s=>{ const d=pd(s), w=(d.getDay()+6)%7; d.setDate(d.getDate()-w); return ymdL(d); };
+const perKey=(f,s)=>f==='D'?s:f==='W'?monKey(s):s.slice(0,7);
+const mtDone=id=>(((ENV&&ENV.tasks&&ENV.tasks.done)||{})[id])||[];
+const mtDoneSet=t=>new Set(mtDone(t[0]).map(s=>perKey(t[2],s)));
+function mtNow(t){ const today=ymdL(new Date()); return mtDoneSet(t).has(perKey(t[2],today)); }
+function mtMonth(y,m){   // compliance for one calendar month (m 1-12)
+  const today=ymdL(new Date()), first=ymdL(new Date(y,m-1,1)), last=ymdL(new Date(y,m,0)); let due=0, done=0; const per={};
+  if(last<MT_START||first>today) return null;
+  MT.forEach(t=>{ if(t[2]==='A'||(t[5]&&t[5].indexOf(m)<0)) return; const ds=mtDoneSet(t), keys=[];
+    if(t[2]==='D'){ for(let d=pd(first>MT_START?first:MT_START); ymdL(d)<=last&&ymdL(d)<=today; d.setDate(d.getDate()+1)) keys.push([ymdL(d),ymdL(d)<today]); }
+    else if(t[2]==='W'){ for(let d=pd(first); ymdL(d)<=last; d.setDate(d.getDate()+1)) if(d.getDay()===0){ const sun=ymdL(d); if(sun>=MT_START&&monKey(sun)<=today) keys.push([monKey(sun),sun<today]); } }
+    else keys.push([first.slice(0,7),last<today]);
+    let a=0,b=0; keys.forEach(([k,ended])=>{ const ok=ds.has(k); if(ended||ok){ b++; if(ok) a++; } }); due+=b; done+=a; per[t[0]]=[a,b]; });
+  return {due,done,pct:due?Math.round(done/due*100):null,per};
+}
+const pctCls=p=>p==null?'':p>=MT_TARGET?'ok':p>=85?'wrn':'bad';
+function mtStatus(t){ const today=ymdL(new Date()), now=new Date();
+  if(t[2]==='A') return ['','as required'];
+  if(mtNow(t)) return ['ok','✓ done '+(t[2]==='D'?'today':t[2]==='W'?'this week':'this month')];
+  if(t[2]==='D') return ['bad','due today'];
+  if(t[2]==='W'){ const left=(7-now.getDay())%7; return [left<=1?'bad':'wrn',left===0?'due today (Sunday)':`due by Sunday (${left} day${left===1?'':'s'})`]; }
+  const left=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate(); return [left<=3?'bad':left<=7?'wrn':'',`due by month end (${left} days)`];
+}
+function mtOutstanding(){ const now=new Date(), left=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate();
+  return MT.filter(t=>t[2]!=='A'&&!(t[5]&&t[5].indexOf(now.getMonth()+1)<0)&&!mtNow(t)&&(t[2]!=='M'||left<=7)&&t[0]!=='effck'); }
+function mtBtn(t){
+  if(t[3]==='auto') return t[0]==='effck'?`<button class="btn alt mtb" data-tab="ck">Checklist</button><button class="btn alt mtb" data-mtnr="1">Not run today</button>`
+                                          :t[0]==='effboard'?`<button class="btn alt mtb" data-tab="eb">Open board</button><button class="btn alt mtb" data-mt="effboard" data-note="no shifts this week">No shifts this week</button>`:`<button class="btn alt mtb" data-tab="${t[4]}">Open</button>`;
+  return t[3]==='photo'?`<label class="btn mtb">📷 Photo<input type="file" accept="image/*" capture="environment" data-mtph="${t[0]}" hidden></label>`
+                       :`<button class="btn mtb" data-mt="${t[0]}">✓ Done</button><label class="btn alt mtb" title="Add a photo">📷<input type="file" accept="image/*" capture="environment" data-mtph="${t[0]}" hidden></label>`;
+}
+function officeTasks(){
+  const now=new Date(), cur=mtMonth(now.getFullYear(),now.getMonth()+1), ph=(ENV&&ENV.tasks&&ENV.tasks.photo)||{};
+  const hist=[]; for(let i=1;i<=6;i++){ const d=new Date(now.getFullYear(),now.getMonth()-i,1), r=mtMonth(d.getFullYear(),d.getMonth()+1); if(r&&r.due) hist.push([d.toLocaleDateString('en-NZ',{month:'short',year:'2-digit'}),r.pct]); }
+  const last=t=>{ const a=mtDone(t[0]); return a.length?a.slice().sort().pop():''; };
+  const row=t=>{ const [c,txt]=mtStatus(t), l=last(t), p=ph[t[0]], m=cur&&cur.per[t[0]];
+    return `<tr><td>${ESC(t[1])}${t[3]==='auto'?' <small class="mta">auto</small>':''}</td><td><span class="mts ${c}">${txt}</span></td>
+      <td>${l?dshort(l):'–'}${p?` <a href="https://drive.google.com/file/d/${p.id}/view" target="_blank" rel="noopener">📷</a>`:''}</td><td>${m&&m[1]?`<b class="${pctCls(Math.round(m[0]/m[1]*100))}">${m[0]}/${m[1]}</b>`:'–'}</td><td class="mtact">${mtBtn(t)}</td></tr>`; };
+  return `<div class="ofbd">
+   <div class="mth"><div class="mtsc ${pctCls(cur&&cur.pct)}"><small>${now.toLocaleDateString('en-NZ',{month:'long'})} compliance</small><b>${cur&&cur.pct!=null?cur.pct+'%':'–'}</b><small>target ${MT_TARGET}% · ${cur?cur.done:0} of ${cur?cur.due:0} jobs done on time</small>
+      <i class="mtbar"><i style="width:${cur&&cur.pct!=null?cur.pct:0}%"></i><u style="left:${MT_TARGET}%"></u></i></div>
+     <div class="mthist">${hist.length?hist.map(h=>`<div><small>${h[0]}</small><b class="${pctCls(h[1])}">${h[1]}%</b></div>`).join(''):'<small>Monthly history builds up from here – scoring started '+dshort(MT_START)+'.</small>'}</div></div>
+   <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><b style="font-size:12px;color:#5b6b55">RECORDING AS</b>${signerSel('mtName')}<input id="mtOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
+   <p class="note" style="margin:0 0 6px">A daily job counts once the day is over, a weekly job once Sunday has passed, a monthly job at month end. Doing a job late in its day/week/month still counts; skipping it lowers the score.</p>
+   ${['D','W','M','A'].map(f=>`<table class="mtt"><tr><th>${MTF[f]}</th><th>This ${f==='D'?'day':f==='W'?'week':f==='M'?'month':'–'}</th><th>Last done</th><th>Month</th><th></th></tr>${MT.filter(t=>t[2]===f).map(row).join('')}</table>`).join('')}
+   <p class="note">Every job is recorded on the "Management tasks log" tab of the GV1 Farm Management sheet (photos in the Farm task photos folder).</p></div>`;
+}
+function mtWho(scope){ const id=scope==='prompt'?'mpName':'mtName', o=scope==='prompt'?'mpOther':'mtOther'; const n=signerName(id,o); if(!n) toast('Choose who is recording first'); return n; }
+function mtDo(id,file,note,scope){ const t=MT.find(x=>x[0]===id); if(!t) return; const name=mtWho(scope); if(!name) return;
+  const post=b=>fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(x=>x.json());
+  const go=photo=>{ toast(photo?'Uploading photo…':'Saving…');
+    const req=id.startsWith('ph_')?post({action:'effphoto',farm:META.name,kind:id.slice(3),photo,name}):post({action:'task',farm:META.name,id,tname:t[1],name,note:note||'',photo:photo||''});
+    req.then(x=>{ if(!x.ok) return toast(x.error||'Could not save');
+      if(x.tasks) ENV.tasks=x.tasks; else { ENV.tasks=ENV.tasks||{done:{},photo:{}}; (ENV.tasks.done[id]=ENV.tasks.done[id]||[]).push(ymdL(new Date())); }
+      if(x.photos) ENV.photos=x.photos; toast('Recorded ✓'); if(scope==='prompt') mtPrompt(true); else officeRender(); }).catch(()=>toast('No connection – not saved')); };
+  if(file) shrinkPhoto(file).then(go).catch(()=>toast('Could not read that photo')); else go(''); }
+function mtWire(root,scope){
+  const sel=root.querySelector('#'+(scope==='prompt'?'mpName':'mtName')), oth=root.querySelector('#'+(scope==='prompt'?'mpOther':'mtOther'));
+  if(sel){ const so=()=>{ oth.style.display=sel.value==='__other'?'':'none'; try{ if(sel.value!=='__other') localStorage.setItem('gvmap.signer',sel.value); }catch(e){} }; sel.onchange=so; so(); }
+  root.querySelectorAll('[data-mt]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); mtDo(b.dataset.mt,null,b.dataset.note,scope); });
+  root.querySelectorAll('[data-mtph]').forEach(i=>i.onchange=()=>{ if(i.files[0]) mtDo(i.dataset.mtph,i.files[0],'',scope); });
+  root.querySelectorAll('[data-mtnr]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const name=mtWho(scope); if(!name) return;
+    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'task',farm:META.name,id:'effck',tname:'Effluent daily checklist',name,note:'system not run today (Lines 1–3 off)'})}).then(x=>x.json())
+      .then(x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.tasks=x.tasks; toast('Recorded – system not run today'); scope==='prompt'?mtPrompt(true):officeRender(); }).catch(()=>toast('No connection')); });
+}
+function mtPrompt(refresh){   // "before you start" – outstanding jobs, shown once a day when the office view opens
+  let el=document.getElementById('mtPrompt'); const due=mtOutstanding();
+  if(!due.length){ if(el) el.remove(); return; }
+  if(!el){ if(refresh) return; el=document.createElement('div'); el.id='mtPrompt'; document.body.appendChild(el); }
+  el.innerHTML=`<div class="mpw"><h2>Before you start</h2><p>These jobs are due. Doing them now keeps this month's compliance on target (${MT_TARGET}%). You can skip for now, but anything not done by the end of its day/week counts as missed.</p>
+   <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><b style="font-size:12px">I am</b>${signerSel('mpName')}<input id="mpOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
+   ${due.map(t=>{ const [c,txt]=mtStatus(t); return `<div class="mpr"><div><b>${ESC(t[1])}</b><small class="mts ${c}">${MTF[t[2]]} · ${txt}</small></div><div>${t[3]==='auto'?`<button class="btn alt mtb" data-go="${t[4]}">Open</button>`:mtBtn(t)}</div></div>`; }).join('')}
+   <div class="btns" style="margin-top:12px"><button class="btn alt" id="mpSkip">Skip for now</button><button class="btn" id="mpAll">See all management tasks</button></div></div>`;
+  mtWire(el,'prompt');
+  el.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ el.remove(); OFTAB=b.dataset.go; officeRender(); });
+  document.getElementById('mpSkip').onclick=()=>el.remove();
+  document.getElementById('mpAll').onclick=()=>{ el.remove(); OFTAB='mt'; officeRender(); };
+}
+
 // ---- shared helpers for the effluent tabs ----
 function signers(){ const p=(window._ppl||[]).filter(x=>/milker/i.test(x.role)).map(x=>x.name); return p.length?p:['Caleb Lusty']; }   // contract milker(s) from the Contact Us page
 function signerSel(id){ let last=''; try{ last=localStorage.getItem('gvmap.signer')||''; }catch(e){}
@@ -1566,7 +1707,7 @@ function leakState(){ const cal=(ENV&&ENV.calc)||{}, n=daysSince(cal.leak), ph=c
   return {al:'ok',txt:`Pond leak check done ${n} day${n===1?'':'s'} ago ✓ (photo on file)`,n,ph}; }
 const leakLine=()=>{ if(!ENV) return ''; const l=leakState(); return `<div class="ckl ${l.al==='ok'?'ok':l.al==='warn'?'wrn flasho':'bad flash'}">${l.al==='ok'?'':'⚠ '}${l.txt}${l.al!=='ok'?' <button class="btn" data-tab="ck" style="padding:3px 10px;font-size:12px;margin-left:4px">Record check</button>':''}</div>`; };
 const PH_KINDS=[['ponds','Effluent pond levels'],['sand','Sand traps'],['solids','Solids ponds / storage areas']];
-function phState(k){ const p=((ENV&&ENV.photos)||{})[k], n=p?daysSince(p.date):null; return {p,n,al:n==null||n>14?'crit':n>7?'warn':'ok'}; }
+function phState(k){ const p=((ENV&&ENV.photos)||{})[k], n=p?daysSince(p.date):null; return {p,n,al:n==null||n>7?'crit':'ok'}; }
 
 // ---- Effluent application board (from the "Effluent/Irrigation/Cultivation Board Templates" GV1 tab) ----
 const EB_LINES=[['Line 1',[2,3,4,5,18,19,34,35,36,37,44,45,46,47,48,49,50]],['Line 2',[21,22,23,24,30,31,32,33,52,53,54,55,56]],['Line 3',[25,26,65,66,67,68,70,78,79,80,81,82,84,86]]];
@@ -1584,10 +1725,10 @@ function officeEffBoard(){
   const sol=`<div class="ebt"><table class="eb"><tr><th colspan="3">Solid effluent paddocks</th></tr><tr><th>Pdk</th><th>Date</th><th>Person spreading</th></tr>
      ${EB_SOLIDS.map(pd=>{ const r=ebGet('Solids',pd); return `<tr><td class="pd">${pd}</td><td class="ebc ${r[0]?'set':''}" data-l="Solids" data-p="${pd}" data-s="0">${dshort(r[0])}</td><td class="ebc" data-l="Solids" data-p="${pd}" data-s="0">${ESC(r[1])}</td></tr>`; }).join('')}</table></div>`;
   return `<div class="ofbd"><div class="ckh">Recording as</div><div style="display:flex;gap:8px">${signerSel('ebName')}<input id="ebOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
-   <div class="ckh">Weekly photos <small>(replaces posting to the GV effluent group – orange after 7 days, red after 14)</small></div><div class="phg">${PH_KINDS.map(card).join('')}</div>
+   <div class="ckh">Weekly photos <small>(replaces posting to the GV effluent group – green when taken in the last 7 days, flashing red after that)</small></div><div class="phg">${PH_KINDS.map(card).join('')}</div>
    <div class="ckh">Effluent application board <small>tap a box to record the date the pods were shifted onto that paddock</small></div>
    <div class="ebg">${EB_LINES.map(tbl).join('')}${sol}</div>
-   <p class="note">Saved to the "Effluent application log" and "Effluent photos" tabs of the GV1 Map Suggestions sheet; photos go in the Effluent photos folder.</p></div>`;
+   <p class="note">Saved to the "Effluent application log" and "Effluent photos" tabs of the GV1 Farm Management sheet; photos go in the Farm task photos folder.</p></div>`;
 }
 function ebWire(){
   const sel=document.getElementById('ebName'); if(!sel) return; const oth=document.getElementById('ebOther');
@@ -1643,7 +1784,7 @@ function officeChecklist(){
   let st;
   if(!c.loaded) st='<div class="ckst">Loading…</div>';
   else if(c.today) st=`<div class="ckst ${c.today['Permitted to start']==='Yes'?'ok':'bad'}">${c.today['Permitted to start']==='Yes'?'✓ Checklist completed today':'✕ Checklist completed today – NOT permitted to start'}<small>by ${ESC(c.today['Operator today'])} (signed ${ESC(c.today['Signed by'])}, ${ESC(String(c.today['Submitted']).slice(11))}) · beacon ${ESC(c.today['Beacon colour'])} · pod run ${ESC(c.today['Pod run time (min)'])} min · max run ${ESC(c.today['Max run time (h)'])} h · rain forecast ${ESC(c.today['Rain forecast today (mm)'])} mm</small><small>You can submit it again below if something changes.</small></div>`;
-  else st=`<div class="ckst bad">⚠ Not completed today<small>Must be completed before Lines 1–3 are started. Green wash can run without it.${c.last?` Last done ${ESC(c.last['Date'])} by ${ESC(c.last['Operator today'])}.`:''}</small></div>`;
+  else st=`<div class="ckst bad">⚠ Not completed today<small>Must be completed before Lines 1–3 are started. Green wash can run without it.${c.last?` Last done ${ESC(c.last['Date'])} by ${ESC(c.last['Operator today'])}.`:''}</small>${mtNow(MT[3])?'<small>✓ Already recorded for today on Management tasks (checklist or “system not run today”).</small>':`<div style="margin-top:6px">${signerSel('nrName')} <button class="btn alt" id="ckNR" type="button" style="padding:4px 10px;font-size:12px">Lines 1–3 not running today</button></div>`}</div>`;
   const fmt=v=>v==null||!isFinite(v)?'–':(Math.round(v*10)/10).toLocaleString('en-NZ');
   const lk=ENV?leakState():null;
   return `${st}${lk&&lk.al!=='ok'?`<div style="margin:0 16px">${leakLine()}</div>`:''}<form id="ckF" class="ckf" autocomplete="off">
@@ -1651,8 +1792,9 @@ function officeChecklist(){
    <div class="bcbox" style="border-color:${BCOL[b]||'#ccc'}"><div class="bctop"><i style="background:${BCOL[b]||'#999'}"></i><div><small>Beacon soil moisture · Isla Bank (Environment Southland, live)</small><b style="color:${BCOL[b]||'#333'}">${b||'Not available'}${ENV&&ENV.sm!=null?` <span>${ENV.sm}% soil moisture</span>`:''}</b><small>${ESC((ENV&&ENV.smAt)||'')} · <a href="https://envdata.es.govt.nz/?tab=graph" target="_blank" rel="noopener">open ES graph ↗</a></small></div></div>
      ${smGraph()}<div class="smk">Last 30 days · shading shows the beacon colour bands (Green under ${BEACON_T.orange}%, Orange ${BEACON_T.orange}–${BEACON_T.red}%, Red ${BEACON_T.red}% and over)</div>
      <table class="bgd"><tr><th>Beacon colour</th><th>Pod run time setpoint guide</th></tr>${['Red','Orange','Green'].map(x=>`<tr class="${x===b?'cur':''}"><td><i style="background:${BCOL[x]}"></i>${x}</td><td>${BEACON_GUIDE[x][0]}–${BEACON_GUIDE[x][1]} min${x===b?' ← today':''}</td></tr>`).join('')}</table></div>
-   <label class="field">Current beacon soil moisture colour<select name="beacon"><option value="">— choose —</option>${['Red','Orange','Green'].map(x=>`<option ${x===b?'selected':''}>${x}</option>`).join('')}</select></label>
-   <label class="field">Pod run time setpoint (minutes) <small id="ckGuide"></small><input name="pod" type="number" inputmode="decimal" min="0" max="30" step="0.5" value="${ESC(L['Pod run time (min)'])}"></label>
+   ${b?`<input type="hidden" name="beacon" value="${b}"><div class="field">Current beacon soil moisture colour <b style="color:${BCOL[b]}">${b}</b> <small>– filled in automatically from the live Isla Bank reading</small></div>`
+      :`<label class="field">Current beacon soil moisture colour <small>(live reading not available – choose)</small><select name="beacon"><option value="">— choose —</option>${['Red','Orange','Green'].map(x=>`<option>${x}</option>`).join('')}</select></label>`}
+   <label class="field">Pod run time setpoint (minutes) <small id="ckGuide"></small><input name="pod" type="number" inputmode="decimal" min="0" max="30" step="0.5" value="${ESC(b?BEACON_GUIDE[b][0]:L['Pod run time (min)'])}"></label>
    <label class="field">Max run time setpoint (hours)<input name="maxrun" type="number" inputmode="decimal" min="0" max="24" step="0.5" value="${ESC(mx)}"></label>
    <label class="field">Rain forecast (total) today (mm) <small>${fc?`– filled in from ${ESC(fc.src)} for the rest of today, updated ${ESC(fc.at)} · tomorrow ${fc.tomorrow} mm`:'– forecast not available, please enter it'}</small><input name="rain" type="number" inputmode="decimal" min="0" step="0.1" value="${fc?fc.today:''}"></label>
    <div class="ckh">People <small>(filled in from the last checklist – change if needed)</small></div>
@@ -1669,7 +1811,7 @@ function officeChecklist(){
    <label class="field">Signed off by${signerSel('ckName')}</label>
    <label class="field" id="ckOtherL" style="display:none">Your name<input id="ckOther" maxlength="80"></label>
    <button class="btn" id="ckGo" type="submit" style="width:100%;margin:8px 0 4px">Submit today's checklist</button>
-   <p class="note">Saved to the "Effluent checklist" tab of the GV1 Map Suggestions sheet. Dave is emailed if the answers mean the system must not be started.</p>
+   <p class="note">Saved to the "Effluent checklist" tab of the GV1 Farm Management sheet. Dave is emailed if the answers mean the system must not be started.</p>
    <div class="ckh" style="margin-top:22px;font-size:13px;color:#2e5e2a">System checks &amp; pond calculator <small>(saved with each checklist – only change when re-tested)</small></div>
    ${leakLine()}
    <label class="field">Date of last effluent pond leak detection check (monthly)<input name="leak" type="date" value="${ESC(cal.leak||L['Last pond leak check'])}"></label>
@@ -1683,12 +1825,15 @@ function officeChecklist(){
 function ckWire(){
   const f=document.getElementById('ckF'); if(!f) return;
   const guide=()=>{ const b=f.beacon.value, g=BEACON_GUIDE[b], el=document.getElementById('ckGuide'), v=parseFloat(f.pod.value);
-    el.innerHTML=g?`guide for ${b}: <b>${g[0]}–${g[1]} min</b>${!isNaN(v)&&(v<g[0]||v>g[1])?' <b style="color:#d50000">– outside the guide</b>':''}`:'Red 2–5 · Orange 5–10 · Green 10–20 min'; };
+    el.innerHTML=g?`set to the ${b} minimum – guide ${b}: <b>${g[0]}–${g[1]} min</b>${!isNaN(v)&&(v<g[0]||v>g[1])?' <b style="color:#d50000">– outside the guide</b>':''}`:'Red 2–5 · Orange 5–10 · Green 10–20 min'; };
   const warn=()=>{ document.getElementById('ckWarn').style.display=[...f.querySelectorAll('input[type=radio]:checked')].some(x=>x.value==='No')?'':'none'; };
   const calc=()=>{ const c={}; CALC_F.forEach(([l,k])=>{ if(k) c[k]=f['c_'+k].value.trim(); }); c.leak=f.leak.value; c.bucket=f.bucket.value; return c; };
   const recalc=()=>{ const v=calcVals(calc()); f.querySelectorAll('[data-calc]').forEach(b=>{ const x=v[b.dataset.calc==='undefined'?'':b.dataset.calc]; b.textContent=x==null||!isFinite(x)?'–':(Math.round(x*10)/10).toLocaleString('en-NZ'); }); };
   const sel=document.getElementById('ckName'), oth=()=>{ document.getElementById('ckOtherL').style.display=sel.value==='__other'?'':'none'; try{ if(sel.value!=='__other') localStorage.setItem('gvmap.signer',sel.value); }catch(e){} };
   if(!window._ppl) loadPeople(()=>{ if(OFTAB==='ck'&&!window._ckDirty) officeRender(); });
+  const nr=document.getElementById('ckNR'); if(nr) nr.onclick=()=>{ const name=signerName('nrName',''); if(!name||name==='__other') return toast('Choose who is recording');
+    nr.disabled=true; fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'task',farm:META.name,id:'effck',tname:'Effluent daily checklist',name,note:'system not run today (Lines 1–3 off)'})}).then(x=>x.json())
+      .then(x=>{ if(!x.ok){ nr.disabled=false; return toast(x.error||'Could not save'); } ENV.tasks=x.tasks; officeRender(); toast('Recorded – system not run today'); }).catch(()=>{ nr.disabled=false; toast('No connection'); }); };
   let leakPh=''; const lkIn=document.getElementById('lkPh'); if(lkIn) lkIn.onchange=()=>{ const fl=lkIn.files[0]; if(!fl) return; shrinkPhoto(fl).then(d=>{ leakPh=d; const pv=document.getElementById('lkPrev'); pv.src=d; pv.style.display='block'; window._ckDirty=true; }).catch(()=>toast('Could not read that photo')); };
   const leakOld=((ENV&&ENV.calc)||{}).leak||'';
   const needPh=()=>f.leak.value&&f.leak.value!==leakOld&&!leakPh;
@@ -1714,17 +1859,19 @@ function ckWire(){
 }
 function officeRender(){
   const rows=boardRows(), now=new Date(), crit=rows.filter(s=>s.rating==='Critical').length;
-  const tabs=[['info','Farm information',''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['ck','Effluent checklist',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')],['eb','Effluent board',ENV&&PH_KINDS.some(([k])=>phState(k).al!=='ok')?`<span class="ckb ${PH_KINDS.some(([k])=>phState(k).al==='crit')?'bad':'wrn'}">photos due</span>`:'']];
+  const mcur=ENV?mtMonth(new Date().getFullYear(),new Date().getMonth()+1):null;
+  const tabs=[['info','Farm dashboard',''],['mt','Management tasks',mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['ck','Effluent checklist',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')],['eb','Effluent board',ENV&&PH_KINDS.some(([k])=>phState(k).al!=='ok')?`<span class="ckb ${PH_KINDS.some(([k])=>phState(k).al==='crit')?'bad':'wrn'}">photos due</span>`:'']];
   const panel=document.getElementById('ofp');
   if(OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')){   // don't wipe a half-filled checklist on the 10-minute refresh
     const tb=panel.querySelector('.oftabs'); if(tb) tb.querySelectorAll('button').forEach((b,i)=>b.innerHTML=tabs[i][1]+' '+tabs[i][2]); return; }
   panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><small>updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
     <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
-   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():OFTAB==='eb'?officeEffBoard():officeFarmInfo()}</div>`;
+   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():officeFarmInfo()}</div>`;
   panel.querySelectorAll('[data-tab]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); if(OFTAB==='ck'&&b.dataset.tab!=='ck') window._ckDirty=false; OFTAB=b.dataset.tab; try{ localStorage.setItem('gvmap.oftab',OFTAB); }catch(e){} officeRender(); panel.scrollTop=0; });
-  panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
-  document.body.classList.toggle('wide',OFTAB==='board'||OFTAB==='eb'); setTimeout(()=>map.invalidateSize(),50);
-  panel.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
+  const toMap=()=>{ if(innerWidth<=820){ document.body.classList.add('mapmode'); setTimeout(()=>map.invalidateSize(),60); } };
+  panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ toMap(); const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
+  document.body.classList.toggle('wide',OFTAB==='board'||OFTAB==='eb'||OFTAB==='mt'); setTimeout(()=>map.invalidateSize(),50);
+  panel.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return; toMap();
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   panel.querySelectorAll('.mbdone').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.id); if(s) sgComplete(s); });
   const opr=document.getElementById('ofPrint'); if(opr) opr.onclick=()=>{ document.getElementById('boardBtn').click(); setTimeout(()=>{ const p=document.getElementById('mbPrint'); if(p) p.click(); },1500); };
@@ -1732,12 +1879,15 @@ function officeRender(){
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} sgShow(s); });
   panel.querySelectorAll('[data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
   if(OFTAB==='ck') ckWire();
+  if(OFTAB==='mt'){ mtWire(panel,'tab'); if(!window._ppl) loadPeople(()=>{ if(OFTAB==='mt') officeRender(); }); }
   if(OFTAB==='eb'){ ebWire(); if(!window._ppl) loadPeople(()=>{ if(OFTAB==='eb') officeRender(); }); }
 }
 function officeLoad(){
   const q='?farm='+encodeURIComponent(META.name);
   Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); }).catch(()=>{}),
-               fetch(SUGGEST_URL+q+'&env=1').then(r=>r.json()).then(d=>{ ENV=d; }).catch(()=>{})]).then(()=>officeRender());
+               fetch(SUGGEST_URL+q+'&env=1').then(r=>r.json()).then(d=>{ ENV=d; }).catch(()=>{})]).then(()=>{ officeRender();
+    if(ENV&&!window._mpShown){ window._mpShown=true; const td=ymdL(new Date()); let k=''; try{ k=localStorage.getItem('gvmap.mprompt')||''; }catch(e){}
+      if(k!==td){ try{ localStorage.setItem('gvmap.mprompt',td); }catch(e){} loadPeople(()=>mtPrompt()); } } });
   officeRender();
 }
 function sgLoad(){
@@ -1993,8 +2143,12 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
 } else if(OFFICE){
   document.body.classList.add('office'); document.title='GV1 Office View';
   state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); ['paddocks','sugg','lanes','buildings','cowshed','yards','trough','farminfo','pond',...GROUPS['Dairy shed & barn services (2019 plan)'],'sbtiles','cables','effpit','effdrain','valve'].forEach(k=>{ if(LAYERS.some(d=>d.id===k)) state[k]=true; });
+  { const tg=document.createElement('button'); tg.id='ofToggle'; document.body.appendChild(tg);   // phone: switch between the office panel and the map
+    const lab=()=>{ tg.textContent=document.body.classList.contains('mapmode')?'📋 Back to office view':'🗺️ Show map'; };
+    tg.onclick=()=>{ document.body.classList.toggle('mapmode'); if(!document.body.classList.contains('mapmode')) closeSheet(); lab(); setTimeout(()=>map.invalidateSize(),60); };
+    new MutationObserver(lab).observe(document.body,{attributes:true,attributeFilter:['class']}); lab(); }
   map.invalidateSize(); syncLayers(); fitFarm(); officeLoad(); setInterval(officeLoad, 10*60*1000);
-  let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); if(OFTAB!=='info' && !window._ckDirty){ OFTAB='info'; try{ localStorage.setItem('gvmap.oftab','info'); }catch(e){} officeRender(); } }, 3*60*1000); };
+  let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); const mp=document.getElementById('mtPrompt'); if(mp) mp.remove(); if(OFTAB!=='info' && !window._ckDirty){ OFTAB='info'; try{ localStorage.setItem('gvmap.oftab','info'); }catch(e){} officeRender(); } }, 3*60*1000); };
   ['mousedown','touchstart','wheel','keydown'].forEach(ev=>addEventListener(ev,kick,{passive:true})); kick();
 } else if(VIEW==='water'){   // website link beside the stock water PDF: paddocks, stock water and the water blocks
   if(!Object.keys(state).length){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; });
