@@ -905,11 +905,12 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 
 <div class="fabs" id="fabs">
   <button class="fab" data-label="Key" id="keyBtn" aria-label="Map key" title="Map key" style="font-weight:800;font-size:13px">KEY</button>
+  <button class="fab" data-label="Office view" id="officeBtn" aria-label="Office view" title="Office view – farm dashboard, tasks, maintenance board, effluent & cameras"><svg viewBox="0 0 24 24"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h7V6H4zm9 0v4h7V6h-7zm0 6v3h7v-3h-7z"/></svg></button>
   <button class="fab" data-label="Views" id="viewsBtn" aria-label="Map views" title="Map views"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
   <button class="fab" data-label="Layers" id="layersBtn" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="M12 2 1 8l11 6 11-6-11-6zm0 14.2L3.2 11.4 1 12.6 12 18.6l11-6-2.2-1.2L12 16.2zm0 4L3.2 15.4 1 16.6l11 6 11-6-2.2-1.2L12 20.2z"/></svg></button>
   <button class="fab" data-label="Measure" id="measBtn" aria-label="Measure distance" title="Measure distance / area"><svg viewBox="0 0 24 24"><path d="M2.6 15.6 15.6 2.6l5.8 5.8L8.4 21.4zM6.2 15.2l1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1zm2.8-2.8 1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1z"/></svg></button>
-  <button class="fab" data-label="Paddock sizes" id="listBtn" aria-label="Paddock sizes"><svg viewBox="0 0 24 24"><path d="M3 5h2v2H3V5zm4 0h14v2H7V5zM3 11h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/></svg></button>
-  <button class="fab" data-label="Maintenance board" id="boardBtn" aria-label="Maintenance board" title="Maintenance board"><svg viewBox="0 0 24 24"><path d="M9 2h6a1 1 0 0 1 1 1v1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3V3a1 1 0 0 1 1-1zm1 2v2h4V4h-4zM6 6v14h12V6h-2v2H8V6H6zm2 4h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></button>
+  <button class="fab" data-label="Paddock sizes" id="listBtn" aria-label="Paddock sizes" style="display:none"><svg viewBox="0 0 24 24"><path d="M3 5h2v2H3V5zm4 0h14v2H7V5zM3 11h2v2H3v-2zm4 0h14v2H7v-2zm-4 6h2v2H3v-2zm4 0h14v2H7v-2z"/></svg></button>
+  <button class="fab" data-label="Maintenance board" id="boardBtn" aria-label="Maintenance board" title="Maintenance board" style="display:none"><svg viewBox="0 0 24 24"><path d="M9 2h6a1 1 0 0 1 1 1v1h3a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3V3a1 1 0 0 1 1-1zm1 2v2h4V4h-4zM6 6v14h12V6h-2v2H8V6H6zm2 4h8v2H8v-2zm0 4h8v2H8v-2z"/></svg></button>
   <button class="fab" data-label="Whole farm" id="fitBtn" aria-label="Whole farm"><svg viewBox="0 0 24 24"><path d="M3 3h7v2H5v5H3V3zm11 0h7v7h-2V5h-5V3zM3 14h2v5h5v2H3v-7zm16 0h2v7h-7v-2h5v-5z"/></svg></button>
   <button class="fab" data-label="My location" id="locBtn" aria-label="My location"><svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm-1-7h2v3.06A8 8 0 0 1 19.94 11H23v2h-3.06A8 8 0 0 1 13 19.94V23h-2v-3.06A8 8 0 0 1 4.06 13H1v-2h3.06A8 8 0 0 1 11 4.06V1zm1 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg></button>
 </div>
@@ -2305,7 +2306,7 @@ function applyView(v){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); [...v
 }
 document.getElementById('viewsBtn').onclick=()=>{ clearSel();
   openSheet(`<h2>Map views</h2><div class="sub">Tap a view to show just the layers for that job – this box stays open so you can flick between them.</div>
-   <div class="views">${VIEWS.map(v=>`<button data-v="${v.k}" class="${v.k===curView?'on':''}"><b>${v.n}</b><small>${v.d}</small></button>`).join('')}<button data-office="1"><b>Office view ↗</b><small>Wall screen: maintenance board on the left, refreshes every 10 min</small></button></div>`);
+   <div class="views">${VIEWS.map(v=>`<button data-v="${v.k}" class="${v.k===curView?'on':''}"><b>${v.n}</b><small>${v.d}</small></button>`).join('')}</div>`);
   body.querySelectorAll('.views button[data-v]').forEach(b=>b.onclick=()=>applyView(VIEWS.find(v=>v.k===b.dataset.v)));
   const ob=body.querySelector('.views button[data-office]'); if(ob) ob.onclick=()=>{ location.href='?view=office'; }; };
 
@@ -2365,6 +2366,8 @@ keyBtn.onclick=()=>toggleKey(!keyBox.classList.contains('open'));
 const farmBounds = paddocks.getBounds();
 function fitFarm(){ map.fitBounds(farmBounds,{padding:[20,20],paddingTopLeft:[20,70]}); updateLabels(); }
 document.getElementById('fitBtn').onclick=()=>{ closeSheet(); fitFarm(); };
+{ const ob=document.getElementById('officeBtn'); if(OFFICE){ ob.dataset.label='Map view'; ob.title='Leave the office view'; }
+  ob.onclick=()=>{ location.href=location.pathname+(OFFICE?'':'?view=office'); }; }
 document.getElementById('listBtn').onclick=()=>{ clearSel();
   const ps=by('paddocks').map(f=>f.properties).sort((a,b)=>a.num-b.num);
   const row=p=>`<button class="lyr" data-n="${p.num}" style="padding:7px 0"><span class="nm">Paddock ${p.num}${p.block==='McFarlane'?' <span class="cnt" style="display:inline">· McFarlane</span>':''}</span><b>${p.ha.toFixed(2)} ha</b></button>`;
@@ -2376,7 +2379,7 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
   syncLayers(); map.fitBounds([[-46.17135,168.13400],[-46.16790,168.13560]],{paddingTopLeft:[innerWidth>=760?280:10,70],paddingBottomRight:[70,10]}); sgLoad();
 } else if(HAZ){
   state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=true; }); syncLayers(); fitFarm(); document.title='GV1 Hazard Map';
-  ['viewsBtn','boardBtn'].forEach(i=>{ const e=document.getElementById(i); if(e) e.style.display='none'; });
+  ['viewsBtn','boardBtn','officeBtn'].forEach(i=>{ const e=document.getElementById(i); if(e) e.style.display='none'; });
   { const fb=document.getElementById('farmBtn'); fb.textContent='GV1 Hazard Map'; fb.onclick=null; fb.style.cursor='default'; }
 } else if(OFFICE){
   document.body.classList.add('office'); document.title='GV1 Office View';
@@ -2388,6 +2391,9 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
   map.invalidateSize(); syncLayers(); fitFarm(); officeLoad(); setInterval(officeLoad, 10*60*1000);
   let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); const mp=document.getElementById('mtPrompt'); if(mp) mp.remove(); if(OFTAB!=='info' && !window._ckDirty){ OFTAB='info'; try{ localStorage.setItem('gvmap.oftab','info'); }catch(e){} officeRender(); } }, 3*60*1000); };
   ['mousedown','touchstart','wheel','keydown'].forEach(ev=>addEventListener(ev,kick,{passive:true})); kick();
+} else if(VIEW==='tiles'){   // website "Tile traffic light map": paddock boundaries + drainage & services + effluent only
+  state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); [...GROUPS['Paddocks'],...GROUPS['Drainage & services'],...GROUPS['Effluent']].forEach(k=>state[k]=true);
+  syncLayers(); fitFarm(); sgLoad(); document.title='GV1 Tile Traffic Light Map';
 } else if(VIEW==='water'){   // website link beside the stock water PDF: paddocks, stock water and the water blocks
   if(!Object.keys(state).length){ LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; });
     ['paddocks','trough','valve','bore',...WL(),'wb0','wb1','wb2','wb3','wb4','wb5','wb6'].forEach(k=>state[k]=true); }
