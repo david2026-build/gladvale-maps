@@ -676,6 +676,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
 #phOv img{max-width:100%;max-height:88vh;border-radius:6px}
 .staffrow{font-size:13px;padding:6px 2px 8px;border-bottom:1px solid #e3e3e3;margin-bottom:6px}.staffrow button{border:1px solid #1565c0;background:#fff;color:#1565c0;border-radius:6px;padding:4px 9px;font-size:13px;cursor:pointer}
 .staffrow span{color:#666}
+#pfBox{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;z-index:900;background:#fff;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.25);padding:10px 12px;width:300px;max-width:calc(100vw - 24px);font-size:13px}
+#pfBox .pfh{font-weight:700;display:flex;justify-content:space-between;align-items:center}#pfBox .pfh button{border:0;background:none;font-size:20px;cursor:pointer}
+#pfBox .pfp{display:flex;gap:4px;margin:6px 0}#pfBox .pfp button{flex:1;border:1px solid #9ccc65;background:#fff;border-radius:6px;padding:5px 2px;font-size:12px;cursor:pointer}#pfBox .pfp button.on{background:#2e7d32;color:#fff;border-color:#2e7d32}
+#pfBox .pfd input{font-size:12px;padding:3px;border:1px solid #bbb;border-radius:5px}
+#pfBox .pfleg{margin-top:6px}#pfBox .pfleg span{font-weight:600;display:block}#pfBox .pfleg i{display:block;height:9px;border-radius:4px;margin:2px 0}#pfBox .pfleg small,#pfBox .pfnote{color:#666;font-size:11.5px}#pfBox .pfnote{margin-top:6px}
+.pflab{background:rgba(255,255,255,.85);border:0;box-shadow:none;padding:0 3px;font-weight:700;font-size:11px;color:#222}.pflab:before{display:none}
 </style>
 <style>
 :root{--ink:#1f2a1f;--muted:#5d6b5d;--card:#fff;--line:#e4e0d6;--accent:#2f6b3a;--accent-soft:#eaf2e7;
@@ -973,6 +979,58 @@ const padStyle = f => ({color:'#ffffff',weight:1.6,fillColor:'#9ccc65',fillOpaci
 const paddocks = gj('paddocks',{style:padStyle,onEachFeature:(f,l)=>{
   l.on('click',e=>{L.DomEvent.stopPropagation(e);selectPaddock(f.properties.num,false);});
 }});
+// ---- Pasture & fertiliser layers: per-paddock grass growth and N applied over a date range (MINDA data, signed-in staff only)
+const pfGrow=L.layerGroup(), pfN=L.layerGroup(), pfGraze=L.layerGroup();
+let MINDA=null, MINDA_AT='', pfLoading=false;
+const PF={preset:'4w',from:'',to:''};
+const pfYmd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function pfPreset(p){ const t=new Date(), y=t.getMonth()>=5?t.getFullYear():t.getFullYear()-1;   // season starts 1 June
+  PF.preset=p; if(p==='4w'){ PF.from=pfYmd(new Date(t-28*864e5)); PF.to=pfYmd(t); } else if(p==='season'){ PF.from=y+'-06-01'; PF.to=pfYmd(t); }
+  else if(p==='last'){ PF.from=(y-1)+'-06-01'; PF.to=y+'-05-31'; } }
+pfPreset('4w');
+const pfPad=k=>/^5\d\d$/.test(k)?String(+k.slice(1)):k;   // MINDA 501-597 = map paddock 1-97; 100-119 are the same
+function pfCalc(){ const out={}, W=MINDA.walks, ds=Object.keys(W).filter(d=>d>=PF.from&&d<=PF.to).sort();
+  for(let i=1;i<ds.length;i++){ const d0=ds[i-1], d1=ds[i], days=(new Date(d1)-new Date(d0))/864e5; if(days<3||days>35) continue;
+    Object.keys(W[d1]).forEach(k=>{ if(!(k in W[d0])) return; const dl=W[d1][k]-W[d0][k]; if(dl<=0||dl/days>150) return;   // a drop = grazed in between; over 150/day = measuring noise
+      const o=out[pfPad(k)]=out[pfPad(k)]||{g:0,gd:0,n:0,apps:[]}; o.g+=dl; o.gd+=days; }); }
+  MINDA.fert.forEach(([d,prod,rate,N,pads])=>{ if(d<PF.from||d>PF.to||!N) return; const kg=rate*N/100;
+    pads.forEach(k=>{ const o=out[pfPad(k)]=out[pfPad(k)]||{g:0,gd:0,n:0,apps:[]}; o.n+=kg; o.apps.push(d+' '+prod+' '+rate+' kg/ha'); }); });
+  return { pads:out, walks:ds.length }; }
+const pfCol=(v,max,c0,c1)=>{ const t=Math.max(0,Math.min(1,v/max)), h=x=>parseInt(x,16), a=[1,3,5].map(i=>h(c0.substr(i,2))), b=[1,3,5].map(i=>h(c1.substr(i,2)));
+  return '#'+a.map((x,i)=>Math.round(x+(b[i]-x)*t).toString(16).padStart(2,'0')).join(''); };
+const PFS={pfgrow:{max:80,c0:'#f1f8e9',c1:'#1b5e20',unit:'kg DM/ha/day',lab:'Grass grown'}, pfn:{max:150,c0:'#fff3e0',c1:'#bf360c',unit:'kg N/ha',lab:'N applied'}};
+function pfDraw(){ if(!MINDA) return; const R=pfCalc();
+  [['pfgrow',pfGrow],['pfn',pfN]].forEach(([id,grp])=>{ grp.clearLayers(); const S=PFS[id];
+    grp.addLayer(L.geoJSON({type:'FeatureCollection',features:by('paddocks')},{style:f=>{ const o=R.pads[String(f.properties.num)], v=!o?null:id==='pfgrow'?(o.gd?o.g/o.gd:null):o.n;
+        return v==null?{color:'#fff',weight:1,fillColor:'#9e9e9e',fillOpacity:.25,dashArray:'4 3'}:{color:'#fff',weight:1.2,fillColor:pfCol(v,S.max,S.c0,S.c1),fillOpacity:.78}; },
+      onEachFeature:(f,l)=>{ const o=R.pads[String(f.properties.num)], v=!o?null:id==='pfgrow'?(o.gd?o.g/o.gd:null):o.n;
+        l.bindTooltip(v==null?'–':String(Math.round(v)),{permanent:true,direction:'center',className:'pflab'});
+        l.on('click',e=>{ L.DomEvent.stopPropagation(e); openSheet(`<h2>Paddock ${f.properties.num}</h2><div class="sub">${PF.from} to ${PF.to} · MINDA</div>
+          <p><b>Grass grown:</b> ${o&&o.gd?Math.round(o.g/o.gd)+' kg DM/ha/day (over '+o.gd+' days of regrowth between walks)':'no regrowth measured in this period'}</p>
+          <p><b>Nitrogen applied:</b> ${o&&o.n?Math.round(o.n)+' kg N/ha':'none recorded'}</p>${o&&o.apps.length?'<ul>'+o.apps.map(a=>'<li>'+a+'</li>').join('')+'</ul>':''}`); }); } })); });
+  pfBox(R); }
+function pfBox(R){ let b=document.getElementById('pfBox'); const on=['pfgrow','pfn','pfgraze'].filter(isOn);
+  if(!on.length){ if(b) b.remove(); return; }
+  if(!b){ b=document.createElement('div'); b.id='pfBox'; document.body.appendChild(b); }
+  const leg=id=>{ const S=PFS[id]; return `<div class="pfleg"><span>${S.lab}</span><i style="background:linear-gradient(90deg,${S.c0},${S.c1})"></i><small>0 – ${S.max}+ ${S.unit}</small></div>`; };
+  b.innerHTML=`<div class="pfh">Pasture &amp; fertiliser <button id="pfX" title="Turn these layers off">×</button></div>
+    <div class="pfp">${[['4w','Last 4 weeks'],['season','Season to date'],['last','Last season']].map(([k,t])=>`<button data-p="${k}" class="${PF.preset===k?'on':''}">${t}</button>`).join('')}</div>
+    <div class="pfd"><input type="date" id="pfFrom" value="${PF.from}"> to <input type="date" id="pfTo" value="${PF.to}"></div>
+    ${on.includes('pfgrow')?leg('pfgrow'):''}${on.includes('pfn')?leg('pfn'):''}
+    ${on.includes('pfgraze')?'<div class="pfnote">Paddocks grazed: this layer will read the grazing board once it is connected.</div>':''}
+    <div class="pfnote">${MINDA?(R?R.walks+' farm walks in range · ':'')+'MINDA data to '+(Object.keys(MINDA.walks).sort().pop()||'')+' · grey = no data':pfLoading?'Loading…':''}</div>`;
+  b.querySelectorAll('[data-p]').forEach(x=>x.onclick=()=>{ pfPreset(x.dataset.p); pfDraw(); });
+  b.querySelector('#pfFrom').onchange=e=>{ PF.preset=''; PF.from=e.target.value; pfDraw(); };
+  b.querySelector('#pfTo').onchange=e=>{ PF.preset=''; PF.to=e.target.value; pfDraw(); };
+  b.querySelector('#pfX').onclick=()=>{ ['pfgrow','pfn','pfgraze'].forEach(k=>state[k]=false); syncLayers(); };
+}
+function pfOn(){ if(MINDA){ pfDraw(); return; } pfBox();
+  if(!STAFF.tok){ staffSignIn({why:'Grass growth and fertiliser layers are for Gladvale staff only.'}); ['pfgrow','pfn'].forEach(k=>state[k]=false); setTimeout(syncLayers,0); return; }
+  if(pfLoading) return; pfLoading=true; pfBox();
+  fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'minda',farm:META.name})}).then(r=>r.json())
+    .then(r=>{ pfLoading=false; if(r.ok){ MINDA=r.data; pfDraw(); } else { toast(r.error||'Could not load the MINDA data'); pfBox(); } }).catch(()=>{ pfLoading=false; toast('No connection'); }); }
+[pfGrow,pfN].forEach(g=>{ g.on('add',()=>setTimeout(pfOn,0)); g.on('remove',()=>setTimeout(()=>pfBox(),0)); });
+pfGraze.on('add',()=>setTimeout(()=>pfBox(),0)); pfGraze.on('remove',()=>setTimeout(()=>pfBox(),0));
 const padLabels = L.layerGroup(by('paddocks').map(f=>{
   const c = f.properties.lab ? L.latLng(f.properties.lab[1],f.properties.lab[0]) : L.geoJSON(f).getBounds().getCenter();
   return L.marker(c,{interactive:false,icon:L.divIcon({className:'pdlabel',html:`${f.properties.num}<small>${f.properties.ha.toFixed(2)} ha</small>`,iconSize:[60,28],iconAnchor:[30,14]})});
@@ -1146,6 +1204,10 @@ const LAYERS = [
   {id:'sugg', name:'Open tasks & hazards', cnt:'orange new · blue actioned · green completed · purple deferred', sw:'<i class="dot" style="color:#ef6c00;background:#ef6c00"></i>', on:true, layer:sgLayer},
   {grp:'Paddocks'},
   {id:'paddocks', name:'Paddock boundaries', cnt:by('paddocks').length+' paddocks', sw:'<i class="box" style="background:#9ccc6555;border:2px solid #fff;outline:1px solid #9ccc65"></i>', on:true, layer:L.layerGroup([paddocks,padLabels])},
+  {grp:'Pasture & fertiliser'},
+  {id:'pfgrow', name:'Grass grown per paddock', cnt:'kg DM/ha/day from MINDA farm walks – staff sign-in', sw:'<i class="box" style="background:linear-gradient(90deg,#f1f8e9,#1b5e20)"></i>', on:false, layer:pfGrow},
+  {id:'pfn', name:'Nitrogen applied per paddock', cnt:'kg N/ha from MINDA fertiliser records – staff sign-in', sw:'<i class="box" style="background:linear-gradient(90deg,#fff3e0,#bf360c)"></i>', on:false, layer:pfN},
+  {id:'pfgraze', name:'Paddocks grazed (date range)', cnt:'from the grazing board – connection to come', sw:'<i class="box" style="background:#7e57c255;border:2px solid #7e57c2"></i>', on:false, layer:pfGraze},
   {grp:'Stock water'},
   ...Object.keys(WATER_COL).map(size=>{ const fs=by('water').filter(f=>f.properties.size===size);
     const km=(fs.reduce((s,f)=>s+lineLen(f.geometry.coordinates),0)/1000).toFixed(1);
@@ -1247,7 +1309,7 @@ const VIEW = new URLSearchParams(location.search).get('view') || '';
 const STKEY = 'gvmap.layers.v2' + (VIEW ? '.'+VIEW : '');
 let state = {};
 try{ state = JSON.parse(localStorage.getItem(STKEY)||'{}'); }catch(e){}
-const order = ['effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','camera','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
+const order = ['effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','pfgrow','pfn','pfgraze','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','camera','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
 const MINZ = {trough:15, trees:15, riparian:14.5, valve:15.5, hydrant:15, gtap:16, effpit:16, inspect:16, storm:16, septic:16, septicinfo:16, offal:15, sghist:16, hzaddr:14.5, divined:15, camera:17};
 if(URLVIEW==='water'){ delete MINZ.trough; delete MINZ.valve; }
 
@@ -1431,19 +1493,19 @@ function staffSignIn(opts){ opts=opts||{};
   const ov=document.createElement('div'); ov.id='staffOv';
   ov.innerHTML=`<div class="sbox"><h2>🔒 Staff sign in</h2><div class="sub">${opts.why||'Sign in to see all tasks, photos and the office view.'}</div>
     <label>Your name<select id="siName"><option value="">Loading names…</option></select></label>
-    <label>Your code<input id="siCode" type="password" inputmode="numeric" autocomplete="off" placeholder="Manager PIN or last 4 digits of your phone"></label>
+    <label>Your code<input id="siCode" type="password" inputmode="numeric" autocomplete="off" placeholder="Your code"></label>
     <div class="btns"><button class="btn" id="siGo">Sign in</button>${opts.noClose?`<a class="btn alt" href="${location.pathname}">Back to the map</a>`:'<button class="btn alt" id="siX">Cancel</button>'}</div>
     <div class="sub" style="margin-top:10px">Stays signed in on this device for 30 days. Use “Sign out” in the Key on a shared computer.</div></div>`;
   document.body.appendChild(ov);
   const x=ov.querySelector('#siX'); if(x) x.onclick=()=>ov.remove();
   _fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'people',farm:META.name})}).then(r=>r.json()).then(r=>{
-    ov.querySelector('#siName').innerHTML='<option value="">Choose…</option>'+(r.people||[]).map(p=>`<option>${escH(p.name)}</option>`).join(''); }).catch(()=>{});
+    ov.querySelector('#siName').innerHTML='<option value="">Choose…</option>'+`<option value="${escH(META.name)}">${escH(META.name)} staff (shared login)</option>`+(r.people||[]).map(p=>`<option>${escH(p.name)}</option>`).join(''); }).catch(()=>{});
   const go=ov.querySelector('#siGo'), code=ov.querySelector('#siCode');
   code.onkeydown=e=>{ if(e.key==='Enter') go.click(); };
   go.onclick=()=>{ const name=ov.querySelector('#siName').value, pin=code.value.trim(); if(!name||!pin){ toast('Choose your name and enter your code'); return; }
     go.disabled=true; go.textContent='Checking…';
     _fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'login',farm:META.name,name,pin})}).then(r=>r.json()).then(r=>{
-      if(r.ok){ try{ localStorage.setItem('gvmap.staff',JSON.stringify({tok:r.tok,name:r.name,exp:r.exp})); }catch(e){} location.reload(); }
+      if(r.ok){ try{ localStorage.setItem('gvmap.staff',JSON.stringify({tok:r.tok,name:r.name,exp:r.exp,role:r.role})); }catch(e){} location.reload(); }
       else { toast(r.error||'Sign in failed'); go.disabled=false; go.textContent='Sign in'; } }).catch(()=>{ toast('No connection – try again'); go.disabled=false; go.textContent='Sign in'; }); };
 }
 // Private photos: fetched through the backend for signed-in staff only
