@@ -667,6 +667,15 @@ svg.leaflet-image-layer.leaflet-interactive path {
 		print-color-adjust: exact;
 		}
 	}
+#staffOv{position:fixed;inset:0;z-index:5000;background:rgba(20,30,25,.72);display:flex;align-items:center;justify-content:center;padding:16px}
+#staffOv .sbox{background:#fff;border-radius:14px;max-width:380px;width:100%;padding:20px 20px 16px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+#staffOv h2{margin:0 0 4px;font-size:20px}#staffOv label{display:block;margin-top:12px;font-size:13px;font-weight:600}
+#staffOv select,#staffOv input{display:block;width:100%;box-sizing:border-box;margin-top:4px;padding:10px;font-size:16px;border:1px solid #bbb;border-radius:8px}
+#staffOv .btns{margin-top:16px;display:flex;gap:8px}#staffOv a.btn{text-decoration:none;text-align:center}
+#phOv{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;color:#ddd}
+#phOv img{max-width:100%;max-height:88vh;border-radius:6px}
+.staffrow{font-size:13px;padding:6px 2px 8px;border-bottom:1px solid #e3e3e3;margin-bottom:6px}.staffrow button{border:1px solid #1565c0;background:#fff;color:#1565c0;border-radius:6px;padding:4px 9px;font-size:13px;cursor:pointer}
+.staffrow span{color:#666}
 </style>
 <style>
 :root{--ink:#1f2a1f;--muted:#5d6b5d;--card:#fff;--line:#e4e0d6;--accent:#2f6b3a;--accent-soft:#eaf2e7;
@@ -1231,7 +1240,7 @@ const LAYERS = [
 const URLVIEW = new URLSearchParams(location.search).get('view') || '';
 const HAZ = URLVIEW==='hazard';
 const OFFICE = URLVIEW==='office';   // office wall screen: maintenance board docked on the left, refreshes every 10 minutes   // website "GV1 Interactive Hazard Map": paddocks + health & safety only, nothing else available
-if(HAZ){ let g=null; const keep=LAYERS.filter(d=>{ if(d.grp) g=d.grp; return g==='Paddocks' || g==='Health & safety'; }); LAYERS.splice(0,LAYERS.length,...keep); }
+if(HAZ){ let g=null; const keep=LAYERS.filter(d=>{ if(d.grp) g=d.grp; return g==='Paddocks' || g==='Health & safety' || d.id==='sugg'; }); LAYERS.splice(0,LAYERS.length,...keep); }
 { const OFF=['Buildings & access','Dairy shed & barn services (2019 plan)','Effluent','Map notes','Winter management']; let g=null;
   LAYERS.forEach(d=>{ if(d.grp) g=d.grp; else if(OFF.includes(g)) d.on=false; }); }
 const VIEW = new URLSearchParams(location.search).get('view') || '';
@@ -1404,6 +1413,52 @@ let toastT; function toast(t){ const el=document.getElementById('toast'); el.tex
 /* ---------- suggestions (stored in the GV1 Map Suggestions Google Sheet) ---------- */
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1OXyMJkW_mjoQ3t3319DvobrX41oXU3t4I0eLdFDYmc4/edit';
 const SUGGEST_URL = 'https://script.google.com/macros/s/AKfycbyjpYbL9yBzKs-4a-VxgNqF_mKoF3cAbBNNUdag0_WjvvtFYA6d5LVkIm2jP1CWGTYI/exec';
+// ---- Staff sign-in. Without a pass the backend only sends open Health & safety items; the office view, other tasks and photos need a pass.
+const escH=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+let STAFF={tok:'',name:''}; try{ const o=JSON.parse(localStorage.getItem('gvmap.staff')||'null'); if(o&&o.tok&&(!o.exp||o.exp>Date.now())) STAFF=o; }catch(e){}
+const _fetch=window.fetch.bind(window);
+function staffOut(){ STAFF={tok:'',name:''}; try{ localStorage.removeItem('gvmap.staff'); }catch(e){} }
+const authChk=r=>{ r.clone().json().then(j=>{ if(j&&j.auth===false&&STAFF.tok){ staffOut(); toast('Your staff sign-in has expired – please sign in again'); setTimeout(()=>location.reload(),1500); } }).catch(()=>{}); return r; };
+window.fetch=(u,o)=>{   // every call to the farm backend carries the pass in the body (never in the address)
+  if(typeof u==='string' && u.indexOf(SUGGEST_URL)===0 && STAFF.tok){
+    const q=new URLSearchParams(u.split('?')[1]||'');
+    if(!o||!o.method||o.method==='GET'){ if(!q.get('series')&&!q.get('edits'))
+      return _fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:q.get('env')?'env':'list',farm:q.get('farm')||'',tok:STAFF.tok})}).then(authChk); }
+    else if(typeof o.body==='string'){ try{ const b=JSON.parse(o.body); if(b.action!=='login'){ b.tok=STAFF.tok; o={...o,body:JSON.stringify(b)}; } }catch(e){} return _fetch(u,o).then(authChk); }
+  }
+  return _fetch(u,o); };
+function staffSignIn(opts){ opts=opts||{};
+  const ov=document.createElement('div'); ov.id='staffOv';
+  ov.innerHTML=`<div class="sbox"><h2>🔒 Staff sign in</h2><div class="sub">${opts.why||'Sign in to see all tasks, photos and the office view.'}</div>
+    <label>Your name<select id="siName"><option value="">Loading names…</option></select></label>
+    <label>Your code<input id="siCode" type="password" inputmode="numeric" autocomplete="off" placeholder="Manager PIN or last 4 digits of your phone"></label>
+    <div class="btns"><button class="btn" id="siGo">Sign in</button>${opts.noClose?`<a class="btn alt" href="${location.pathname}">Back to the map</a>`:'<button class="btn alt" id="siX">Cancel</button>'}</div>
+    <div class="sub" style="margin-top:10px">Stays signed in on this device for 30 days. Use “Sign out” in the Key on a shared computer.</div></div>`;
+  document.body.appendChild(ov);
+  const x=ov.querySelector('#siX'); if(x) x.onclick=()=>ov.remove();
+  _fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'people',farm:META.name})}).then(r=>r.json()).then(r=>{
+    ov.querySelector('#siName').innerHTML='<option value="">Choose…</option>'+(r.people||[]).map(p=>`<option>${escH(p.name)}</option>`).join(''); }).catch(()=>{});
+  const go=ov.querySelector('#siGo'), code=ov.querySelector('#siCode');
+  code.onkeydown=e=>{ if(e.key==='Enter') go.click(); };
+  go.onclick=()=>{ const name=ov.querySelector('#siName').value, pin=code.value.trim(); if(!name||!pin){ toast('Choose your name and enter your code'); return; }
+    go.disabled=true; go.textContent='Checking…';
+    _fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'login',farm:META.name,name,pin})}).then(r=>r.json()).then(r=>{
+      if(r.ok){ try{ localStorage.setItem('gvmap.staff',JSON.stringify({tok:r.tok,name:r.name,exp:r.exp})); }catch(e){} location.reload(); }
+      else { toast(r.error||'Sign in failed'); go.disabled=false; go.textContent='Sign in'; } }).catch(()=>{ toast('No connection – try again'); go.disabled=false; go.textContent='Sign in'; }); };
+}
+// Private photos: fetched through the backend for signed-in staff only
+const PHC={};
+function phLoad(img){ const id=img.dataset.pid, sz=img.dataset.sz||'400'; if(!STAFF.tok) { img.remove(); return; }
+  const k=id+'|'+sz; (PHC[k]=PHC[k]||_fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'photo',id,sz,tok:STAFF.tok})}).then(r=>r.json()))
+    .then(r=>{ if(r.ok) img.src=r.src; else img.alt='Photo unavailable'; }).catch(()=>{}); }
+new MutationObserver(ms=>{ ms.forEach(m=>m.addedNodes.forEach(n=>{ if(n.nodeType!==1) return;
+  [...(n.matches&&n.matches('img')?[n]:[]),...n.querySelectorAll('img')].forEach(img=>{ const mm=/drive\.google\.com\/thumbnail\?id=([-\w]+)(?:&sz=w(\d+))?/.exec(img.getAttribute('src')||''); if(!mm) return;
+    img.dataset.pid=mm[1]; img.dataset.sz=mm[2]||'400'; img.src='data:image/gif;base64,R0lGODlhAQABAAAAACw='; img.style.minHeight='40px'; img.style.background='#eee'; phLoad(img); }); })); })
+  .observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener('click',e=>{ const a=e.target.closest&&e.target.closest('a[href*="drive.google.com/file/d/"]'); if(!a) return;
+  const id=(/file\/d\/([-\w]+)/.exec(a.href)||[])[1]; if(!id) return; e.preventDefault(); e.stopPropagation(); if(!STAFF.tok){ staffSignIn(); return; }
+  const ov=document.createElement('div'); ov.id='phOv'; ov.innerHTML='<img alt="Photo"><div class="sub">Loading photo… tap anywhere to close</div>'; ov.onclick=()=>ov.remove(); document.body.appendChild(ov);
+  const img=ov.querySelector('img'); img.dataset.pid=id; img.dataset.sz='1600'; phLoad(img); },true);
 const SG_COL = {New:'#ef6c00', Actioned:'#1e88e5', Completed:'#2e7d32', Deferred:'#8e24aa', Approved:'#1e88e5', Done:'#2e7d32'};
 const SG_CATS = ['Health & safety','Drainage needed','Soak hole needed','Tile drain issue','Drain plough required','Water / trough','Fence / gate','Effluent','Lane / track','Pasture / weeds','Pasture damage','Aeration required','Infrastructure','Repairs & maintenance','Machinery & equipment','Other'];
 const SGI = (()=>{ const sv=(c,p)=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
@@ -1432,6 +1487,7 @@ function sgStyle(s){ return {color:SG_COL[s.status]||SG_COL.New, weight:3, dashA
 function sgDraw(){
   sgLayer.clearLayers(); sgHist.clearLayers();
   sgData.forEach(s=>{ const closed = s.status==='Completed' || s.status==='Rejected';
+    if(HAZ && (closed || s.cat!=='Health & safety')) return;   // public hazard map: open H&S items only
     let g; try{ g = typeof s.geom==='string' ? JSON.parse(s.geom) : s.geom; }catch(e){ return; }
     if(!g) return;
     const col=SG_COL[s.status]||SG_COL.New; let lyr;
@@ -2342,6 +2398,7 @@ const keyExp={};
 function renderKey(){
   if(!keyBox.classList.contains('open')) return;
   let h='<h3>Key <button id="keyClose" aria-label="Close key">×</button></h3>', grp=null, fixed=false;
+  if(!HAZ) h+=STAFF.tok?`<div class="staffrow">🔓 Signed in as <b>${escH(STAFF.name)}</b> <button id="staffOutBtn">Sign out</button></div>`:`<div class="staffrow"><button id="staffInBtn">🔒 Staff sign in</button> <span>to see all tasks &amp; photos</span></div>`;
   LAYERS.forEach(d=>{
     if(d.grp){ grp=d.grp; fixed=['Suggestions','Paddocks'].includes(grp);
       if(!(grp in keyExp)) keyExp[grp]=!!grpState(grp);
@@ -2354,6 +2411,7 @@ function renderKey(){
   h+='<div class="hint">Group switch = all on/off. Tap ▸ to open a group, then tap any line to turn just that one on or off.</div>';
   keyBox.innerHTML=h; requestAnimationFrame(placeFabs);
   document.getElementById('keyClose').onclick=()=>toggleKey(false);
+  { const i=document.getElementById('staffInBtn'), o=document.getElementById('staffOutBtn'); if(i) i.onclick=()=>staffSignIn(); if(o) o.onclick=()=>{ staffOut(); location.reload(); }; }
   keyBox.querySelectorAll('.kc').forEach(b=>b.onclick=()=>{ keyExp[b.dataset.g]=!keyExp[b.dataset.g]; renderKey(); });
   keyBox.querySelectorAll('.ks').forEach(b=>b.onclick=()=>{ const g=b.dataset.g, on=!grpState(g); keyExp[g]=true; setGroup(g, on); });
   keyBox.querySelectorAll('.row').forEach(b=>b.onclick=()=>{ const id=b.dataset.id; state[id]=!isOn(id); try{localStorage.setItem(STKEY,JSON.stringify(state));}catch(e){} syncLayers(); });
@@ -2378,7 +2436,7 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
     [...GROUPS['Dairy shed & barn services (2019 plan)'],'sbtiles','cables','pond','buildings','cowshed','yards','lanes','farminfo','effpit','effdrain','valve'].forEach(k=>state[k]=true); }
   syncLayers(); map.fitBounds([[-46.17135,168.13400],[-46.16790,168.13560]],{paddingTopLeft:[innerWidth>=760?280:10,70],paddingBottomRight:[70,10]}); sgLoad();
 } else if(HAZ){
-  state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=true; }); syncLayers(); fitFarm(); document.title='GV1 Hazard Map';
+  state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=true; }); syncLayers(); fitFarm(); sgLoad(); document.title='GV1 Hazard Map';
   ['viewsBtn','boardBtn','officeBtn'].forEach(i=>{ const e=document.getElementById(i); if(e) e.style.display='none'; });
   { const fb=document.getElementById('farmBtn'); fb.textContent='GV1 Hazard Map'; fb.onclick=null; fb.style.cursor='default'; }
 } else if(OFFICE){
@@ -2388,7 +2446,9 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
     const lab=()=>{ tg.textContent=document.body.classList.contains('mapmode')?'📋 Back to office view':'🗺️ Show map'; };
     tg.onclick=()=>{ document.body.classList.toggle('mapmode'); if(!document.body.classList.contains('mapmode')) closeSheet(); lab(); setTimeout(()=>map.invalidateSize(),60); };
     new MutationObserver(lab).observe(document.body,{attributes:true,attributeFilter:['class']}); lab(); }
-  map.invalidateSize(); syncLayers(); fitFarm(); officeLoad(); setInterval(officeLoad, 10*60*1000);
+  map.invalidateSize(); syncLayers(); fitFarm();
+  if(!STAFF.tok) staffSignIn({noClose:true, why:'The office view is for Gladvale staff only. Sign in with your name and code.'});
+  else { officeLoad(); setInterval(officeLoad, 10*60*1000); }
   let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); const mp=document.getElementById('mtPrompt'); if(mp) mp.remove(); if(OFTAB!=='info' && !window._ckDirty){ OFTAB='info'; try{ localStorage.setItem('gvmap.oftab','info'); }catch(e){} officeRender(); } }, 3*60*1000); };
   ['mousedown','touchstart','wheel','keydown'].forEach(ev=>addEventListener(ev,kick,{passive:true})); kick();
 } else if(VIEW==='tiles'){   // website "Tile traffic light map": paddock boundaries + drainage & services + effluent only
