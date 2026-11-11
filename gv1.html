@@ -676,12 +676,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
 #phOv img{max-width:100%;max-height:88vh;border-radius:6px}
 .staffrow{font-size:13px;padding:6px 2px 8px;border-bottom:1px solid #e3e3e3;margin-bottom:6px}.staffrow button{border:1px solid #1565c0;background:#fff;color:#1565c0;border-radius:6px;padding:4px 9px;font-size:13px;cursor:pointer}
 .staffrow span{color:#666}
-#pfBox{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;z-index:900;background:#fff;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.25);padding:10px 12px;width:300px;max-width:calc(100vw - 24px);font-size:13px}
-#pfBox .pfh{font-weight:700;display:flex;justify-content:space-between;align-items:center}#pfBox .pfh button{border:0;background:none;font-size:20px;cursor:pointer}
-#pfBox .pfp{display:flex;gap:4px;margin:6px 0}#pfBox .pfp button{flex:1;border:1px solid #9ccc65;background:#fff;border-radius:6px;padding:5px 2px;font-size:12px;cursor:pointer}#pfBox .pfp button.on{background:#2e7d32;color:#fff;border-color:#2e7d32}
-#pfBox .pfd input{font-size:12px;padding:3px;border:1px solid #bbb;border-radius:5px}
-#pfBox .pfleg{margin-top:6px}#pfBox .pfleg span{font-weight:600;display:block}#pfBox .pfleg i{display:block;height:9px;border-radius:4px;margin:2px 0}#pfBox .pfleg small,#pfBox .pfnote{color:#666;font-size:11.5px}#pfBox .pfnote{margin-top:6px}
+.pf{padding:10px 16px}.pf .pfmodes,.pf .pfp{display:flex;gap:5px;margin:4px 0 8px;flex-wrap:wrap}.pf .pfmodes button,.pf .pfp button{flex:1;border:1px solid #9ccc65;background:#fff;border-radius:8px;padding:7px 4px;font-size:13px;cursor:pointer;min-width:90px}
+.pf .pfmodes button{font-weight:600;font-size:14px}.pf .pfmodes button.on,.pf .pfp button.on{background:#2e7d32;color:#fff;border-color:#2e7d32}
+.pf .pfd{font-size:13px;margin-bottom:8px}.pf .pfd input{font-size:13px;padding:4px;border:1px solid #bbb;border-radius:6px}
+.pf .pfsum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0}.pf .pfsum div{background:#f4f6f1;border-radius:8px;padding:6px 8px}.pf .pfsum small{display:block;color:#666;font-size:11px}.pf .pfsum b{font-size:22px}.pf .pfsum span{display:block;font-size:11px;color:#666}
+.pf .pfleg span{font-weight:600;font-size:12px}.pf .pfleg i{display:block;height:9px;border-radius:4px;margin:2px 0}.pf .pfleg small,.pf .pfnote{color:#666;font-size:11.5px}.pf .pfnote{margin:8px 0;background:#fffde7;border-radius:6px;padding:6px 8px}
+.pf .pft{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}.pf .pft th{text-align:left;background:#e8f0e3;padding:5px;cursor:default}.pf .pft th[data-pfs]{cursor:pointer}.pf .pft td{padding:4px 5px;border-bottom:1px solid #eee}.pf .pft tr[data-pfpad]{cursor:pointer}.pf .pft tr[data-pfpad]:hover{background:#f1f8e9}.pf .pft small{color:#888;font-weight:400}
 .pflab{background:rgba(255,255,255,.85);border:0;box-shadow:none;padding:0 3px;font-weight:700;font-size:11px;color:#222}.pflab:before{display:none}
+.ofclock{position:absolute;right:14px;top:44px;color:#fff;text-align:right;line-height:1.1}.ofclock b{font-size:22px;font-variant-numeric:tabular-nums}.ofclock span{display:block;font-size:12px;opacity:.85}
 </style>
 <style>
 :root{--ink:#1f2a1f;--muted:#5d6b5d;--card:#fff;--line:#e4e0d6;--accent:#2f6b3a;--accent-soft:#eaf2e7;
@@ -979,58 +981,73 @@ const padStyle = f => ({color:'#ffffff',weight:1.6,fillColor:'#9ccc65',fillOpaci
 const paddocks = gj('paddocks',{style:padStyle,onEachFeature:(f,l)=>{
   l.on('click',e=>{L.DomEvent.stopPropagation(e);selectPaddock(f.properties.num,false);});
 }});
-// ---- Pasture & fertiliser layers: per-paddock grass growth and N applied over a date range (MINDA data, signed-in staff only)
-const pfGrow=L.layerGroup(), pfN=L.layerGroup(), pfGraze=L.layerGroup();
-let MINDA=null, MINDA_AT='', pfLoading=false;
-const PF={preset:'4w',from:'',to:''};
+// ---- Pasture & fertiliser (office view tab): per-paddock grass grown, N applied and paddocks grazed over a date range. MINDA data, signed-in staff only.
+const pfLayer=L.layerGroup();
+let MINDA=null, pfLoading=false, pfErr='';
+const PF={preset:'4w',from:'',to:'',mode:'grow',sort:'num'};
 const pfYmd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 function pfPreset(p){ const t=new Date(), y=t.getMonth()>=5?t.getFullYear():t.getFullYear()-1;   // season starts 1 June
-  PF.preset=p; if(p==='4w'){ PF.from=pfYmd(new Date(t-28*864e5)); PF.to=pfYmd(t); } else if(p==='season'){ PF.from=y+'-06-01'; PF.to=pfYmd(t); }
-  else if(p==='last'){ PF.from=(y-1)+'-06-01'; PF.to=y+'-05-31'; } }
+  PF.preset=p; if(p==='4w'){ PF.from=pfYmd(new Date(t-28*864e5)); PF.to=pfYmd(t); } else if(p==='6w'){ PF.from=pfYmd(new Date(t-42*864e5)); PF.to=pfYmd(t); }
+  else if(p==='season'){ PF.from=y+'-06-01'; PF.to=pfYmd(t); } else if(p==='last'){ PF.from=(y-1)+'-06-01'; PF.to=y+'-05-31'; } }
 pfPreset('4w');
 const pfPad=k=>/^5\d\d$/.test(k)?String(+k.slice(1)):k;   // MINDA 501-597 = map paddock 1-97; 100-119 are the same
-function pfCalc(){ const out={}, W=MINDA.walks, ds=Object.keys(W).filter(d=>d>=PF.from&&d<=PF.to).sort();
-  for(let i=1;i<ds.length;i++){ const d0=ds[i-1], d1=ds[i], days=(new Date(d1)-new Date(d0))/864e5; if(days<3||days>35) continue;
-    Object.keys(W[d1]).forEach(k=>{ if(!(k in W[d0])) return; const dl=W[d1][k]-W[d0][k]; if(dl<=0||dl/days>150) return;   // a drop = grazed in between; over 150/day = measuring noise
-      const o=out[pfPad(k)]=out[pfPad(k)]||{g:0,gd:0,n:0,apps:[]}; o.g+=dl; o.gd+=days; }); }
-  MINDA.fert.forEach(([d,prod,rate,N,pads])=>{ if(d<PF.from||d>PF.to||!N) return; const kg=rate*N/100;
-    pads.forEach(k=>{ const o=out[pfPad(k)]=out[pfPad(k)]||{g:0,gd:0,n:0,apps:[]}; o.n+=kg; o.apps.push(d+' '+prod+' '+rate+' kg/ha'); }); });
+function pfCalc(){ const out={}, W=MINDA.walks, ds=Object.keys(W).filter(d=>d>=PF.from&&d<=PF.to).sort(), P=k=>out[pfPad(k)]=out[pfPad(k)]||{g:0,gd:0,n:0,apps:[],gz:[]};
+  // the walk just before the range lets a grazing early in the range show up
+  const before=Object.keys(W).filter(d=>d<PF.from).sort().pop(); const dsx=before?[before,...ds]:ds;
+  for(let i=1;i<dsx.length;i++){ const d0=dsx[i-1], d1=dsx[i], days=(new Date(d1)-new Date(d0))/864e5; if(days>35) continue;
+    Object.keys(W[d1]).forEach(k=>{ if(!(k in W[d0])) return; const dl=W[d1][k]-W[d0][k];
+      if(dl<=-300){ P(k).gz.push([d0,d1]); return; }                        // cover fell = grazed (or cut) between these walks
+      if(i===1&&before) return; if(days<3||dl<=0||dl/days>150) return;      // regrowth only inside the range; over 150/day = measuring noise
+      const o=P(k); o.g+=dl; o.gd+=days; }); }
+  MINDA.fert.forEach(([d,prod,rate,N,pads])=>{ if(d<PF.from||d>PF.to||!N) return; const kg=rate*N/100; pads.forEach(k=>{ const o=P(k); o.n+=kg; o.apps.push([d,prod,rate,kg]); }); });
   return { pads:out, walks:ds.length }; }
 const pfCol=(v,max,c0,c1)=>{ const t=Math.max(0,Math.min(1,v/max)), h=x=>parseInt(x,16), a=[1,3,5].map(i=>h(c0.substr(i,2))), b=[1,3,5].map(i=>h(c1.substr(i,2)));
   return '#'+a.map((x,i)=>Math.round(x+(b[i]-x)*t).toString(16).padStart(2,'0')).join(''); };
-const PFS={pfgrow:{max:80,c0:'#f1f8e9',c1:'#1b5e20',unit:'kg DM/ha/day',lab:'Grass grown'}, pfn:{max:150,c0:'#fff3e0',c1:'#bf360c',unit:'kg N/ha',lab:'N applied'}};
-function pfDraw(){ if(!MINDA) return; const R=pfCalc();
-  [['pfgrow',pfGrow],['pfn',pfN]].forEach(([id,grp])=>{ grp.clearLayers(); const S=PFS[id];
-    grp.addLayer(L.geoJSON({type:'FeatureCollection',features:by('paddocks')},{style:f=>{ const o=R.pads[String(f.properties.num)], v=!o?null:id==='pfgrow'?(o.gd?o.g/o.gd:null):o.n;
-        return v==null?{color:'#fff',weight:1,fillColor:'#9e9e9e',fillOpacity:.25,dashArray:'4 3'}:{color:'#fff',weight:1.2,fillColor:pfCol(v,S.max,S.c0,S.c1),fillOpacity:.78}; },
-      onEachFeature:(f,l)=>{ const o=R.pads[String(f.properties.num)], v=!o?null:id==='pfgrow'?(o.gd?o.g/o.gd:null):o.n;
-        l.bindTooltip(v==null?'–':String(Math.round(v)),{permanent:true,direction:'center',className:'pflab'});
-        l.on('click',e=>{ L.DomEvent.stopPropagation(e); openSheet(`<h2>Paddock ${f.properties.num}</h2><div class="sub">${PF.from} to ${PF.to} · MINDA</div>
-          <p><b>Grass grown:</b> ${o&&o.gd?Math.round(o.g/o.gd)+' kg DM/ha/day (over '+o.gd+' days of regrowth between walks)':'no regrowth measured in this period'}</p>
-          <p><b>Nitrogen applied:</b> ${o&&o.n?Math.round(o.n)+' kg N/ha':'none recorded'}</p>${o&&o.apps.length?'<ul>'+o.apps.map(a=>'<li>'+a+'</li>').join('')+'</ul>':''}`); }); } })); });
-  pfBox(R); }
-function pfBox(R){ let b=document.getElementById('pfBox'); const on=['pfgrow','pfn','pfgraze'].filter(isOn);
-  if(!on.length){ if(b) b.remove(); return; }
-  if(!b){ b=document.createElement('div'); b.id='pfBox'; document.body.appendChild(b); }
-  const leg=id=>{ const S=PFS[id]; return `<div class="pfleg"><span>${S.lab}</span><i style="background:linear-gradient(90deg,${S.c0},${S.c1})"></i><small>0 – ${S.max}+ ${S.unit}</small></div>`; };
-  b.innerHTML=`<div class="pfh">Pasture &amp; fertiliser <button id="pfX" title="Turn these layers off">×</button></div>
-    <div class="pfp">${[['4w','Last 4 weeks'],['season','Season to date'],['last','Last season']].map(([k,t])=>`<button data-p="${k}" class="${PF.preset===k?'on':''}">${t}</button>`).join('')}</div>
-    <div class="pfd"><input type="date" id="pfFrom" value="${PF.from}"> to <input type="date" id="pfTo" value="${PF.to}"></div>
-    ${on.includes('pfgrow')?leg('pfgrow'):''}${on.includes('pfn')?leg('pfn'):''}
-    ${on.includes('pfgraze')?'<div class="pfnote">Paddocks grazed: this layer will read the grazing board once it is connected.</div>':''}
-    <div class="pfnote">${MINDA?(R?R.walks+' farm walks in range · ':'')+'MINDA data to '+(Object.keys(MINDA.walks).sort().pop()||'')+' · grey = no data':pfLoading?'Loading…':''}</div>`;
-  b.querySelectorAll('[data-p]').forEach(x=>x.onclick=()=>{ pfPreset(x.dataset.p); pfDraw(); });
-  b.querySelector('#pfFrom').onchange=e=>{ PF.preset=''; PF.from=e.target.value; pfDraw(); };
-  b.querySelector('#pfTo').onchange=e=>{ PF.preset=''; PF.to=e.target.value; pfDraw(); };
-  b.querySelector('#pfX').onclick=()=>{ ['pfgrow','pfn','pfgraze'].forEach(k=>state[k]=false); syncLayers(); };
-}
-function pfOn(){ if(MINDA){ pfDraw(); return; } pfBox();
-  if(!STAFF.tok){ staffSignIn({why:'Grass growth and fertiliser layers are for Gladvale staff only.'}); ['pfgrow','pfn'].forEach(k=>state[k]=false); setTimeout(syncLayers,0); return; }
-  if(pfLoading) return; pfLoading=true; pfBox();
+const PFS={grow:{max:80,c0:'#f1f8e9',c1:'#1b5e20',unit:'kg DM/ha/day',lab:'Grass grown'}, n:{max:150,c0:'#fff3e0',c1:'#bf360c',unit:'kg N/ha',lab:'Nitrogen applied'}, graze:{max:4,c0:'#ede7f6',c1:'#4527a0',unit:'grazings',lab:'Paddocks grazed'}};
+const pfVal=(o,m)=>!o?null:m==='grow'?(o.gd?o.g/o.gd:null):m==='n'?(o.n||null):(o.gz.length||null);
+let PFR=null;
+function pfDraw(){ pfLayer.clearLayers(); if(!MINDA) return; PFR=pfCalc(); const S=PFS[PF.mode];
+  pfLayer.addLayer(L.geoJSON({type:'FeatureCollection',features:by('paddocks')},{style:f=>{ const v=pfVal(PFR.pads[String(f.properties.num)],PF.mode);
+      return v==null?{color:'#fff',weight:1,fillColor:'#9e9e9e',fillOpacity:.25,dashArray:'4 3'}:{color:'#fff',weight:1.2,fillColor:pfCol(v,S.max,S.c0,S.c1),fillOpacity:.8}; },
+    onEachFeature:(f,l)=>{ const v=pfVal(PFR.pads[String(f.properties.num)],PF.mode);
+      l.bindTooltip(v==null?'–':String(Math.round(v)),{permanent:true,direction:'center',className:'pflab'});
+      l.on('click',e=>{ L.DomEvent.stopPropagation(e); pfSheet(f.properties.num); }); } })); }
+function pfSheet(num){ const o=PFR&&PFR.pads[String(num)], f=by('paddocks').find(x=>x.properties.num==num);
+  openSheet(`<h2>Paddock ${num}</h2><div class="sub">${f?f.properties.ha.toFixed(2)+' ha · ':''}${PF.from} to ${PF.to} · MINDA</div>
+    <p><b>Grass grown:</b> ${o&&o.gd?Math.round(o.g/o.gd)+' kg DM/ha/day (regrowth over '+o.gd+' days between farm walks)':'no regrowth measured in this period'}</p>
+    <p><b>Nitrogen applied:</b> ${o&&o.n?Math.round(o.n)+' kg N/ha':'none recorded'}</p>${o&&o.apps.length?'<ul>'+o.apps.map(a=>`<li>${a[0]} – ${a[1]} at ${a[2]} kg/ha (${a[3].toFixed(1)} kg N/ha)</li>`).join('')+'</ul>':''}
+    <p><b>Grazed:</b> ${o&&o.gz.length?o.gz.length+' time'+(o.gz.length>1?'s':'')+'</p><ul>'+o.gz.map(g=>`<li>between the walks on ${g[0]} and ${g[1]}</li>`).join('')+'</ul>':'not grazed between farm walks in this period</p>'}`); }
+function pfLoad(){ if(MINDA||pfLoading||!STAFF.tok) return; pfLoading=true; pfErr='';
   fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'minda',farm:META.name})}).then(r=>r.json())
-    .then(r=>{ pfLoading=false; if(r.ok){ MINDA=r.data; pfDraw(); } else { toast(r.error||'Could not load the MINDA data'); pfBox(); } }).catch(()=>{ pfLoading=false; toast('No connection'); }); }
-[pfGrow,pfN].forEach(g=>{ g.on('add',()=>setTimeout(pfOn,0)); g.on('remove',()=>setTimeout(()=>pfBox(),0)); });
-pfGraze.on('add',()=>setTimeout(()=>pfBox(),0)); pfGraze.on('remove',()=>setTimeout(()=>pfBox(),0));
+    .then(r=>{ pfLoading=false; if(r.ok){ MINDA=r.data; } else pfErr=r.error||'Could not load the MINDA data'; if(OFTAB==='pf') officeRender(); })
+    .catch(()=>{ pfLoading=false; pfErr='No connection'; if(OFTAB==='pf') officeRender(); }); }
+function pfMapSync(){ if(OFTAB==='pf'&&MINDA){ pfDraw(); if(!map.hasLayer(pfLayer)) pfLayer.addTo(map); } else if(map.hasLayer(pfLayer)) map.removeLayer(pfLayer); }
+function officePF(){
+  if(!MINDA){ pfLoad(); return `<div class="pf"><h3>Pasture &amp; fertiliser</h3><p>${pfErr?ESC(pfErr):'Loading the MINDA pasture covers and fertiliser records…'}</p></div>`; }
+  PFR=pfCalc(); const S=PFS[PF.mode], ps=by('paddocks').map(f=>f.properties);
+  let ha=0,gs=0,nha=0,nk=0,gzc=0; ps.forEach(p=>{ const o=PFR.pads[String(p.num)]; if(!o) return; if(o.gd){ ha+=p.ha; gs+=o.g/o.gd*p.ha; } if(o.n){ nk+=o.n*p.ha; } if(o.gz.length) gzc++; nha+=p.ha; });
+  const totHa=ps.reduce((a,p)=>a+p.ha,0);
+  const rows=ps.map(p=>({p,o:PFR.pads[String(p.num)]})).sort((a,b)=>PF.sort==='num'?a.p.num-b.p.num:(pfVal(b.o,PF.mode)||-1)-(pfVal(a.o,PF.mode)||-1));
+  const lastWalk=Object.keys(MINDA.walks).sort().pop();
+  return `<div class="pf">
+   <div class="pfmodes">${[['grow','🌱 Grass grown'],['n','🧪 Nitrogen applied'],['graze','🐄 Paddocks grazed']].map(([k,t])=>`<button data-pfm="${k}" class="${PF.mode===k?'on':''}">${t}</button>`).join('')}</div>
+   <div class="pfp">${[['4w','Last 4 weeks'],['6w','Last 6 weeks'],['season','Season to date'],['last','Last season']].map(([k,t])=>`<button data-pfp="${k}" class="${PF.preset===k?'on':''}">${t}</button>`).join('')}</div>
+   <div class="pfd">From <input type="date" id="pfFrom" value="${PF.from}"> to <input type="date" id="pfTo" value="${PF.to}"></div>
+   <div class="pfsum"><div><small>Farm grass grown</small><b>${ha?Math.round(gs/ha):'–'}</b><span>kg DM/ha/day</span></div><div><small>Nitrogen applied</small><b>${Math.round(nk/totHa)}</b><span>kg N/ha (farm average)</span></div><div><small>Paddocks grazed</small><b>${gzc}</b><span>of ${ps.length}</span></div><div><small>Farm walks</small><b>${PFR.walks}</b><span>in this period</span></div></div>
+   <div class="pfleg"><span>${S.lab} on the map</span><i style="background:linear-gradient(90deg,${S.c0},${S.c1})"></i><small>0 – ${S.max}+ ${S.unit} · grey = no data</small></div>
+   ${PF.mode==='graze'?`<div class="pfnote">⚠️ Example only: GV1 isn't on the grazing board yet, so "grazed" is worked out from MINDA farm walks – a paddock counts as grazed when its cover dropped by 300 kg DM/ha or more between two walks. Once GV1 uses the grazing board this will show the actual AM/PM paddocks for each day.</div>`:''}
+   <table class="pft"><tr><th data-pfs="num">Paddock${PF.sort==='num'?' ▾':''}</th><th>ha</th><th data-pfs="v">Grass grown<br><small>kg DM/ha/day</small></th><th>N applied<br><small>kg N/ha</small></th><th>Grazed</th></tr>
+   ${rows.map(({p,o})=>`<tr data-pfpad="${p.num}"><td>${p.num}</td><td>${p.ha.toFixed(2)}</td><td>${o&&o.gd?Math.round(o.g/o.gd):'–'}</td><td>${o&&o.n?Math.round(o.n):'–'}</td><td>${o&&o.gz.length?o.gz.length+'× <small>last '+o.gz[o.gz.length-1][1].slice(5)+'</small>':'–'}</td></tr>`).join('')}</table>
+   <div class="pfnote">Source: MINDA Land &amp; Feed (farm walks and fertiliser), data to ${lastWalk}. Grass grown = average regrowth between walks on paddocks that weren't grazed in between, so short periods with only 1–2 walks are rough. Ask Claude to “run the MINDA sync” to update.</div></div>`; }
+function pfWire(panel){
+  panel.querySelectorAll('[data-pfm]').forEach(b=>b.onclick=()=>{ PF.mode=b.dataset.pfm; officeRender(); });
+  panel.querySelectorAll('[data-pfp]').forEach(b=>b.onclick=()=>{ pfPreset(b.dataset.pfp); officeRender(); });
+  const fr=panel.querySelector('#pfFrom'), to=panel.querySelector('#pfTo');
+  if(fr) fr.onchange=()=>{ PF.preset=''; PF.from=fr.value; officeRender(); }; if(to) to.onchange=()=>{ PF.preset=''; PF.to=to.value; officeRender(); };
+  panel.querySelectorAll('[data-pfs]').forEach(h=>h.onclick=()=>{ PF.sort=h.dataset.pfs; officeRender(); });
+  panel.querySelectorAll('[data-pfpad]').forEach(tr=>tr.onclick=()=>{ const n=+tr.dataset.pfpad, f=by('paddocks').find(x=>x.properties.num===n); if(!f) return;
+    if(innerWidth<=820){ document.body.classList.add('mapmode'); setTimeout(()=>map.invalidateSize(),60); } map.fitBounds(L.geoJSON(f).getBounds(),{maxZoom:18}); pfSheet(n); });
+}
 const padLabels = L.layerGroup(by('paddocks').map(f=>{
   const c = f.properties.lab ? L.latLng(f.properties.lab[1],f.properties.lab[0]) : L.geoJSON(f).getBounds().getCenter();
   return L.marker(c,{interactive:false,icon:L.divIcon({className:'pdlabel',html:`${f.properties.num}<small>${f.properties.ha.toFixed(2)} ha</small>`,iconSize:[60,28],iconAnchor:[30,14]})});
@@ -1204,10 +1221,6 @@ const LAYERS = [
   {id:'sugg', name:'Open tasks & hazards', cnt:'orange new · blue actioned · green completed · purple deferred', sw:'<i class="dot" style="color:#ef6c00;background:#ef6c00"></i>', on:true, layer:sgLayer},
   {grp:'Paddocks'},
   {id:'paddocks', name:'Paddock boundaries', cnt:by('paddocks').length+' paddocks', sw:'<i class="box" style="background:#9ccc6555;border:2px solid #fff;outline:1px solid #9ccc65"></i>', on:true, layer:L.layerGroup([paddocks,padLabels])},
-  {grp:'Pasture & fertiliser'},
-  {id:'pfgrow', name:'Grass grown per paddock', cnt:'kg DM/ha/day from MINDA farm walks – staff sign-in', sw:'<i class="box" style="background:linear-gradient(90deg,#f1f8e9,#1b5e20)"></i>', on:false, layer:pfGrow},
-  {id:'pfn', name:'Nitrogen applied per paddock', cnt:'kg N/ha from MINDA fertiliser records – staff sign-in', sw:'<i class="box" style="background:linear-gradient(90deg,#fff3e0,#bf360c)"></i>', on:false, layer:pfN},
-  {id:'pfgraze', name:'Paddocks grazed (date range)', cnt:'from the grazing board – connection to come', sw:'<i class="box" style="background:#7e57c255;border:2px solid #7e57c2"></i>', on:false, layer:pfGraze},
   {grp:'Stock water'},
   ...Object.keys(WATER_COL).map(size=>{ const fs=by('water').filter(f=>f.properties.size===size);
     const km=(fs.reduce((s,f)=>s+lineLen(f.geometry.coordinates),0)/1000).toFixed(1);
@@ -1309,7 +1322,7 @@ const VIEW = new URLSearchParams(location.search).get('view') || '';
 const STKEY = 'gvmap.layers.v2' + (VIEW ? '.'+VIEW : '');
 let state = {};
 try{ state = JSON.parse(localStorage.getItem(STKEY)||'{}'); }catch(e){}
-const order = ['effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','pfgrow','pfn','pfgraze','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','camera','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
+const order = ['effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','camera','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
 const MINZ = {trough:15, trees:15, riparian:14.5, valve:15.5, hydrant:15, gtap:16, effpit:16, inspect:16, storm:16, septic:16, septicinfo:16, offal:15, sghist:16, hzaddr:14.5, divined:15, camera:17};
 if(URLVIEW==='water'){ delete MINZ.trough; delete MINZ.valve; }
 
@@ -1749,8 +1762,8 @@ function chartSheet(title,sub,ranges,days,load,extra){
 }
 const dms=d=>new Date(d+'T00:00:00').getTime();
 const serGet=(s,d)=>fetch(SUGGEST_URL+'?series='+s+'&days='+d).then(r=>r.json());
-function soilGraph(days){ chartSheet('Soil temperature (10 cm)','Live · Environment Southland soil monitoring sites – Isla Bank (nearest) and Heddon Bush (as on the Gladvale weather page)',[7,30,60,90,180,365],days||30,
-  d=>serGet('soilT',d).then(r=>({unit:' °C',refs:[[10,'#2e7d32','10 °C']],series:(r.sites||[]).map((s,i)=>({name:s.name+(s.latest?` – now ${(+s.latest[1]).toFixed(1)}°C`:''),color:i?'#1565c0':'#6d4c41',dash:!!i,band:!i,pts:s.pts.map(p=>[dms(p[0]),p[1],p[2],p[3]])}))}))); }
+function soilGraph(days){ chartSheet('Soil temperature (10 cm) – this year vs last year','Live · Environment Southland soil monitoring at Isla Bank. Solid = this year (shading = daily low–high), dashed = the same dates last year, carried on 2 weeks ahead to show where it went next.',[7,30,60,90,180,365],days||30,
+  d=>serGet('soilT',d).then(r=>({unit:' °C',refs:[[10,'#2e7d32','10 °C']],series:(r.sites||[]).map((s,i)=>({name:s.name+(s.latest?` – now ${(+s.latest[1]).toFixed(1)}°C`:'')+(i?((p=>p?` – ${p[1]}°C on this day`:' – builds up from Nov 2026 (ES only keeps 12 months)')(s.pts.find(p=>p[0]===ymdL(new Date())))):''),color:i?'#1565c0':'#6d4c41',dash:!!i,band:!i,pts:s.pts.map(p=>[dms(p[0]),p[1],p[2],p[3]])}))}))); }
 function smSheet(days){ chartSheet('Beacon soil moisture – Isla Bank','Live · Environment Southland soil moisture (water-filled pores). Shading = beacon colour bands used for the effluent pod run time.',[7,30,60,90,180,365],days||30,
   d=>serGet('sm',d).then(r=>({unit:'%',yMax:100,bands:[[0,BEACON_T.orange,'#2e7d32'],[BEACON_T.orange,BEACON_T.red,'#ef6c00'],[BEACON_T.red,100,'#d50000']],series:(r.sites||[]).map(s=>({name:'Isla Bank daily average',color:'#1565c0',band:true,pts:s.pts.map(p=>[dms(p[0]),p[1],p[2],p[3]])}))})),
   `<table class="bgd" style="margin-top:8px"><tr><th>Beacon colour</th><th>Soil moisture</th><th>Pod run time guide</th></tr>${['Red','Orange','Green'].map(x=>`<tr class="${x===(ENV&&ENV.beacon)?'cur':''}"><td><i style="background:${BCOL[x]}"></i>${x}</td><td>${x==='Red'?BEACON_T.red+'% +':x==='Orange'?BEACON_T.orange+'–'+BEACON_T.red+'%':'under '+BEACON_T.orange+'%'}</td><td>${BEACON_GUIDE[x][0]}–${BEACON_GUIDE[x][1]} min</td></tr>`).join('')}</table>`); }
@@ -1927,7 +1940,7 @@ function weatherBlock(){
   return `<div class="ofr"><div class="ofcat">Weather <span class="lvchip live">● live</span> · <a href="https://www.gladvalefarms.co.nz/weather.html" target="_blank" rel="noopener">Gladvale weather page ↗</a></div>
    <iframe class="wwarn" src="https://southland-weather-warnings.dave-7b9.workers.dev/" title="MetService warnings" loading="lazy"></iframe>
    ${days.length?`<div class="wdays">${days.map((d,i)=>`<div class="wday" title="Open the hourly forecast"><small>${i===0?'Today':new Date(d.d+'T00:00:00').toLocaleDateString('en-NZ',{weekday:'short',day:'numeric'})}</small><i>${wsym(d.sym)}</i><b>${d.max}°</b><span>${d.min}°</span><em>${d.rain} mm</em><em>${d.wind} km/h</em></div>`).join('')}
-     ${ENV.soilT!=null?`<div class="wsoil" id="soilTile" title="Open the soil temperature graph"><small>Soil temp</small><i>🌱</i><b>${ENV.soilT}°</b><span>Isla Bank 10 cm</span><em style="color:#1565c0">📈 graph</em></div>`:''}</div><div class="wsrc">Forecast: Yr (met.no) for the farm · warnings: MetService · soil temperature: Environment Southland</div>`:'<div class="wsrc">Forecast loading…</div>'}
+     ${ENV.soilT!=null?`<div class="wsoil" id="soilTile" title="Open the soil temperature graph"><small>Soil temp</small><i>🌱</i><b>${ENV.soilT}°</b><span>Isla Bank 10 cm</span>${ENV.soilTly!=null?`<span style="color:${ENV.soilT>=ENV.soilTly?'#2e7d32':'#c62828'}">${ENV.soilT>=ENV.soilTly?'▲':'▼'} ${Math.abs(ENV.soilT-ENV.soilTly).toFixed(1)}° vs last year (${ENV.soilTly}°)</span>`:''}<em style="color:#1565c0">📈 graph</em></div>`:''}</div><div class="wsrc">Forecast: Yr (met.no) for the farm · warnings: MetService · soil temperature: Environment Southland</div>`:'<div class="wsrc">Forecast loading…</div>'}
    <img class="wmet" id="wxMet" title="Open the hourly forecast" src="https://www.yr.no/en/content/2-2185446/meteogram.svg" alt="Yr meteogram" loading="lazy"></div>`;
 }
 
@@ -2211,13 +2224,13 @@ function ckWire(){
 function officeRender(){
   const rows=boardRows(), now=new Date(), crit=rows.filter(s=>s.rating==='Critical').length;
   const mcur=ENV?mtMonth(new Date().getFullYear(),new Date().getMonth()+1):null;
-  const tabs=[['info','Farm dashboard',''],['mt','Management tasks',mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['ck','Effluent checklist',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')],['cam','Cameras',camTour?'<span class="ckb ok">tour</span>':''],['eb','Effluent board',ENV&&PH_KINDS.some(([k])=>phState(k).al!=='ok')?`<span class="ckb ${PH_KINDS.some(([k])=>phState(k).al==='crit')?'bad':'wrn'}">photos due</span>`:'']];
+  const tabs=[['info','Farm dashboard',''],['mt','Management tasks',mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['ck','Effluent checklist',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')],['cam','Cameras',camTour?'<span class="ckb ok">tour</span>':''],['pf','Pasture & fertiliser',''],['eb','Effluent board',ENV&&PH_KINDS.some(([k])=>phState(k).al!=='ok')?`<span class="ckb ${PH_KINDS.some(([k])=>phState(k).al==='crit')?'bad':'wrn'}">photos due</span>`:'']];
   const panel=document.getElementById('ofp');
   if(OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')){   // don't wipe a half-filled checklist on the 10-minute refresh
     const tb=panel.querySelector('.oftabs'); if(tb) tb.querySelectorAll('button').forEach((b,i)=>b.innerHTML=tabs[i][1]+' '+tabs[i][2]); return; }
-  panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><small>updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
+  panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><div class="ofclock"><b id="ofClock">${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit',second:'2-digit'})}</b> <span>${now.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</span></div><small>data updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
     <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
-   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():OFTAB==='cam'?officeCams():officeFarmInfo()}</div>`;
+   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklist():OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():OFTAB==='cam'?officeCams():OFTAB==='pf'?officePF():officeFarmInfo()}</div>`;
   const goSheet=fn=>()=>{ if(innerWidth<=820) document.body.classList.add('mapmode'); fn(); };
   const st=document.getElementById('soilTile'); if(st) st.onclick=goSheet(()=>soilGraph(30));
   const bt=document.getElementById('bcnTile'); if(bt) bt.onclick=goSheet(()=>smSheet(30));
@@ -2226,7 +2239,7 @@ function officeRender(){
   panel.querySelectorAll('[data-tab]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); if(OFTAB==='ck'&&b.dataset.tab!=='ck') window._ckDirty=false; OFTAB=b.dataset.tab; try{ localStorage.setItem('gvmap.oftab',OFTAB); }catch(e){} officeRender(); panel.scrollTop=0; });
   const toMap=()=>{ if(innerWidth<=820){ document.body.classList.add('mapmode'); setTimeout(()=>map.invalidateSize(),60); } };
   panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ toMap(); const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
-  document.body.classList.toggle('wide',OFTAB==='board'||OFTAB==='eb'||OFTAB==='mt'||OFTAB==='cam'); setTimeout(()=>map.invalidateSize(),50);
+  document.body.classList.toggle('wide',OFTAB==='board'||OFTAB==='eb'||OFTAB==='mt'||OFTAB==='cam'||OFTAB==='pf'); setTimeout(()=>map.invalidateSize(),50);
   panel.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return; toMap();
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   panel.querySelectorAll('.mbdone').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.id); if(s) sgComplete(s); });
@@ -2236,9 +2249,12 @@ function officeRender(){
   panel.querySelectorAll('[data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
   if(OFTAB==='ck') ckWire();
   if(OFTAB==='cam') camWire(panel);
+  if(OFTAB==='pf') pfWire(panel);
+  pfMapSync();
   if(OFTAB==='mt'){ mtWire(panel,'tab'); if(!window._ppl) loadPeople(()=>{ if(OFTAB==='mt') officeRender(); }); }
   if(OFTAB==='eb'){ ebWire(); if(!window._ppl) loadPeople(()=>{ if(OFTAB==='eb') officeRender(); }); }
 }
+setInterval(()=>{ const c=document.getElementById('ofClock'); if(c) c.textContent=new Date().toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit',second:'2-digit'}); },1000);
 function officeLoad(){
   const q='?farm='+encodeURIComponent(META.name);
   Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); if(!(OFTAB==='ck'&&window._ckDirty)) officeRender(); }).catch(()=>{}),
