@@ -949,6 +949,15 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .jbon{display:flex;flex-wrap:wrap;gap:6px 18px;background:#f7faf8;border:1px solid #dde5df;border-radius:10px;padding:8px 10px;font-size:13px}.jbon b{color:#2e6b3f}
 .jbt{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}.jbt th{background:#2e6b3f;color:#fff;padding:5px;text-align:left}.jbt td{border-bottom:1px solid #eee;padding:3px}.jbt input:not([type=checkbox]),.jbt select{width:100%;padding:4px;border:1px solid #d3ddd5;border-radius:6px;font-size:13px}
 .jbt tr.dn input:not([type=checkbox]){text-decoration:line-through;color:#888}.jbt td.jbw select{border-color:#ef6c00;background:#fff4e5}.jbnone{color:#777;padding:10px!important}
+.mtt small.mtms,.note small.mtms{background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9;border-radius:8px;padding:0 6px;font-size:10.5px;font-weight:700}
+.jbt th.jbn{text-align:center;font-size:11.5px;min-width:46px}.jbt th.jbn small{display:block;font-weight:400;opacity:.85}.jbt th.jbn.off{background:#8a9a8e}.jbt td.jbck{text-align:center}.jbt td.jbck.off{background:#f3f3f3}.jbt td.jbck input{transform:scale(1.3)}.jbt td.jbw{background:#fff4e5!important;outline:2px solid #ef6c00}
+.jbt tr.nowho td:first-child input{border-color:#ef6c00}.jbt td.jbnote{display:flex;gap:4px;align-items:center;min-width:220px}.jbmic{border:1px solid #d3ddd5;background:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;flex:none}.jbmic.rec{background:#c62828;color:#fff;animation:flasho 1s infinite}
+.cwkey{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;margin:6px 0}.cwkey i{font-style:normal;font-weight:700;font-family:monospace;font-size:14px}
+.cwwrap{max-height:60vh}.cwt{border-collapse:collapse;font-size:12px}.cwt th{background:#2e6b3f;color:#fff;padding:4px;font-size:10.5px;font-weight:600;min-width:62px;position:sticky;top:0;z-index:1}.cwt td{border:1px solid #e3e8e4;padding:2px;text-align:center;white-space:nowrap}
+.cwt .cwp{position:sticky;left:0;background:#fff;z-index:2;text-align:left;padding:3px 6px;min-width:70px}.cwt th.cwp{background:#2e6b3f;z-index:3}.cwt .cwp small{display:block;color:#777}
+.cwt td.cwop{cursor:pointer;font-weight:700;font-family:monospace;min-width:62px;height:28px}.cwt td.cwop:hover{background:#f2f8f3}.cwt td.cwop.pk{outline:2px solid #f9a825;background:#fffde7}.cwt td.cwtx input{width:84px;border:1px solid #e3e8e4;padding:3px;font-size:12px}
+.cwbar{display:inline-block;width:40px;height:6px;background:#eee;border-radius:3px;margin-right:4px;vertical-align:middle}.cwbar i{display:block;height:100%;background:#2e7d32;border-radius:3px}
+.cwpop{position:sticky;bottom:0;background:#fff;border:2px solid #f9a825;border-radius:10px;padding:8px 10px;margin:8px 0;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:5}.cwpop .btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.cwpop .btn{flex:none;width:auto}.cwpop input[type=date]{margin-left:4px}
 </style>
 </head>
 <body>
@@ -1710,7 +1719,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13c staff & jobs, policy milking times -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13d cultivation whiteboard, jobs tick boxes + talk, task labels -->
 </html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
@@ -2189,17 +2198,17 @@ function weatherBlock(){
 const MT_START='2026-11-09', MT_TARGET=95;
 const MT=[  // id, task, freq D/W/M/A, how: photo | done | auto, tab (for auto), months (seasonal)
  ['jobs','Jobs to do list filled in for today (Staff & jobs tab – or a photo)','D','auto','jb'],
- ['fertmap','Photo of the fertiliser maps','D','photo'],
+ ['fertmap','Photo of the fertiliser maps','D','photo','db'],
  ['effck','Effluent daily checklist (or "system not run today")','D','auto','ck'],
  ['roster','Roster filled in for next week and key person milking requirements met (Roster tab)','W','auto','ro'],
- ['feedbudget','Photo of the feed budget board','W','photo'],
- ['wedges','Photo of completed feed wedges incl. growth rates','W','photo'],
+ ['feedbudget','Photo of the feed budget board','W','photo','db'],
+ ['wedges','Photo of completed feed wedges incl. growth rates','W','photo','db'],
  ['ph_ponds','Photo of effluent pond levels','W','photo'],
  ['ph_sand','Photo of sand traps','W','photo'],
  ['ph_solids','Photo of solids ponds / storage areas','W','photo'],
  ['effboard','Effluent application board up to date','W','auto','eb'],
- ['fertdone','Photo of completed fertiliser map for the week','W','photo'],
- ['workboard','Photo of the paddock workboard (Nov–Dec)','W','photo',null,[11,12]],
+ ['fertdone','Photo of completed fertiliser map for the week','W','photo','db'],
+ ['workboard','Cultivation whiteboard up to date (Nov–Dec)','W','auto','cw',[11,12]],
  ['trev','Trev reports completed (Tue expected, Thu final)','W','done'],
  ['wsr','Weekly Summary Report downloaded (PDF) & circulated','W','done'],
  ['monthend','Trev Month End Report downloaded & circulated','M','done'],
@@ -2211,7 +2220,8 @@ const MT=[  // id, task, freq D/W/M/A, how: photo | done | auto, tab (for auto),
  ['efftrain','Effluent training form – everyone running the effluent system, yearly by 31 July','A','auto','et'],
  ['asd','ASD uploaded for stock movements','A','done']];
 const MTF={D:'Daily',W:'Weekly',M:'Monthly',A:'As required'};
-const MT_LIVE=new Set(['jobs','roster','effck','ph_ponds','ph_sand','ph_solids','effboard','leak','quiz','efftrain','cams']);   // the rest are placeholders – shown but not scored yet
+const MT_MEASURE=new Set(['jobs']);   // tracked and shown, but not part of the compliance score
+const MT_LIVE=new Set(['workboard','jobs','roster','effck','ph_ponds','ph_sand','ph_solids','effboard','leak','quiz','efftrain','cams']);   // the rest are placeholders – shown but not scored yet
 const mtLive=t=>MT_LIVE.has(t[0]);
 const ymdL=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const pd=s=>new Date(s+'T00:00:00');
@@ -2223,7 +2233,7 @@ function mtNow(t){ const today=ymdL(new Date()); return mtDoneSet(t).has(perKey(
 function mtMonth(y,m){   // compliance for one calendar month (m 1-12)
   const today=ymdL(new Date()), first=ymdL(new Date(y,m-1,1)), last=ymdL(new Date(y,m,0)); let due=0, done=0; const per={};
   if(last<MT_START||first>today) return null;
-  MT.forEach(t=>{ if(t[2]==='A'||!mtLive(t)||(t[5]&&t[5].indexOf(m)<0)) return; const ds=mtDoneSet(t), keys=[];
+  MT.forEach(t=>{ if(t[2]==='A'||!mtLive(t)||MT_MEASURE.has(t[0])||(t[5]&&t[5].indexOf(m)<0)) return; const ds=mtDoneSet(t), keys=[];
     if(t[2]==='D'){ for(let d=pd(first>MT_START?first:MT_START); ymdL(d)<=last&&ymdL(d)<=today; d.setDate(d.getDate()+1)) keys.push([ymdL(d),ymdL(d)<today]); }
     else if(t[2]==='W'){ for(let d=pd(first); ymdL(d)<=last; d.setDate(d.getDate()+1)) if(d.getDay()===0){ const sun=ymdL(d); if(sun>=MT_START&&monKey(sun)<=today) keys.push([monKey(sun),sun<today]); } }
     else keys.push([first.slice(0,7),last<today]);
@@ -2243,10 +2253,10 @@ function mtStatus(t){ const today=ymdL(new Date()), now=new Date();
   const left=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate(); return [left<=3?'bad':left<=7?'wrn':'',`due by month end (${left} days)`];
 }
 function mtOutstanding(){ const now=new Date(), left=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate();
-  return MT.filter(t=>t[2]!=='A'&&mtLive(t)&&!(t[5]&&t[5].indexOf(now.getMonth()+1)<0)&&!mtNow(t)&&(t[2]!=='M'||left<=7)&&t[0]!=='effck'); }
+  return MT.filter(t=>t[2]!=='A'&&mtLive(t)&&!MT_MEASURE.has(t[0])&&!(t[5]&&t[5].indexOf(now.getMonth()+1)<0)&&!mtNow(t)&&(t[2]!=='M'||left<=7)&&t[0]!=='effck'); }
 function mtBtn(t){
   if(t[3]==='auto') return t[0]==='effck'?`<button class="btn alt mtb" data-tab="ck">Checklist</button><button class="btn alt mtb" data-mtnr="1">Not run today</button>`
-                                          :t[0]==='effboard'?`<button class="btn alt mtb" data-tab="eb">Effluent board</button><button class="btn alt mtb" data-mt="effboard" data-note="no shifts this week">No shifts this week</button>`:`<button class="btn alt mtb" data-tab="${t[4]}">${{ck:'Effluent checklist',eq:'Effluent quiz',et:'Training form',eb:'Effluent board',jb:'Jobs to do',ro:'Roster'}[t[4]]||'Open'}</button>`;
+                                          :t[0]==='effboard'?`<button class="btn alt mtb" data-tab="eb">Effluent board</button><button class="btn alt mtb" data-mt="effboard" data-note="no shifts this week">No shifts this week</button>`:`<button class="btn alt mtb" data-tab="${t[4]}">${{ck:'Effluent checklist',eq:'Effluent quiz',et:'Training form',eb:'Effluent board',jb:'Jobs to do',ro:'Roster',cw:'Cultivation whiteboard'}[t[4]]||'Open'}</button>`;
   if(t[0]==='jobs') return `<button class="btn alt mtb" data-tab="jb">Jobs to do</button><label class="btn alt mtb" title="Photo of your own jobs list instead">📷<input type="file" accept="image/*" capture="environment" data-mtph="jobs" hidden></label>`;
   if(t[0]==='roster') return `<button class="btn alt mtb" data-tab="ro">Roster</button><label class="btn alt mtb" title="Photo of your own roster instead">📷<input type="file" accept="image/*" capture="environment" data-mtph="roster" hidden></label>`;
   if(t[0].startsWith('ph_')) return `<label class="btn mtb">📷 Photo<input type="file" accept="image/*" capture="environment" data-mtph="${t[0]}" hidden></label><button class="btn alt mtb" data-tab="eb">Effluent board</button>`;
@@ -2258,7 +2268,9 @@ function officeTasks(){
   const hist=[]; for(let i=1;i<=6;i++){ const d=new Date(now.getFullYear(),now.getMonth()-i,1), r=mtMonth(d.getFullYear(),d.getMonth()+1); if(r&&r.due) hist.push([d.toLocaleDateString('en-NZ',{month:'short',year:'2-digit'}),r.pct]); }
   const last=t=>{ const a=mtDone(t[0]); return a.length?a.slice().sort().pop():''; };
   const row=t=>{ const [c,txt]=mtStatus(t), l=last(t), p=ph[t[0]], m=cur&&cur.per[t[0]];
-    if(!mtLive(t)) return `<tr class="mtph"><td>${ESC(t[1])} <small class="mtph">placeholder</small></td><td><span class="mts">not scored yet</span></td><td>${l?dshort(l):'–'}</td><td>–</td><td class="mtact">${mtBtn(t)}</td></tr>`;
+    if(!mtLive(t)) return `<tr class="mtph"><td>${ESC(t[1])} <small class="mtph">${t[4]==='db'?'placeholder – extract from DB':'placeholder'}</small></td><td><span class="mts">not scored yet</span></td><td>${l?dshort(l):'–'}</td><td>–</td><td class="mtact">${mtBtn(t)}</td></tr>`;
+    if(MT_MEASURE.has(t[0])){ const ds=mtDoneSet(t), mm=new Date(), first=new Date(mm.getFullYear(),mm.getMonth(),1); let a=0,b=0; for(let d=new Date(first); ymdL(d)<=ymdL(mm); d.setDate(d.getDate()+1)){ if(ymdL(d)<MT_START) continue; b++; if(ds.has(ymdL(d))) a++; }
+      return `<tr><td>${ESC(t[1])} <small class="mtms">measured – not scored</small></td><td><span class="mts ${mtNow(t)?'ok':''}">${mtNow(t)?'✓ done today':'not filled in yet today'}</span></td><td>${l?dshort(l):'–'}</td><td>${b?`<b>${a}/${b}</b>`:'–'}</td><td class="mtact">${mtBtn(t)}</td></tr>`; }
     return `<tr><td>${ESC(t[1])} <small class="mtlv">live</small>${t[3]==='auto'?' <small class="mta">auto</small>':''}</td><td><span class="mts ${c}">${txt}</span></td>
       <td>${l?dshort(l):'–'}${p?` <a href="https://drive.google.com/file/d/${p.id}/view" target="_blank" rel="noopener">📷</a>`:''}</td><td>${m&&m[1]?`<b class="${pctCls(Math.round(m[0]/m[1]*100))}">${m[0]}/${m[1]}</b>`:'–'}</td><td class="mtact">${mtBtn(t)}</td></tr>`; };
   return `<div class="ofbd">
@@ -2266,7 +2278,7 @@ function officeTasks(){
       <i class="mtbar"><i style="width:${cur&&cur.pct!=null?cur.pct:0}%"></i><u style="left:${MT_TARGET}%"></u></i></div>
      <div class="mthist">${hist.length?hist.map(h=>`<div><small>${h[0]}</small><b class="${pctCls(h[1])}">${h[1]}%</b></div>`).join(''):'<small>Monthly history builds up from here – scoring started '+dshort(MT_START)+'.</small>'}</div></div>
    <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><b style="font-size:12px;color:#5b6b55">RECORDING AS</b>${signerSel('mtName')}<input id="mtOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
-   <p class="note" style="margin:0 0 6px"><small class="mtlv">live</small> jobs are working and count toward the score. <small class="mtph">placeholder</small> jobs are shown so you can see what's coming – they aren't scored until they're set up properly. A daily job counts once the day is over, a weekly job once Sunday has passed, a monthly job at month end. Doing a job late in its day/week/month still counts; skipping it lowers the score.</p>
+   <p class="note" style="margin:0 0 6px"><small class="mtlv">live</small> jobs are working and count toward the score. <small class="mtms">measured – not scored</small> jobs are tracked but left out of the score. <small class="mtph">placeholder</small> jobs are shown so you can see what's coming (“extract from DB” = the data will come straight from the farm database) – they aren't scored until they're set up properly. A daily job counts once the day is over, a weekly job once Sunday has passed, a monthly job at month end. Doing a job late in its day/week/month still counts; skipping it lowers the score.</p>
    ${['D','W','M','A'].map(f=>`<table class="mtt"><tr><th>${MTF[f]}</th><th>This ${f==='D'?'day':f==='W'?'week':f==='M'?'month':'–'}</th><th>Last done</th><th>Month</th><th></th></tr>${MT.filter(t=>t[2]===f).map(row).join('')}</table>`).join('')}
    <p class="note">Every job is recorded on the "Management tasks log" tab of the GV1 Farm Management sheet (photos in the Farm task photos folder).</p></div>`;
 }
@@ -2481,17 +2493,19 @@ function ckWire(){
 function officeRender(){
   const rows=boardRows(), now=new Date(), crit=rows.filter(s=>s.rating==='Critical').length;
   const mcur=ENV?mtMonth(new Date().getFullYear(),new Date().getMonth()+1):null;
-  const tabs=[['info','Farm dashboard',''],['mt','Management tasks',mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['eff','Effluent',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')+ebBadge()],['pf','Pasture & fertiliser',''],['staff','Staff & jobs',roBadge()+jbBadge()]];
+  const tabs=[['info','Farm dashboard',''],['mt','Management tasks',mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['eff','Effluent',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')+ebBadge()],['pfg','Pasture & fertiliser',cwBadge()],['staff','Staff & jobs',roBadge()+jbBadge()]];
+  const pfSubs=[['pf','🌱','Pasture & fertiliser',''],['cw','🚜','Cultivation whiteboard',cwBadge()]];
   const staffSubs=[['ro','📅','Roster',roBadge()],['jb','📝','Jobs to do',jbBadge()]];
   const effSubs=[['ck','📋','Effluent checklist',ckBadge()],['eb','🗺️','Effluent board',ebBadge()],['eq','✅','Effluent quiz',effQuizBadge()],['et','📝','Effluent training form',effTrainBadge()]];
   const panel=document.getElementById('ofp');
   if((OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')) || ((OFTAB==='et'||OFTAB==='eq') && window._etDirty && document.getElementById('etF'))){   // don't wipe a half-filled checklist on the 10-minute refresh
     const tb=panel.querySelector('.oftabs'); if(tb) tb.querySelectorAll('button').forEach((b,i)=>b.innerHTML=tabs[i][1]+' '+tabs[i][2]); return; }
   panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><div class="ofclock"><b id="ofClock">${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit',second:'2-digit'})}</b> <span>${now.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</span></div><small>data updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
-    <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]||(t[0]==='eff'&&EFFG.includes(OFTAB))||(t[0]==='staff'&&STAFFG.includes(OFTAB))?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
+    <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]||(t[0]==='eff'&&EFFG.includes(OFTAB))||(t[0]==='staff'&&STAFFG.includes(OFTAB))||(t[0]==='pfg'&&PFG.includes(OFTAB))?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
+   ${PFG.includes(OFTAB)?`<div class="effsub two">${pfSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
    ${STAFFG.includes(OFTAB)?`<div class="effsub two">${staffSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
    ${EFFG.includes(OFTAB)?`<div class="effsub">${effSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
-   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklistMain()+effTrainSection():OFTAB==='et'?(window._effForm='train',effFormHTML()):OFTAB==='eq'?(window._effForm='quiz',effFormHTML()):OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():OFTAB==='cam'?officeCams():OFTAB==='pf'?officePF():OFTAB==='ro'?officeRoster():OFTAB==='jb'?officeJobs():officeFarmInfo()}</div>`;
+   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklistMain()+effTrainSection():OFTAB==='et'?(window._effForm='train',effFormHTML()):OFTAB==='eq'?(window._effForm='quiz',effFormHTML()):OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():OFTAB==='cam'?officeCams():OFTAB==='pf'?officePF():OFTAB==='ro'?officeRoster():OFTAB==='jb'?officeJobs():OFTAB==='cw'?officeCult():officeFarmInfo()}</div>`;
   const goSheet=fn=>()=>{ if(innerWidth<=820) document.body.classList.add('mapmode'); fn(); };
   const st=document.getElementById('soilTile'); if(st) st.onclick=goSheet(()=>soilGraph('season'));
   panel.querySelectorAll('[data-cond],.nstrip').forEach(b=>b.onclick=e=>{ e.stopPropagation(); goSheet(()=>condSheet(7))(); });
@@ -2499,12 +2513,14 @@ function officeRender(){
   const rt=document.getElementById('rainTbl'); if(rt) rt.onclick=goSheet(()=>rainSheet(30));
   panel.querySelectorAll('.wday,#wxMet').forEach(w=>w.onclick=goSheet(wxSheet));
   panel.querySelectorAll('[data-tab]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); let nt=b.dataset.tab; if(nt==='eff'){ if(EFFG.includes(OFTAB)) return; nt='ck'; try{ nt=localStorage.getItem('gvmap.effsub')||'ck'; }catch(e){} if(!EFFG.includes(nt)) nt='ck'; }
+    if(nt==='pfg'){ if(PFG.includes(OFTAB)) return; nt='pf'; try{ nt=localStorage.getItem('gvmap.pfsub')||'pf'; }catch(e){} if(!PFG.includes(nt)) nt='pf'; }
+    if(PFG.includes(nt)) try{ localStorage.setItem('gvmap.pfsub',nt); }catch(e){}
     if(nt==='staff'){ if(STAFFG.includes(OFTAB)) return; nt='ro'; try{ nt=localStorage.getItem('gvmap.staffsub')||'ro'; }catch(e){} if(!STAFFG.includes(nt)) nt='ro'; }
     if(STAFFG.includes(nt)) try{ localStorage.setItem('gvmap.staffsub',nt); }catch(e){}
     if(OFTAB==='ck'&&nt!=='ck') window._ckDirty=false; if(nt!==OFTAB) window._etDirty=false; OFTAB=nt; if(EFFG.includes(nt)) try{ localStorage.setItem('gvmap.effsub',nt); }catch(e){} try{ localStorage.setItem('gvmap.oftab',OFTAB); }catch(e){} officeRender(); panel.scrollTop=0; });
   const toMap=()=>{ if(innerWidth<=820){ document.body.classList.add('mapmode'); setTimeout(()=>map.invalidateSize(),60); } };
   panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ toMap(); const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
-  document.body.classList.toggle('wide',OFTAB==='ro'||OFTAB==='jb'||OFTAB==='board'||OFTAB==='eb'||OFTAB==='mt'||OFTAB==='cam'||OFTAB==='pf'); setTimeout(()=>map.invalidateSize(),50);
+  document.body.classList.toggle('wide',OFTAB==='cw'||OFTAB==='ro'||OFTAB==='jb'||OFTAB==='board'||OFTAB==='eb'||OFTAB==='mt'||OFTAB==='cam'||OFTAB==='pf'); setTimeout(()=>map.invalidateSize(),50);
   panel.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return; toMap();
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   panel.querySelectorAll('.mbdone').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.id); if(s) sgComplete(s); });
@@ -2519,6 +2535,7 @@ function officeRender(){
   if(OFTAB==='ro'||OFTAB==='jb'){ if(!window._ppl) loadPeople(()=>{ if(STAFFG.includes(OFTAB)) officeRender(); }); if(!ROSTER) roLoad(); }
   if(OFTAB==='ro') roWire(panel);
   if(OFTAB==='jb'){ jbWire(panel); if(!JOBS) jbLoad(); }
+  if(OFTAB==='cw'){ cwWire(panel); if(!CULT) cwLoad(); }
   pfMapSync();
   if(OFTAB==='mt'){ mtWire(panel,'tab'); if(!window._ppl) loadPeople(()=>{ if(OFTAB==='mt') officeRender(); }); }
   if(OFTAB==='eb'){ ebWire(); if(!window._ppl) loadPeople(()=>{ if(OFTAB==='eb') officeRender(); }); }
@@ -2552,6 +2569,7 @@ function officeRoster(){
    <div class="rostat ${nw.ok?'ok':'wrn'}">${(()=>{ const f=dl(nw.mon).toLocaleDateString('en-NZ',{day:'numeric',month:'short'});
      return nw.ok?`✓ Next week (from ${f}) is fully rostered and the key person milking requirement is met – the weekly roster task is ticked off`:`● Next week (from ${f}): ${[nw.w.gaps?`${nw.w.gaps} day${nw.w.gaps>1?'s have':' has'} an AM or PM milking with nobody rostered`:'',!nw.cmOk?`contract milker has fewer than ${cmN()} milkings`:''].filter(Boolean).join(' · ')}`; })()}</div>
    ${CMMIN&&CMMIN.ok?`<div class="rosrc">Key person minimum (${cmN()} milkings a week) is read from <a href="${CMMIN.url}" target="_blank" rel="noopener">${ESC(CMMIN.src)}</a> (updated ${ESC(CMMIN.updated)}) – change the number there and the roster follows within an hour.</div>`:`<div class="rosrc">Key person minimum: ${cmN()} milkings a week (couldn't read the Contract Milker Responsibilities document just now, so using ${cmN()}).</div>`}
+   ${roTimeWarn().length?`<div class="rostat wrn">🚩 Milking times differ from the farm policy – see “Roster pattern &amp; milking times” below.</div>`:''}
    ${roPatternHTML()}
    ${cmLine}
    <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><b style="font-size:12px;color:#5b6b55">RECORDING AS</b>${signerSel('roName',true)}<input id="roOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
@@ -2566,7 +2584,8 @@ let POLT=null;   // standard milking times from the Farm Policy Manual (milking 
 const roT=()=>{ const c=(ROSTER&&ROSTER.times)||{}; return c.amS||c.pmS?Object.assign({},POLT||{},c,{custom:true}):Object.assign({},POLT||{amS:'04:30',amF:'09:00',pmS:'14:00',pmF:'18:00'}); };
 const t12=v=>{ if(!v) return ''; const [h,m]=v.split(':').map(Number); return (h%12||12)+(m?'.'+String(m).padStart(2,'0'):'')+(h<12?'am':'pm'); };
 const roTimes=k=>{ const t=roT(), a=t[k==='AM'?'amS':'pmS'], b=t[k==='AM'?'amF':'pmF']; return a?` (${t12(a)}${b?'–'+t12(b):''})`:''; };
-function roTimeWarn(){ const t=roT(), p=POLT||{gapH:9.5,pmEarliest:'13:30'}, mm=v=>{ const [h,m]=(v||'0:0').split(':').map(Number); return h*60+m; }, w=[];
+function roTimeWarn(){ const t=roT(), p=POLT||{gapH:9.5,pmEarliest:'13:30',amS:'04:30',amF:'09:00',pmS:'14:00',pmF:'18:00'}, mm=v=>{ const [h,m]=(v||'0:0').split(':').map(Number); return h*60+m; }, w=[];
+  if(t.custom) ['amS','amF','pmS','pmF'].forEach((k,i)=>{ if(t[k]&&p[k]&&t[k]!==p[k]) w.push(`${['AM start','AM finish','PM start','PM finish'][i]} ${t12(t[k])} (policy ${t12(p[k])})`); });
   if(t.amS&&t.pmS&&(mm(t.pmS)-mm(t.amS))<p.gapH*60) w.push(`less than ${p.gapH} hours between the start of AM and PM milking`);
   if(t.pmS&&p.pmEarliest&&mm(t.pmS)<mm(p.pmEarliest)) w.push(`PM milking starts before ${t12(p.pmEarliest)}`); return w; }
 function roPatDefaults(on,off){ const S=ROSTER.staff, m=roMon(0), cyc=on+off, st={}; S.forEach((x,i)=>{ const d=new Date(m); d.setDate(m.getDate()+on+Math.round(i*cyc/Math.max(1,S.length))%cyc); st[x.name]=ymdL(d); }); return st; }
@@ -2580,7 +2599,7 @@ function roPatternHTML(){ const pt=ROSTER.pattern||{on:6,off:2,start:{}}, S=ROST
    ${(()=>{ const e=roT(), w=roTimeWarn(); return `<div class="ropr"><b>Milking times</b> <label>AM <input type="time" id="roAmS" value="${e.amS||''}"> – <input type="time" id="roAmF" value="${e.amF||''}"></label><label>PM <input type="time" id="roPmS" value="${e.pmS||''}"> – <input type="time" id="roPmF" value="${e.pmF||''}"></label>
      ${e.custom?'<button class="btn alt" id="roPolT">Use the policy times</button>':''}</div>
      <div class="ropr"><small>${e.custom?'<b>Farm’s own times.</b> ':'<b>Standard times from the farm policy.</b> '}Milking policy${POLT&&POLT.url?` (<a href="${POLT.url}" target="_blank" rel="noopener">Farm Policy Manual</a>)`:''}: AM ${t12((POLT||{}).amS||'04:30')}–${t12((POLT||{}).amF||'09:00')}, PM ${t12((POLT||{}).pmS||'14:00')}–${t12((POLT||{}).pmF||'18:00')}, at least ${(POLT||{}).gapH||9.5} hours between the starts and PM no earlier than ${t12((POLT||{}).pmEarliest||'13:30')}. Change the policy and this default follows within an hour.</small></div>
-     ${w.length?`<div class="rostat wrn">● These times don't meet the milking policy: ${w.join(' · ')}</div>`:''}`; })()}
+     ${w.length?`<div class="rostat wrn">🚩 These milking times don't match the farm policy: ${w.join(' · ')}. Worth a discussion – if this farm needs different times (herd size, shed size), the policy can be set per farm.</div>`:''}`; })()}
    <div class="ropr"><button class="btn" id="roFill">Fill these 2 weeks from the pattern</button><small>Days on get AM + PM, days off are left clear, leave (L) is kept. You can still tap any day to change it afterwards.</small></div></details>`; }
 function roReadPattern(panel){ const on=Math.max(1,+panel.querySelector('#roOn').value||6), off=Math.max(1,+panel.querySelector('#roOff').value||2), start={};
   panel.querySelectorAll('[data-rostart]').forEach(i=>{ if(i.value) start[i.dataset.rostart]=i.value; }); return {on,off,start}; }
@@ -2612,13 +2631,64 @@ function roWire(panel){
   const add=panel.querySelector('#roAdd'); if(add) add.onclick=()=>{ const n=panel.querySelector('#roNew').value.trim(), r=panel.querySelector('#roRole').value; if(!n) return toast('Type a name first');
     if(ROSTER.staff.some(x=>x.name.toLowerCase()===n.toLowerCase())) return toast('Already on the roster'); ROSTER.staff.push({name:n,role:r}); roSave({staff:ROSTER.staff}); officeRender(); };
 }
+// ---- Cultivation whiteboard (same columns and key as the "Cultivation Board Template" sheet)
+const PFG=['pf','cw'];
+let CULT=null, cwLoading=false, cwTimer=null, cwPick=null;
+const CW_COLS=[['crop','Crop','text'],['spray0','Date sprayed','op'],['whp','Withholding','text'],['subsoil','Subsoiled','op'],['disc','Disced','op'],['plough','Ploughed','op'],['ph1','Power harrowed','op'],['terra','Terra-disced','op'],['level','Levelled','op'],['drain','Drain ploughed','op'],
+  ['bfType','Base fert type','text'],['bfRate','Rate','text'],['bfDone','Base fert done','op'],['ph2','2nd power harrow','op'],['oats','Oats drilled','op'],['grass','Grass drilled','op'],['beet','Beet drilled','op'],['other','Other drilled','op'],
+  ['sd1Type','1st side dressing','text'],['sd1Rate','Rate kg/ha','text'],['sd1Done','1st side dressing done','op'],['sd2Type','2nd side dressing','text'],['sd2Rate','Rate kg/ha','text'],['sd2Done','2nd side dressing done','op'],['sp1','1st spray','op'],['sp2','2nd spray','op'],['sp3','3rd spray','op']];
+const CW_ST={ready:['Ready to go','----','#ef6c00'],wet:['Too wet','o','#1565c0'],nr:['Not required','x','#9e9e9e'],cx:['Cancelled','x','#757575'],info:['Need info','.','#7b1fa2']};
+// starting paddocks for GV1 (from the "202526 Crop/Re-grass" tab of Regrassing/Stock Feed & Wintering Plans) – edit freely
+const CW_SEED={GV1:[['32','3.1','Turnips'],['35','3.31','Turnips'],['36','3.24','Turnips'],['76','4.77','Grass'],['77','4.8','Grass'],['38','4.7','Grass'],['39','4.1','Grass']]};
+function cwPost(body){ return fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({action:'cult',farm:META.name},body))}).then(r=>r.json()); }
+function cwLoad(){ if(cwLoading||!STAFF.tok||cwTimer) return; cwLoading=true; cwPost({}).then(r=>{ cwLoading=false; if(r.ok){ CULT=r.board||{season:'',rows:(CW_SEED[META.name]||[]).map(([p,a,c])=>({pdk:p,area:a,crop:c,c:{}})),seeded:true}; if(r.tasks&&ENV) ENV.tasks=r.tasks; if(PFG.includes(OFTAB)||OFTAB==='mt') officeRender(); } }).catch(()=>{ cwLoading=false; }); }
+function cwBadge(){ if(!CULT){ if(STAFF.tok&&ENV&&PFG.includes(OFTAB)) cwLoad(); return ''; } let r=0,w=0; CULT.rows.forEach(x=>Object.values(x.c).forEach(v=>{ if(v==='ready') r++; if(v==='wet') w++; })); return r?`<span class="ckb wrn">${r} ready</span>`:''; }
+const cwCell=v=>{ if(!v) return ['','','']; if(CW_ST[v]) return [CW_ST[v][1],CW_ST[v][0],CW_ST[v][2]]; if(/^\d{4}-\d{2}-\d{2}$/.test(v)){ const d=new Date(v+'T12:00:00'); return ['✓ '+d.getDate()+' '+d.toLocaleDateString('en-NZ',{month:'short'}),'Done '+d.toLocaleDateString('en-NZ'),'#2e7d32']; } return [v,v,'#333']; };
+function officeCult(){
+  if(!STAFF.tok) return '<div class="ofbd"><p>Sign in to see the cultivation whiteboard.</p></div>';
+  if(!CULT){ cwLoad(); return '<div class="ofbd"><p>Loading the cultivation whiteboard…</p></div>'; }
+  const R=CULT.rows, tot=R.reduce((a,r)=>a+(+r.area||0),0);
+  const prog=r=>{ const ops=CW_COLS.filter(c=>c[2]==='op'), v=ops.map(c=>r.c[c[0]]||''), need=v.filter(x=>x!=='nr'&&x!=='cx'&&x), done=need.filter(x=>/^\d{4}/.test(x)).length; return need.length?Math.round(done/need.length*100):null; };
+  return `<div class="ofbd">
+   <div class="rohead"><div><b>Cultivation whiteboard – ${META.name}</b> <input id="cwSeason" placeholder="Season e.g. 2026–27" value="${ESC(CULT.season||'')}" style="width:150px;margin-left:6px"><small>Tap a cell to set it: ready to go, too wet, not required, cancelled, need info – or done (with the date). Saves as you go; updating it each week ticks off the whiteboard task.</small></div>
+    <div class="ronav"><button class="btn alt" id="cwPrint">🖨 Print</button></div></div>
+   ${CULT.seeded?`<div class="rostat wrn">● Started with the GV1 paddocks from the “202526 Crop/Re-grass” plan (${R.length} paddocks, ${Math.round(tot*10)/10} ha) – check them and add or remove as needed. Nothing is saved until you make a change.</div>`:''}
+   <div class="cwkey">${Object.keys(CW_ST).map(k=>`<span><i style="color:${CW_ST[k][2]}">${CW_ST[k][1]}</i> ${CW_ST[k][0]}</span>`).join('')}<span><i style="color:#2e7d32">✓</i> Done (date)</span></div>
+   <div class="rowrap cwwrap"><table class="cwt"><tr><th class="cwp">Paddock</th>${CW_COLS.map(c=>`<th>${c[1]}</th>`).join('')}<th>Progress</th><th></th></tr>
+    ${R.map((r,i)=>`<tr><td class="cwp"><b>${ESC(r.pdk)}</b>${r.area?`<small>${ESC(r.area)} ha</small>`:''}</td>${CW_COLS.map(c=>{ const v=r.c[c[0]]||(c[0]==='crop'?r.crop:'');
+      if(c[2]==='text') return `<td class="cwtx"><input data-cwt="${i}|${c[0]}" value="${ESC(c[0]==='crop'?r.crop||'':v)}"></td>`;
+      const [t,tt,col]=cwCell(v); return `<td class="cwop ${cwPick===i+'|'+c[0]?'pk':''}" data-cwop="${i}|${c[0]}" title="${ESC(c[1])}: ${ESC(tt||'not set')}" style="color:${col}">${ESC(t)}</td>`; }).join('')}
+      <td>${(p=>p==null?'–':`<i class="cwbar"><i style="width:${p}%"></i></i>${p}%`)(prog(r))}</td><td><button class="rodel" data-cwdel="${i}" title="Remove paddock">✕</button></td></tr>`).join('')||`<tr><td colspan="${CW_COLS.length+3}" class="jbnone">No paddocks yet – add the paddocks being cultivated this season.</td></tr>`}</table></div>
+   ${cwPick?(()=>{ const [i,k]=cwPick.split('|'), col=CW_COLS.find(c=>c[0]===k), r=R[+i]; return `<div class="cwpop"><b>Paddock ${ESC(r.pdk)} – ${ESC(col[1])}</b><div class="btns">${Object.keys(CW_ST).map(s=>`<button class="btn alt" data-cwset="${s}" style="color:${CW_ST[s][2]}">${CW_ST[s][1]} ${CW_ST[s][0]}</button>`).join('')}
+      <button class="btn" data-cwset="today">✓ Done today</button><label class="btn alt">✓ Done on <input type="date" id="cwDate" max="${ymdL(new Date())}"></label><button class="btn alt" data-cwset="">Clear</button><button class="btn alt" data-cwset="close">Close</button></div></div>`; })():''}
+   <div class="roadd"><input id="cwNew" placeholder="Paddock number" maxlength="10" style="max-width:140px"><input id="cwArea" placeholder="ha" maxlength="6" style="max-width:70px"><input id="cwCrop" placeholder="Crop (e.g. Turnips, Grass, FB)" maxlength="30"><button class="btn" id="cwAdd">+ Add paddock</button></div>
+   <p class="note">Saved on the farm sheet (every change is listed on the “Cultivation whiteboard log” tab). Columns and key follow the Cultivation Board Template.</p></div>`;
+}
+function cwSave(now){ clearTimeout(cwTimer); CULT.seeded=false; cwTimer=setTimeout(()=>{ cwTimer=null; const name=(typeof signerName==='function'&&signerName('mtName','mtOther'))||(()=>{ try{ return localStorage.getItem('gvmap.signer')||''; }catch(e){ return ''; } })()||'office view';
+  cwPost({name,set:{season:CULT.season||'',rows:CULT.rows}}).then(r=>{ if(!r.ok) return toast(r.error||'Whiteboard not saved'); if(!cwTimer&&r.board) CULT=r.board; if(r.tasks&&ENV) ENV.tasks=r.tasks; }).catch(()=>toast('No connection – whiteboard not saved')); }, now?0:900); }
+function cwWire(panel){
+  const g=id=>panel.querySelector(id);
+  panel.querySelectorAll('[data-cwop]').forEach(td=>td.onclick=()=>{ cwPick=cwPick===td.dataset.cwop?null:td.dataset.cwop; officeRender(); });
+  panel.querySelectorAll('[data-cwset]').forEach(b=>b.onclick=()=>{ const v=b.dataset.cwset; if(v==='close'){ cwPick=null; return officeRender(); } const [i,k]=cwPick.split('|'), r=CULT.rows[+i];
+    const val=v==='today'?ymdL(new Date()):v; if(val) r.c[k]=val; else delete r.c[k]; cwPick=null; cwSave(true); officeRender(); });
+  const dt=g('#cwDate'); if(dt) dt.onchange=()=>{ if(!dt.value) return; const [i,k]=cwPick.split('|'); CULT.rows[+i].c[k]=dt.value; cwPick=null; cwSave(true); officeRender(); };
+  panel.querySelectorAll('[data-cwt]').forEach(inp=>inp.addEventListener('input',()=>{ const [i,k]=inp.dataset.cwt.split('|'), r=CULT.rows[+i]; if(k==='crop') r.crop=inp.value; else if(inp.value) r.c[k]=inp.value; else delete r.c[k]; cwSave(); }));
+  panel.querySelectorAll('[data-cwdel]').forEach(b=>b.onclick=()=>{ const r=CULT.rows.splice(+b.dataset.cwdel,1)[0]; cwPick=null; cwSave(true); toast('Paddock '+r.pdk+' removed'); officeRender(); });
+  const se=g('#cwSeason'); if(se) se.addEventListener('input',()=>{ CULT.season=se.value; cwSave(); });
+  if(g('#cwAdd')) g('#cwAdd').onclick=()=>{ const p=g('#cwNew').value.trim(); if(!p) return toast('Type a paddock number'); if(CULT.rows.some(r=>r.pdk===p)) return toast('Paddock '+p+' is already on the board');
+    CULT.rows.push({pdk:p,area:g('#cwArea').value.trim(),crop:g('#cwCrop').value.trim(),c:{}}); cwSave(true); officeRender(); };
+  if(g('#cwPrint')) g('#cwPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
+    w.document.write(`<html><head><title>${META.name} cultivation whiteboard</title><style>body{font-family:Arial;font-size:10px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:3px;text-align:center}th{background:#2e6b3f;color:#fff;font-size:9px}@page{size:landscape}</style></head><body><h2>${META.name} cultivation whiteboard ${ESC(CULT.season||'')}</h2>
+      <p>Key: ${Object.keys(CW_ST).map(k=>CW_ST[k][1]+' '+CW_ST[k][0]).join(' · ')} · ✓ done (date)</p><table><tr><th>Paddock</th>${CW_COLS.map(c=>`<th>${c[1]}</th>`).join('')}</tr>${CULT.rows.map(r=>`<tr><td><b>${ESC(r.pdk)}</b> ${ESC(r.area||'')}</td>${CW_COLS.map(c=>`<td>${ESC(c[0]==='crop'?r.crop||'':c[2]==='text'?r.c[c[0]]||'':cwCell(r.c[c[0]])[0])}</td>`).join('')}</tr>`).join('')}</table></body></html>`); w.document.close(); w.focus(); setTimeout(()=>w.print(),300); };
+}
 // ---- Jobs to do: who is doing what each day. The people on come straight from the roster.
 const STAFFG=['ro','jb'];
 let JOBS=null, jbLoading=false, jbDate=null, jbTimer=null;
 const JB_SLOTS=['AM','Midday','PM','All day'], JB_TPL=['Set up breaks / shift fences','Feed out silage / supplement','Feed calves','Check & treat sick / lame cows','Effluent – daily checklist & irrigator shifts','Wash yard & clean dairy','Move stock','Check water troughs','Fencing & maintenance','Spraying / weed control','Farm walk (weekly)'];
 function jbPost(body){ return fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({action:'jobs',farm:META.name},body))}).then(r=>r.json()); }
 function jbLoad(){ if(jbLoading||!STAFF.tok||jbTimer) return; jbLoading=true; jbPost({}).then(r=>{ jbLoading=false; if(r.ok){ JOBS={days:r.days||{},templates:r.templates||null}; if(r.tasks&&ENV) ENV.tasks=r.tasks; if(STAFFG.includes(OFTAB)||OFTAB==='mt') officeRender(); } }).catch(()=>{ jbLoading=false; }); }
-const jbTpl=()=>(JOBS&&JOBS.templates)||JB_TPL;
+const jbTplO=()=>((JOBS&&JOBS.templates)||JB_TPL).map(t=>typeof t==='string'?{job:t,slot:'AM',who:''}:t);   // the usual jobs, each with its usual time and people
+const jbTpl=()=>jbTplO().map(t=>t.job);
 function jbBadge(){ if(!JOBS){ if(STAFF.tok&&ENV) jbLoad(); return ''; } const n=(JOBS.days[ymdL(new Date())]||[]).length; return n?`<span class="ckb ok">${n} today</span>`:'<span class="ckb wrn">jobs today</span>'; }
 function jbOn(d){ const S=(ROSTER&&ROSTER.staff)||[], am=[], pm=[], lv=[], off=[]; S.forEach(x=>{ const v=roGet(d,x.name); if(v.includes('L')) lv.push(x.name); else { if(v.includes('A')) am.push(x.name); if(v.includes('P')) pm.push(x.name); if(!v) off.push(x.name); } }); return {am,pm,lv,off,on:S.map(x=>x.name).filter(n=>am.includes(n)||pm.includes(n))}; }
 function officeJobs(){
@@ -2626,6 +2696,8 @@ function officeJobs(){
   if(!JOBS||!ROSTER){ if(!JOBS) jbLoad(); if(!ROSTER) roLoad(); return '<div class="ofbd"><p>Loading jobs and the roster…</p></div>'; }
   const td=ymdL(new Date()); if(!jbDate) jbDate=td; const d=jbDate, dl=x=>new Date(x+'T12:00:00'), list=JOBS.days[d]||[], on=jbOn(d), S=ROSTER.staff.map(x=>x.name);
   const days=[]; for(let i=-1;i<=7;i++){ const x=new Date(); x.setHours(12,0,0,0); x.setDate(x.getDate()+i); days.push(ymdL(x)); }
+  const whoA=j=>String(j.who||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const whoBox=(j,i)=>S.map(n=>{ const onD=on.on.includes(n), ck=whoA(j).includes(n); return `<td class="jbck ${onD?'':'off'} ${ck&&!onD?'jbw':''}"><input type="checkbox" data-jbwho="${ESC(n)}" data-i="${i}" ${ck?'checked':''} title="${ESC(n)}${onD?'':' – not rostered on'}"></td>`; }).join('');
   const whoSel=(j,i)=>`<select data-jbf="who" data-i="${i}"><option value="">– who –</option>${on.on.map(n=>`<option ${j.who===n?'selected':''}>${ESC(n)}</option>`).join('')}${S.filter(n=>!on.on.includes(n)).map(n=>`<option value="${ESC(n)}" ${j.who===n?'selected':''}>${ESC(n)} (not rostered)</option>`).join('')}${j.who&&!S.includes(j.who)?`<option selected>${ESC(j.who)}</option>`:''}</select>`;
   const warn=j=>j.who&&!on.on.includes(j.who)?' jbw':'';
   const load={}; list.forEach(j=>{ if(j.who) load[j.who]=(load[j.who]||0)+1; });
@@ -2636,12 +2708,15 @@ function officeJobs(){
      ${on.lv.length?`<div><b>On leave</b> ${on.lv.map(ESC).join(', ')}</div>`:''}${on.off.length?`<div><b>Day off</b> ${on.off.map(ESC).join(', ')}</div>`:''}</div>
    <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><b style="font-size:12px;color:#5b6b55">RECORDING AS</b>${signerSel('jbName',true)}<input id="jbOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
    <datalist id="jbTplL">${jbTpl().map(t=>`<option>${ESC(t)}</option>`).join('')}</datalist>
-   <table class="jbt"><tr><th>Job</th><th>When</th><th>Who</th><th>Notes</th><th>Done</th><th></th></tr>
-    ${list.map((j,i)=>`<tr class="${j.done?'dn':''}"><td><input data-jbf="job" data-i="${i}" list="jbTplL" value="${ESC(j.job)}"></td><td><select data-jbf="slot" data-i="${i}">${JB_SLOTS.map(x=>`<option ${j.slot===x?'selected':''}>${x}</option>`).join('')}</select></td>
-      <td class="${warn(j)}">${whoSel(j,i)}</td><td><input data-jbf="note" data-i="${i}" value="${ESC(j.note||'')}" placeholder="paddock, details…"></td><td><input type="checkbox" data-jbf="done" data-i="${i}" ${j.done?'checked':''}></td><td><button class="rodel" data-jbdel="${i}" title="Remove">✕</button></td></tr>`).join('')||'<tr><td colspan="6" class="jbnone">No jobs for this day yet – add the usual jobs, copy yesterday\'s, or add one.</td></tr>'}</table>
-   <div class="roadd"><button class="btn" id="jbAdd">+ Add job</button><button class="btn alt" id="jbUsual">Add the usual jobs</button><button class="btn alt" id="jbCopy">Copy the day before</button><button class="btn alt" id="jbPrint">🖨 Print</button></div>
+   <div class="rowrap"><table class="jbt"><tr><th>Job</th><th>When</th>${S.map(n=>`<th class="jbn ${on.on.includes(n)?'':'off'}">${ESC(n.split(' ')[0])}<small>${on.am.includes(n)&&on.pm.includes(n)?'AM+PM':on.am.includes(n)?'AM':on.pm.includes(n)?'PM':on.lv.includes(n)?'leave':'off'}</small></th>`).join('')}<th>Notes</th><th>Done</th><th></th></tr>
+    ${list.map((j,i)=>`<tr class="${j.done?'dn':''} ${whoA(j).length?'':'nowho'}"><td><input data-jbf="job" data-i="${i}" list="jbTplL" value="${ESC(j.job)}"></td><td><select data-jbf="slot" data-i="${i}">${JB_SLOTS.map(x=>`<option ${j.slot===x?'selected':''}>${x}</option>`).join('')}</select></td>
+      ${whoBox(j,i)}<td class="jbnote"><input data-jbf="note" data-i="${i}" value="${ESC(j.note||'')}" placeholder="paddock, details…"><button class="jbmic" data-jbmic="${i}" title="Talk – speak the details">🎤</button></td><td><input type="checkbox" data-jbf="done" data-i="${i}" ${j.done?'checked':''}></td><td><button class="rodel" data-jbdel="${i}" title="Remove">✕</button></td></tr>`).join('')||'<tr><td colspan="${S.length+5}" class="jbnone">No jobs for this day yet – add the usual jobs, copy yesterday\'s, or add one.</td></tr>'}</table></div>
+   ${list.some(j=>whoA(j).some(n=>!on.on.includes(n)))?`<div class="rostat wrn">● Someone ticked for a job isn't rostered on this day (orange) – tick someone else.</div>`:''}${list.some(j=>!whoA(j).length)?`<div class="rostat wrn">● ${list.filter(j=>!whoA(j).length).length} job(s) with nobody ticked.</div>`:''}
+   <div class="roadd"><button class="btn" id="jbAdd">+ Add job</button><button class="btn alt" id="jbUsual">Add the usual jobs</button><button class="btn alt" id="jbCopy">Copy the day before</button><button class="btn alt" id="jbSaveStd">Save as the usual jobs</button><button class="btn alt" id="jbPrint">🖨 Print</button></div>
    ${Object.keys(load).length?`<div class="roln">Jobs each: ${Object.keys(load).map(n=>`${ESC(n)} <b>${load[n]}</b>`).join(' · ')}</div>`:''}
-   <details class="ropat"><summary>⚙ The usual jobs list</summary><div class="ropr"><textarea id="jbTplT" rows="8" style="width:100%">${ESC(jbTpl().join('\n'))}</textarea></div><div class="ropr"><button class="btn" id="jbTplS">Save the usual jobs</button><small>One job per line – these fill in with "Add the usual jobs" and show as suggestions when typing.</small></div></details>
+   <details class="ropat"><summary>⚙ The usual jobs (${jbTplO().length}) – who normally does what</summary><div class="ropr"><small>“Add the usual jobs” fills these in with the usual people ticked (anyone not rostered on that day is left unticked and flagged). To change them, set a day up the way you like and press “Save as the usual jobs”, or edit the list here (one job per line).</small></div>
+     <table class="jbt">${jbTplO().map(t=>`<tr><td>${ESC(t.job)}</td><td>${ESC(t.slot||'')}</td><td>${ESC(t.who||'–')}</td></tr>`).join('')}</table>
+     <div class="ropr"><textarea id="jbTplT" rows="6" style="width:100%">${ESC(jbTpl().join('\n'))}</textarea></div><div class="ropr"><button class="btn" id="jbTplS">Save this list</button></div></details>
    <p class="note">Saved on the farm sheet (every save is listed on the "Jobs to do log" tab).</p></div>`;
 }
 function jbSave(extra,now){ clearTimeout(jbTimer); const d=jbDate, list=(JOBS.days[d]||[]).slice();
@@ -2655,16 +2730,26 @@ function jbWire(panel){
   panel.querySelectorAll('[data-jbdel]').forEach(b=>b.onclick=()=>{ L().splice(+b.dataset.jbdel,1); jbSave(null,true); officeRender(); });
   const g=id=>panel.querySelector(id);
   if(g('#jbAdd')) g('#jbAdd').onclick=()=>{ L().push({job:'',slot:'AM',who:'',note:'',done:false}); officeRender(); const ins=panel.querySelectorAll('[data-jbf=job]'); if(ins.length) ins[ins.length-1].focus(); };
-  if(g('#jbUsual')) g('#jbUsual').onclick=()=>{ const l=L(), have=l.map(j=>j.job.toLowerCase()); let n=0; jbTpl().forEach(t=>{ if(!have.includes(t.toLowerCase())){ l.push({job:t,slot:'AM',who:'',note:'',done:false}); n++; } }); jbSave(null,true); toast(n+' usual job'+(n===1?'':'s')+' added – now pick who'); officeRender(); };
+  if(g('#jbUsual')) g('#jbUsual').onclick=()=>{ const l=L(), have=l.map(j=>j.job.toLowerCase()), on=jbOn(jbDate).on; let n=0, miss=0;
+    jbTplO().forEach(t=>{ if(have.includes(t.job.toLowerCase())) return; const w=String(t.who||'').split(',').map(x=>x.trim()).filter(Boolean), ok=w.filter(x=>on.includes(x)); miss+=w.length-ok.length; l.push({job:t.job,slot:t.slot||'AM',who:ok.join(', '),note:'',done:false}); n++; });
+    jbSave(null,true); toast(n+' usual job'+(n===1?'':'s')+' added'+(miss?` – ${miss} usual person/people aren't on today, tick someone else`:'')); officeRender(); };
+  if(g('#jbSaveStd')) g('#jbSaveStd').onclick=()=>{ const t=L().filter(j=>j.job).map(j=>({job:j.job,slot:j.slot,who:j.who||''})); if(!t.length) return toast('Add some jobs first'); JOBS.templates=t; jbSave({templates:t},true); toast('Saved as the usual jobs ('+t.length+')'); officeRender(); };
+  panel.querySelectorAll('[data-jbwho]').forEach(c=>c.onchange=()=>{ const j=L()[+c.dataset.i]; if(!j) return; let w=String(j.who||'').split(',').map(x=>x.trim()).filter(Boolean); const n=c.dataset.jbwho;
+    w=c.checked?w.concat(w.includes(n)?[]:[n]):w.filter(x=>x!==n); j.who=w.join(', '); jbSave(); officeRender(); });
+  panel.querySelectorAll('[data-jbmic]').forEach(b=>b.onclick=()=>{ const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return toast('Talking needs Chrome or Edge – type the note instead');
+    const i=+b.dataset.jbmic, inp=panel.querySelector(`[data-jbf=note][data-i="${i}"]`), r=new SR(); r.lang='en-NZ'; r.interimResults=true; r.continuous=false; const base=inp.value?inp.value+' ':'';
+    b.classList.add('rec'); toast('Listening… speak the details'); r.onresult=e=>{ let t=''; for(let k=0;k<e.results.length;k++) t+=e.results[k][0].transcript; inp.value=base+t; };
+    r.onerror=e=>{ b.classList.remove('rec'); toast(e.error==='not-allowed'?'Allow the microphone to use Talk':'Could not hear that – try again'); };
+    r.onend=()=>{ b.classList.remove('rec'); const j=L()[i]; if(j){ j.note=inp.value; jbSave(null,true); } }; r.start(); });
   if(g('#jbCopy')) g('#jbCopy').onclick=()=>{ const p=new Date(jbDate+'T12:00:00'); p.setDate(p.getDate()-1); const prev=JOBS.days[ymdL(p)]||[]; if(!prev.length) return toast('Nothing on the day before to copy');
     const on=jbOn(jbDate).on, l=L(); prev.forEach(j=>l.push({job:j.job,slot:j.slot,who:on.includes(j.who)?j.who:'',note:j.note,done:false})); jbSave(null,true); toast(prev.length+' jobs copied (people not rostered today were cleared)'); officeRender(); };
-  if(g('#jbTplS')) g('#jbTplS').onclick=()=>{ const t=g('#jbTplT').value.split('\n').map(x=>x.trim()).filter(Boolean); JOBS.templates=t; jbSave({templates:t},true); toast('Usual jobs saved'); officeRender(); };
+  if(g('#jbTplS')) g('#jbTplS').onclick=()=>{ const old=jbTplO(), t=g('#jbTplT').value.split('\n').map(x=>x.trim()).filter(Boolean).map(x=>old.find(o=>o.job.toLowerCase()===x.toLowerCase())||{job:x,slot:'AM',who:''}); JOBS.templates=t; jbSave({templates:t},true); toast('Usual jobs saved'); officeRender(); };
   if(g('#jbPrint')) g('#jbPrint').onclick=()=>{ const d=jbDate, on=jbOn(d), w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
     w.document.write(`<html><head><title>${META.name} jobs ${d}</title><style>body{font-family:Arial;font-size:13px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:6px;text-align:left}th{background:#2e6b3f;color:#fff}</style></head><body><h2>${META.name} jobs to do – ${new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{weekday:'long',day:'numeric',month:'long'})}</h2>
       <p><b>AM milking${roTimes('AM')}:</b> ${on.am.map(ESC).join(', ')||'–'}<br><b>PM milking${roTimes('PM')}:</b> ${on.pm.map(ESC).join(', ')||'–'}</p><table><tr><th>Job</th><th>When</th><th>Who</th><th>Notes</th><th>Done</th></tr>${L().map(j=>`<tr><td>${ESC(j.job)}</td><td>${j.slot}</td><td>${ESC(j.who||'')}</td><td>${ESC(j.note||'')}</td><td>${j.done?'✓':''}</td></tr>`).join('')}</table></body></html>`); w.document.close(); w.focus(); setTimeout(()=>w.print(),300); };
 }
 function officeLoad(){
-  COND=null; if(!jbTimer) JOBS=null; ROSTER_STALE=true;   // reload the hourly nitrogen log (and roster) with each 10-minute refresh
+  COND=null; if(!cwTimer&&!cwPick) CULT=CULT&&CULT.seeded?CULT:null; if(!jbTimer) JOBS=null; ROSTER_STALE=true;   // reload the hourly nitrogen log (and roster) with each 10-minute refresh
   const q='?farm='+encodeURIComponent(META.name);
   Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); if(!(OFTAB==='ck'&&window._ckDirty)&&!window._etDirty) officeRender(); }).catch(()=>{}),
                fetch(SUGGEST_URL+q+'&env=1').then(r=>r.json()).then(d=>{ ENV=d; }).catch(()=>{})]).then(()=>{ officeRender();
