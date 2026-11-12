@@ -1729,11 +1729,17 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13f winter view: crops, withholding, sown-no-fert layers -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13g graduated pod run guide, 3-day heavy rain warning, paddock 35 removed -->
 </html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
+// Graduated pod run-time guide from Isla Bank soil moisture (Dave's scale): ~99% is field capacity = don't run; drier soil = longer runs.
+const POD_PTS=[[99,0],[98,1],[95,5],[92,10],[88,15],[86,20]];
+const POD_BANDS=[[99,101,'#7f0000','Field capacity','0 min – don’t run'],[98,99,'#c62828','98–99%','0–1 min'],[95,98,'#ef5350','95–98%','1–5 min'],[92,95,'#fb8c00','92–95%','5–10 min'],[88,92,'#fbc02d','88–92%','10–15 min'],[86,88,'#9ccc65','86–88%','15–20 min'],[0,86,'#2e7d32','Under 86%','20 min']];
+function podMin(sm){ if(sm==null||isNaN(sm)) return null; if(sm>=POD_PTS[0][0]) return 0; for(let i=1;i<POD_PTS.length;i++){ const [a,ma]=POD_PTS[i-1],[b,mb]=POD_PTS[i]; if(sm>=b) return Math.round((ma+(a-sm)/(a-b)*(mb-ma))*2)/2; } return 20; }
+const podBand=sm=>sm==null?null:POD_BANDS.find(b=>sm>=b[0]&&sm<b[1])||POD_BANDS[POD_BANDS.length-1];
+const podTable=sm=>`<table class="bgd"><tr><th>Soil moisture</th><th>Pod run time guide</th></tr>${POD_BANDS.map(b=>`<tr class="${podBand(sm)===b?'cur':''}"><td><i style="background:${b[2]}"></i>${b[0]>=99?'99% + (field capacity)':b[3]}</td><td>${b[4]}${podBand(sm)===b?` ← today (${podMin(sm)} min)`:''}</td></tr>`).join('')}</table>`;
 const ESC=v=>String(v==null?'':v).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
 function ckState(){ const e=ENV&&ENV.eff; return { today:e&&e.today, last:e&&e.last, loaded:!!ENV }; }
 function ckBadge(){ const c=ckState(); if(!c.loaded) return ''; if(!c.today) return '<span class="ckb">not run today</span>';
@@ -1747,11 +1753,11 @@ function effCkLine(p){   // shown in the Effluent system box on the farm info ta
 }
 function envBlock(){
   if(!ENV) return `<div class="ofr"><div class="ofcat">Effluent spreading conditions</div><div class="ofg"><div class="oft"><small>Loading Environment Southland data…</small></div></div></div>`;
-  const r=ENV.rain||{}, b=ENV.beacon, pc=v=>v==null?'':`<span class="rpc ${v>=120?'hi':v<=70?'lo':''}">${v}%</span>`, g=BEACON_GUIDE[b];
+  const r=ENV.rain||{}, pc=v=>v==null?'':`<span class="rpc ${v>=120?'hi':v<=70?'lo':''}">${v}%</span>`, pb=podBand(ENV.sm), pm=podMin(ENV.sm), col=pb?pb[2]:'#999';
   return `<div class="ofr"><div class="ofcat">Effluent spreading conditions · Isla Bank <span class="lvchip live">● live</span></div>
-   <div class="envg"><div class="bcn" id="bcnTile" title="Open the soil moisture graph" style="border-color:${BCOL[b]||'#999'}">
-      <i style="background:${BCOL[b]||'#999'}" class="${b==='Red'?'flash':''}"></i><div><small>Beacon soil moisture (ES)</small><b style="color:${BCOL[b]||'#333'}">${b||'No data'}</b>
-      <small>${ENV.sm!=null?ENV.sm+'% soil moisture':''}${g?` · pod run ${g[0]}–${g[1]} min`:''}</small><small style="color:#999">${ESC(ENV.smAt||'')}</small><small style="color:#1565c0">📈 graph</small></div></div>
+   <div class="envg"><div class="bcn" id="bcnTile" title="Open the soil moisture graph" style="border-color:${col}">
+      <i style="background:${col}"></i><div><small>Soil moisture (ES) · pod run guide</small><b style="color:${col}">${pm!=null?pm+' min':'No data'}</b>
+      <small>${ENV.sm!=null?ENV.sm+'% soil moisture'+(pm===0?' – at field capacity, don’t run':''):''}</small><small style="color:#999">${ESC(ENV.smAt||'')}</small><small style="color:#1565c0">📈 graph</small></div></div>
     <table class="rain" id="rainTbl" title="Open the rainfall graph"><tr><th>Rainfall <small style="color:#1565c0;font-weight:600">📈 graph</small></th><th>Actual</th><th>Normal</th><th>%</th></tr>
      <tr><td>Today</td><td><b>${r.today??'–'} mm</b></td><td></td><td></td></tr>
      <tr><td>${ESC(r.month||'This month')} to date <small>(${r.day||''} days)</small></td><td><b>${r.mtd??'–'} mm</b></td><td>${r.mtdNorm!=null?`${r.mtdNorm} mm<small>(month avg ${r.monthAvg})</small>`:''}</td><td>${pc(r.mtdPct)}</td></tr>
@@ -2024,9 +2030,9 @@ const dms=d=>new Date(d+'T00:00:00').getTime();
 const serGet=(s,d)=>fetch(SUGGEST_URL+'?series='+s+'&days='+d).then(r=>r.json());
 function soilGraph(days){ chartSheet('Soil temperature (10 cm) – this year vs last year','Live · Environment Southland soil monitoring at Isla Bank. Solid = this year (shading = daily low–high), dashed = the same dates last year, carried on 2 weeks ahead to show where it went next. Every day is saved in the Soil temperature history tab of the farm sheet.',[7,30,60,90,'season',365],days||'season',
   d=>serGet('soilT',d).then(r=>({unit:' °C',refs:[[10,'#2e7d32','10 °C']],series:(r.sites||[]).map((s,i)=>({name:s.name+(s.latest?` – now ${(+s.latest[1]).toFixed(1)}°C`:'')+(i?((p=>p?` – ${p[1]}°C on this day`:' – last year before 13 Nov 2025 isn’t available from Environment Southland')(s.pts.find(p=>p[0]===ymdL(new Date())))):''),color:s.avg?'#2e7d32':i?'#1565c0':'#6d4c41',dash:!!i,band:!i,pts:s.pts.map(p=>[dms(p[0]),p[1],p[2],p[3]])}))}))); }
-function smSheet(days){ chartSheet('Beacon soil moisture – Isla Bank','Live · Environment Southland soil moisture (water-filled pores). Shading = beacon colour bands used for the effluent pod run time.',[7,30,60,90,180,365],days||30,
-  d=>serGet('sm',d).then(r=>({unit:'%',yMax:100,bands:[[0,BEACON_T.orange,'#2e7d32'],[BEACON_T.orange,BEACON_T.red,'#ef6c00'],[BEACON_T.red,100,'#d50000']],series:(r.sites||[]).map(s=>({name:'Isla Bank daily average',color:'#1565c0',band:true,pts:s.pts.map(p=>[dms(p[0]),p[1],p[2],p[3]])}))})),
-  `<table class="bgd" style="margin-top:8px"><tr><th>Beacon colour</th><th>Soil moisture</th><th>Pod run time guide</th></tr>${['Red','Orange','Green'].map(x=>`<tr class="${x===(ENV&&ENV.beacon)?'cur':''}"><td><i style="background:${BCOL[x]}"></i>${x}</td><td>${x==='Red'?BEACON_T.red+'% +':x==='Orange'?BEACON_T.orange+'–'+BEACON_T.red+'%':'under '+BEACON_T.orange+'%'}</td><td>${BEACON_GUIDE[x][0]}–${BEACON_GUIDE[x][1]} min</td></tr>`).join('')}</table>`); }
+function smSheet(days){ chartSheet('Soil moisture – Isla Bank','Live · Environment Southland soil moisture (water-filled pores). Shading = the graduated pod run-time guide: around 99% is field capacity (0 min), drier soil allows longer runs.',[7,30,60,90,180,365],days||30,
+  d=>serGet('sm',d).then(r=>({unit:'%',yMax:100,bands:POD_BANDS.map(b=>[b[0],Math.min(b[1],100),b[2]]),series:(r.sites||[]).map(s=>({name:'Isla Bank daily average',color:'#1565c0',band:true,pts:s.pts.map(p=>[dms(p[0]),p[1],p[2],p[3]])}))})),
+  `<div style="margin-top:8px">${podTable(ENV&&ENV.sm)}</div>`); }
 function rainSheet(days){ chartSheet('Rainfall – Otahuti gauge','Live · Environment Southland rain gauge (3 km from Isla Bank). Daily totals, or monthly totals against the long-term average for 6 and 12 months.',[7,30,60,90,180,365],days||30,
   d=>serGet('rain',d).then(r=>{ const s=(r.sites||[])[0]; if(!s) return {series:[]}; const tot=s.pts.reduce((a,p)=>a+p[1],0);
     if(d<180) return {unit:' mm',series:[{name:`Daily rain (total ${Math.round(tot)} mm)`,color:'#1565c0',bar:true,pts:s.pts.map(p=>[dms(p[0]),p[1]])}]};
@@ -2403,12 +2409,12 @@ function calcVals(c){ const n=k=>{ const x=parseFloat(c[k]); return isNaN(x)?nul
   return {A,B,C,D,E,F,G,H,I,J,K,'':days}; }
 function smGraph(){
   const s=(ENV&&ENV.smSeries)||[]; if(s.length<2) return '';
-  const W=330,H=92,lo=Math.min(60,...s.map(p=>p[1]))-2,hi=100,t0=s[0][0],t1=s[s.length-1][0],x=t=>(t-t0)/(t1-t0)*W,y=v=>H-(v-lo)/(hi-lo)*H;
+  const W=330,H=92,lo=Math.min(80,...s.map(p=>p[1]))-2,hi=100,t0=s[0][0],t1=s[s.length-1][0],x=t=>(t-t0)/(t1-t0)*W,y=v=>H-(v-lo)/(hi-lo)*H;
   const band=(a,b,c)=>`<rect x="0" y="${y(Math.min(b,hi))}" width="${W}" height="${Math.max(0,y(Math.max(a,lo))-y(Math.min(b,hi)))}" fill="${c}" opacity=".16"/>`;
   const days=[]; for(let t=Math.ceil(t0/864e5/7)*864e5*7;t<t1;t+=7*864e5) days.push(t);
   return `<svg viewBox="-28 -4 ${W+34} ${H+20}" class="smg" role="img" aria-label="Isla Bank soil moisture, last 30 days">
-   ${band(lo,BEACON_T.orange,'#2e7d32')}${band(BEACON_T.orange,BEACON_T.red,'#ef6c00')}${band(BEACON_T.red,hi,'#d50000')}
-   ${[lo,BEACON_T.orange,BEACON_T.red,100].map(v=>`<text x="-4" y="${y(v)+3}" text-anchor="end">${Math.round(v)}%</text><line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#ddd" stroke-width=".6"/>`).join('')}
+   ${POD_BANDS.map(b=>band(Math.max(b[0],lo),Math.min(b[1],hi),b[2])).join('')}
+   ${[lo,86,92,99].filter(v=>v>=lo).map(v=>`<text x="-4" y="${y(v)+3}" text-anchor="end">${Math.round(v)}%</text><line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#ddd" stroke-width=".6"/>`).join('')}
    ${days.map(t=>`<text x="${x(t)}" y="${H+13}" text-anchor="middle">${new Date(t).toLocaleDateString('en-NZ',{day:'numeric',month:'short'})}</text>`).join('')}
    <polyline fill="none" stroke="#1565c0" stroke-width="2" points="${s.map(p=>x(p[0]).toFixed(1)+','+y(p[1]).toFixed(1)).join(' ')}"/>
    <circle cx="${W}" cy="${y(s[s.length-1][1])}" r="3.5" fill="#1565c0"/></svg>`;
@@ -2420,7 +2426,7 @@ function effTrainBadge(){ const T=ENV&&ENV.efftrain; if(!T||!T.people) return ''
 function ebBadge(){ return ENV&&PH_KINDS.some(([k])=>phState(k).al!=='ok')?` <span class="ckb ${PH_KINDS.some(([k])=>phState(k).al==='crit')?'bad':'wrn'}">photos due</span>`:''; }
 function officeChecklist(){ return officeChecklistMain()+effTrainSection(); }
 function officeChecklistMain(){
-  const c=ckState(), L=c.last||{}, b=(ENV&&ENV.beacon)||'', fc=ENV&&ENV.fc, cal=(ENV&&ENV.calc)||{}, eff=by('farminfo').find(f=>f.properties.kind==='eff');
+  const c=ckState(), L=c.last||{}, smv=ENV&&ENV.sm!=null?ENV.sm:null, pb=podBand(smv), pm=podMin(smv), b=pb?pb[3]:'', fc=ENV&&ENV.fc, cal=(ENV&&ENV.calc)||{}, eff=by('farminfo').find(f=>f.properties.kind==='eff');
   const mx=L['Max run time (h)']||(eff?eff.properties.maxrun:''), cv=calcVals(cal);
   const yn=(id,q)=>`<div class="ckq"><span>${q}</span><label><input type="radio" name="${id}" value="Yes" checked> Yes</label><label><input type="radio" name="${id}" value="No"> No</label></div>`;
   let st;
@@ -2431,14 +2437,15 @@ function officeChecklistMain(){
   const lk=ENV?leakState():null;
   return `${st}${lk&&lk.al!=='ok'?`<div style="margin:0 16px">${leakLine()}</div>`:''}<form id="ckF" class="ckf" autocomplete="off">
    <div class="ckh">Today's conditions</div>
-   <div class="bcbox" style="border-color:${BCOL[b]||'#ccc'}"><div class="bctop"><i style="background:${BCOL[b]||'#999'}"></i><div><small>Beacon soil moisture · Isla Bank (Environment Southland, live)</small><b style="color:${BCOL[b]||'#333'}">${b||'Not available'}${ENV&&ENV.sm!=null?` <span>${ENV.sm}% soil moisture</span>`:''}</b><small>${ESC((ENV&&ENV.smAt)||'')} · <a href="#" id="ckSmG">📈 more history</a></small></div></div>
-     ${smGraph()}<div class="smk">Last 30 days · shading shows the beacon colour bands (Green under ${BEACON_T.orange}%, Orange ${BEACON_T.orange}–${BEACON_T.red}%, Red ${BEACON_T.red}% and over)</div>
-     <table class="bgd"><tr><th>Beacon colour</th><th>Pod run time setpoint guide</th></tr>${['Red','Orange','Green'].map(x=>`<tr class="${x===b?'cur':''}"><td><i style="background:${BCOL[x]}"></i>${x}</td><td>${BEACON_GUIDE[x][0]}–${BEACON_GUIDE[x][1]} min${x===b?' ← today':''}</td></tr>`).join('')}</table></div>
-   ${b?`<input type="hidden" name="beacon" value="${b}"><div class="field">Current beacon soil moisture colour <b style="color:${BCOL[b]}">${b}</b> <small>– filled in automatically from the live Isla Bank reading</small></div>`
-      :`<label class="field">Current beacon soil moisture colour <small>(live reading not available – choose)</small><select name="beacon"><option value="">— choose —</option>${['Red','Orange','Green'].map(x=>`<option>${x}</option>`).join('')}</select></label>`}
-   <label class="field">Pod run time setpoint (minutes) <small id="ckGuide"></small><input name="pod" type="number" inputmode="decimal" min="0" max="30" step="0.5" value="${ESC(b?BEACON_GUIDE[b][0]:L['Pod run time (min)'])}"></label>
+   <div class="bcbox" style="border-color:${pb?pb[2]:'#ccc'}"><div class="bctop"><i style="background:${pb?pb[2]:'#999'}"></i><div><small>Soil moisture · Isla Bank (Environment Southland, live)</small><b style="color:${pb?pb[2]:'#333'}">${smv!=null?`${smv}% → pod run guide ${pm} min`:'Not available'}</b><small>${ESC((ENV&&ENV.smAt)||'')} · <a href="#" id="ckSmG">📈 more history</a></small></div></div>
+     ${smGraph()}<div class="smk">Last 30 days · shading shows the pod run-time guide bands – around 99% is field capacity (don’t run), drier soil allows longer runs</div>
+     ${podTable(smv)}</div>
+   ${pb?`<input type="hidden" name="beacon" value="${pb[3].replace('Field capacity','99%+')}"><div class="field">Soil moisture band <b style="color:${pb[2]}">${pb[3]}</b> <small>– filled in automatically from the live Isla Bank reading</small></div>`
+      :`<label class="field">Soil moisture band <small>(live reading not available – choose)</small><select name="beacon"><option value="">— choose —</option>${POD_BANDS.map(x=>`<option value="${x[3].replace('Field capacity','99%+')}">${x[3]} – ${x[4]}</option>`).join('')}</select></label>`}
+   <label class="field">Pod run time setpoint (minutes) <small id="ckGuide"></small><input name="pod" type="number" inputmode="decimal" min="0" max="30" step="0.5" value="${ESC(pm!=null?pm:L['Pod run time (min)'])}"></label>
    <label class="field">Max run time setpoint (hours)<input name="maxrun" type="number" inputmode="decimal" min="0" max="24" step="0.5" value="${ESC(mx)}"></label>
-   <label class="field">Rain forecast (total) today (mm) <small>${fc?`– filled in from ${ESC(fc.src)} for the rest of today, updated ${ESC(fc.at)} · tomorrow ${fc.tomorrow} mm`:'– forecast not available, please enter it'}</small><input name="rain" type="number" inputmode="decimal" min="0" step="0.1" value="${fc?fc.today:''}"></label>
+   ${fc&&fc.rain72!=null&&fc.rain72>25?`<div class="ckl bad">⚠ Heavy rain coming: <b>${fc.rain72} mm</b> forecast over the next 3 days${fc.max24!=null?` (wettest 24 h ${fc.max24} mm${fc.max24From?' from '+ESC(fc.max24From):''})`:''}. Think about cutting the pod run time / application depth, keep pond storage in hand, and talk to Dave about the application rate if needed.</div>`:''}
+   <label class="field">Rain forecast (total) today (mm) <small>${fc?`– filled in from ${ESC(fc.src)} for the rest of today, updated ${ESC(fc.at)} · tomorrow ${fc.tomorrow} mm${fc.rain72!=null?` · next 3 days <b style="color:${fc.rain72>25?'#c62828':'inherit'}">${fc.rain72} mm</b>`:''}`:'– forecast not available, please enter it'}</small><input name="rain" type="number" inputmode="decimal" min="0" step="0.1" value="${fc?fc.today:''}"></label>
    <div class="ckh">People <small>(filled in from the last checklist – change if needed)</small></div>
    <label class="field">Person in charge (PIC) who has approved the operator<input name="pic" maxlength="80" value="${ESC(L['Person in charge (PIC)'])}"></label>
    <label class="field">Relief PIC (fully trained)<input name="relief" maxlength="80" value="${ESC(L['Relief PIC'])}"></label>
@@ -2466,8 +2473,8 @@ function officeChecklistMain(){
 }
 function ckWire(){
   const f=document.getElementById('ckF'); if(!f) return;
-  const guide=()=>{ const b=f.beacon.value, g=BEACON_GUIDE[b], el=document.getElementById('ckGuide'), v=parseFloat(f.pod.value);
-    el.innerHTML=g?`set to the ${b} minimum – guide ${b}: <b>${g[0]}–${g[1]} min</b>${!isNaN(v)&&(v<g[0]||v>g[1])?' <b style="color:#d50000">– outside the guide</b>':''}`:'Red 2–5 · Orange 5–10 · Green 10–20 min'; };
+  const guide=()=>{ const sm=ENV&&ENV.sm!=null?ENV.sm:null, bd=sm!=null?podBand(sm):POD_BANDS.find(x=>x[3].replace('Field capacity','99%+')===f.beacon.value), gm=sm!=null?podMin(sm):null, el=document.getElementById('ckGuide'), v=parseFloat(f.pod.value);
+    el.innerHTML=bd?`guide at ${sm!=null?sm+'%':bd[3]}: <b>${gm!=null?gm+' min':bd[4]}</b>${gm!=null&&!isNaN(v)&&v>gm+1?' <b style="color:#d50000">– longer than the guide</b>':''}`:'99%+ 0 · 98% 1 · 95% 5 · 92% 10 · 88% 15 · under 86% 20 min'; };
   const warn=()=>{ document.getElementById('ckWarn').style.display=[...f.querySelectorAll('input[type=radio]:checked')].some(x=>x.value==='No')?'':'none'; };
   const calc=()=>{ const c={}; CALC_F.forEach(([l,k])=>{ if(k) c[k]=f['c_'+k].value.trim(); }); c.leak=f.leak.value; c.bucket=f.bucket.value; return c; };
   const recalc=()=>{ const v=calcVals(calc()); f.querySelectorAll('[data-calc]').forEach(b=>{ const x=v[b.dataset.calc==='undefined'?'':b.dataset.calc]; b.textContent=x==null||!isFinite(x)?'–':(Math.round(x*10)/10).toLocaleString('en-NZ'); }); };
@@ -2656,7 +2663,7 @@ function cwWhp(r){ const sp=r.c.spray0, dd=parseInt(r.c.whp,10); if(!sp||!/^\d{4
   const end=cwAddDays(sp,dd), td=ymdL(new Date()); return {end,active:end>td,days:dd,sp}; }
 const CW_ST={ready:['Ready to go','----','#ef6c00'],wet:['Too wet','o','#1565c0'],nr:['Not required','x','#9e9e9e'],cx:['Cancelled','x','#757575'],info:['Need info','.','#7b1fa2']};
 // starting paddocks for GV1 (from the "202526 Crop/Re-grass" tab of Regrassing/Stock Feed & Wintering Plans) – edit freely
-const CW_SEED={GV1:[['32','3.1','Turnips'],['35','3.31','Turnips'],['36','3.24','Turnips'],['76','4.77','Grass'],['77','4.8','Grass'],['38','4.7','Grass'],['39','4.1','Grass']]};
+const CW_SEED={GV1:[['32','3.1','Turnips'],['36','3.24','Turnips'],['76','4.77','Grass'],['77','4.8','Grass'],['38','4.7','Grass'],['39','4.1','Grass']]};
 function cwPost(body){ return fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({action:'cult',farm:META.name,season:CW_SEASON||''},body))}).then(r=>r.json()); }
 function cwLoad(){ if(cwLoading||!STAFF.tok||cwTimer) return; cwLoading=true; cwPost({}).then(r=>{ cwLoading=false; if(r.ok){ CW_SEASON=r.season; CW_CUR=r.current; CW_SEASONS=r.seasons||[]; CULT=r.board||{season:r.season,rows:r.season===r.current?(CW_SEED[META.name]||[]).map(([p,a,c])=>({pdk:p,area:a,crop:c,c:{}})):[],seeded:r.season===r.current}; if(r.tasks&&ENV) ENV.tasks=r.tasks; cwMapDraw(); if(PFG.includes(OFTAB)||OFTAB==='mt') officeRender(); } }).catch(()=>{ cwLoading=false; }); }
 function cwBadge(){ if(!CULT){ if(STAFF.tok&&ENV&&PFG.includes(OFTAB)) cwLoad(); return ''; } let r=0,w=0; CULT.rows.forEach(x=>Object.values(x.c).forEach(v=>{ if(v==='ready') r++; if(v==='wet') w++; })); return r?`<span class="ckb wrn">${r} ready</span>`:''; }
