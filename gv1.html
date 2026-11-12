@@ -965,6 +965,8 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .idf{border:1px solid #d3ddd5;border-radius:10px;background:#f7faf8;padding:10px;margin:8px 0}.idt td{vertical-align:top}
 .pflab.whpl{background:#b71c1c!important;color:#fff!important}.pflab.nfl{background:#e65100!important;color:#fff!important}
 .eb td.ebc{line-height:1.25;vertical-align:top}.ebsol td.ebwho{font-size:11px;color:#555}
+.nreq{border:1px solid #ffcc80;background:#fff8ef;border-radius:10px;padding:8px 10px;margin:8px 0}.nchips{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 6px}
+.nchips label{border:1px solid #d7ccc8;border-radius:12px;padding:1px 7px;font-size:12px;background:#fff;cursor:pointer}.nchips label.gz{border-color:#7e57c2}.nchips label.on{background:#ede7f6;font-weight:700}.nchips input{display:none}
 </style>
 </head>
 <body>
@@ -1042,7 +1044,7 @@ const paddocks = gj('paddocks',{style:padStyle,onEachFeature:(f,l)=>{
   l.on('click',e=>{L.DomEvent.stopPropagation(e);selectPaddock(f.properties.num,false);});
 }});
 // ---- Pasture & fertiliser (office view tab): per-paddock grass grown, N applied and paddocks grazed over a date range. MINDA data, signed-in staff only.
-const pfLayer=L.layerGroup(), cropLayer=L.layerGroup(), whpLayer=L.layerGroup(), nofertLayer=L.layerGroup();   // crops / withholding / sown-no-fert come from the cultivation whiteboard
+const effAppLayer=L.layerGroup(), pfLayer=L.layerGroup(), cropLayer=L.layerGroup(), whpLayer=L.layerGroup(), nofertLayer=L.layerGroup();   // crops / withholding / sown-no-fert come from the cultivation whiteboard
 let MINDA=null, pfLoading=false, pfErr='';
 const PF={preset:'4w',from:'',to:'',mode:'grow',sort:'num'};
 const pfYmd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -1095,12 +1097,35 @@ function officePF(){
    <div class="pfd">From <input type="date" id="pfFrom" value="${PF.from}"> to <input type="date" id="pfTo" value="${PF.to}"></div>
    <div class="pfsum"><div><small>Farm grass grown</small><b>${ha?Math.round(gs/ha):'–'}</b><span>kg DM/ha/day</span></div><div><small>Nitrogen applied</small><b>${Math.round(nk/totHa)}</b><span>kg N/ha (farm average)</span></div><div><small>Paddocks grazed</small><b>${gzc}</b><span>of ${ps.length}</span></div><div><small>Farm walks</small><b>${PFR.walks}</b><span>in this period</span></div></div>
    <div class="pfleg"><span>${S.lab} on the map</span><i style="background:linear-gradient(90deg,${S.c0},${S.c1})"></i><small>0 – ${S.max}+ ${S.unit} · grey = no data</small></div>
+   ${PF.mode==='graze'?nReqHTML(rows):''}
    ${PF.mode==='graze'?`<div class="pfnote"><span class="lvchip ph">placeholder</span> Only GV4 is on the grazing board database so far, so for now "grazed" is estimated from MINDA farm walks – a paddock counts as grazed when its cover dropped by 300 kg DM/ha or more between two walks. It will switch to the grazing board's actual AM/PM paddocks once GV1 is recorded there.</div>`:''}
    ${PF.mode==='n'?`<div class="pfnote"><span class="lvchip ph">placeholder</span> Nitrogen is taken from the MINDA fertiliser records for now. It will switch to the Gladvale database once GV1 fertiliser is entered there.</div>`:''}
    <table class="pft"><tr><th data-pfs="num">Paddock${PF.sort==='num'?' ▾':''}</th><th>ha</th><th data-pfs="v">Grass grown<br><small>kg DM/ha/day</small></th><th>N applied<br><small>kg N/ha</small></th><th>Grazed</th></tr>
    ${rows.map(({p,o})=>`<tr data-pfpad="${p.num}"><td>${p.num}</td><td>${p.ha.toFixed(2)}</td><td>${o&&o.gd?Math.round(o.g/o.gd):'–'}</td><td>${o&&o.n?Math.round(o.n):'–'}</td><td>${o&&o.gz.length?o.gz.length+'× <small>last '+o.gz[o.gz.length-1][1].slice(5)+'</small>':'–'}</td></tr>`).join('')}</table>
    <div class="pfnote">Source: MINDA Land &amp; Feed (farm walks and fertiliser), data to ${lastWalk}. Grass grown = average regrowth between walks on paddocks that weren't grazed in between, so short periods with only 1–2 walks are rough. Ask Claude to “run the MINDA sync” to update.</div></div>`; }
+const N_PROD=[['Urea',46],['SustaiN',46],['Ammonium sulphate',21],['Sulphate of ammonia + urea blend',36],['DAP',18],['Other',0]];
+function nReqHTML(rows){ const gz=rows.filter(r=>r.o&&r.o.gz.length).map(r=>String(r.p.num));
+  if(!PF.nsel||PF.nselKey!==PF.from+PF.to){ PF.nsel=new Set(gz); PF.nselKey=PF.from+PF.to; }
+  const sel=rows.filter(r=>PF.nsel.has(String(r.p.num))), ha=sel.reduce((a,r)=>a+r.p.ha,0), pr=N_PROD.find(x=>x[0]===(PF.nprod||'Urea'))||N_PROD[0], rate=PF.nrate!=null?PF.nrate:30, pct=pr[1]||+(PF.npct||0), kgha=pct?Math.round(rate/(pct/100)):0;
+  return `<div class="nreq"><div class="ckh">🧪 Nitrogen for the grazed paddocks</div>
+   <p class="pfnote" style="margin:2px 0 6px">The ${gz.length} paddock${gz.length===1?'':'s'} grazed ${PF.from} to ${PF.to} are ticked – tap a number to leave it out or add another paddock (purple outline = grazed). Then pick the product and rate and send it.</p>
+   <div class="nchips">${rows.map(r=>{ const k=String(r.p.num); return `<label class="${PF.nsel.has(k)?'on':''} ${gz.includes(k)?'gz':''}"><input type="checkbox" data-nsel="${k}" ${PF.nsel.has(k)?'checked':''}> ${k}</label>`; }).join('')}</div>
+   <div class="ropr"><label>Product <select id="nProd">${N_PROD.map(([n,p])=>`<option ${n===pr[0]?'selected':''}>${n}</option>`).join('')}</select></label>${pr[1]?`<small>${pr[1]}% N</small>`:`<label>% N <input id="nPct" type="number" min="1" max="100" value="${PF.npct||''}" style="width:60px"></label>`}
+     <label>Rate <input id="nRate" type="number" min="0" max="200" value="${rate}" style="width:64px"> kg N/ha</label><label>Spread by <input id="nWhen" type="date" value="${PF.nwhen||''}"></label></div>
+   <div class="pfsum"><div><small>Paddocks</small><b>${sel.length}</b><span>${Math.round(ha*100)/100} ha</span></div><div><small>Product</small><b>${kgha||'–'}</b><span>kg/ha of ${ESC(pr[0])}</span></div><div><small>Total</small><b>${kgha?Math.round(kgha*ha).toLocaleString('en-NZ'):'–'}</b><span>kg of ${ESC(pr[0])}</span></div></div>
+   <div class="ropr"><label style="flex:1">Send to <input id="nTo" type="email" multiple placeholder="spreader / contractor email – Dave is always copied" value="${ESC(PF.nto||'')}" style="flex:1;min-width:240px"></label></div>
+   <div class="ropr"><label style="flex:1">Notes <input id="nNote" maxlength="300" value="${ESC(PF.nnote||'')}" style="flex:1;min-width:240px" placeholder="e.g. avoid the effluent paddocks, spread after rain"></label><b style="font-size:12px;color:#5b6b55">FROM</b>${signerSel('nName',true)}</div>
+   <div class="btns"><button class="btn" id="nSend" ${sel.length?'':'disabled'}>Send nitrogen request (${sel.length} paddocks)</button></div></div>`; }
 function pfWire(panel){
+  panel.querySelectorAll('[data-nsel]').forEach(c=>c.onchange=()=>{ c.checked?PF.nsel.add(c.dataset.nsel):PF.nsel.delete(c.dataset.nsel); officeRender(); });
+  const g=id=>panel.querySelector(id);
+  if(g('#nProd')) g('#nProd').onchange=()=>{ PF.nprod=g('#nProd').value; officeRender(); };
+  [['#nRate','nrate',1],['#nPct','npct',1],['#nWhen','nwhen'],['#nTo','nto'],['#nNote','nnote']].forEach(([id,k,num])=>{ const el=g(id); if(el) el.onchange=()=>{ PF[k]=num?+el.value:el.value; if(num) officeRender(); }; });
+  if(g('#nSend')) g('#nSend').onclick=()=>{ const rows=by('paddocks').map(f=>f.properties).filter(p=>PF.nsel.has(String(p.num))), pr=N_PROD.find(x=>x[0]===(PF.nprod||'Urea'))||N_PROD[0], pct=pr[1]||+(PF.npct||0), rateN=PF.nrate!=null?PF.nrate:30;
+    const name=signerName('nName',''); if(!name||name==='__other') return toast('Choose who the request is from'); if(!pct) return toast('Enter the % N for this product'); if(!(rateN>0)) return toast('Enter the rate');
+    const b=g('#nSend'); b.disabled=true; b.textContent='Sending…';
+    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'nplan',farm:META.name,name,pads:rows.map(p=>({pdk:String(p.num),ha:Math.round(p.ha*100)/100})),product:pr[0],pct,rateN,when:g('#nWhen').value,to:g('#nTo').value,note:g('#nNote').value,period:PF.from+' to '+PF.to})}).then(r=>r.json())
+     .then(r=>{ b.disabled=false; b.textContent='Send nitrogen request'; if(!r.ok) return toast(r.error||'Not sent'); toast(`Sent – ${r.total.toLocaleString('en-NZ')} kg over ${r.ha} ha (request ${r.id})`); }).catch(()=>{ b.disabled=false; toast('No connection – not sent'); }); };
   panel.querySelectorAll('[data-pfm]').forEach(b=>b.onclick=()=>{ PF.mode=b.dataset.pfm; officeRender(); });
   panel.querySelectorAll('[data-pfp]').forEach(b=>b.onclick=()=>{ pfPreset(b.dataset.pfp); officeRender(); });
   const fr=panel.querySelector('#pfFrom'), to=panel.querySelector('#pfTo');
@@ -1298,6 +1323,7 @@ const LAYERS = [
     layer:gj('effpipe',{style:f=>({color:'#8a5a2b',weight:3,dashArray:f.properties.size.startsWith('80')?'6 4':null}),
       onEachFeature:(f,l)=>l.on('click',e=>{L.DomEvent.stopPropagation(e);showLine('Effluent pipe',f.properties.size,e.latlng);})})},
   {id:'hydrant', name:'Effluent hydrants', cnt:by('hydrant').length+' hydrants', sw:swb('hydrant','#8a5a2b'), on:false, layer:bdg('hydrant','hydrant','#8a5a2b')},
+  {id:'effapp', name:'Effluent applied this season', cnt:'from the effluent board – darker = more recent, dashed = not yet (staff sign-in)', sw:'<i class="box" style="background:linear-gradient(90deg,#0d47a1,#bbdefb)"></i>', on:false, layer:effAppLayer},
   {id:'effarea', name:'Effluent irrigation area', cnt:'consent setbacks: 20 m waterways & boundary, 100 m bores', sw:'<i class="box" style="background:#f5c26b88"></i>', on:false,
     layer:gj('effarea',{style:{color:'#e0a040',weight:1,fillColor:'#f5c26b',fillOpacity:.35},interactive:false})},
   {id:'pond', name:'Effluent ponds', cnt:'', sw:'<i class="box" style="background:#6d4c41"></i>', on:true,
@@ -1386,7 +1412,7 @@ const VIEW = new URLSearchParams(location.search).get('view') || '';
 const STKEY = 'gvmap.layers.v2' + (VIEW ? '.'+VIEW : '');
 let state = {};
 try{ state = JSON.parse(localStorage.getItem(STKEY)||'{}'); }catch(e){}
-const order = ['effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','crops','nofert','whp','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','camera','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
+const order = ['effapp','effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','crops','nofert','whp','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','camera','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
 const MINZ = {trough:15, trees:15, riparian:14.5, valve:15.5, hydrant:15, gtap:16, effpit:16, inspect:16, storm:16, septic:16, septicinfo:16, offal:15, sghist:16, hzaddr:14.5, divined:15, camera:17};
 if(URLVIEW==='water'){ delete MINZ.trough; delete MINZ.valve; }
 
@@ -1398,6 +1424,7 @@ function syncLayers(){
   order.forEach(id=>{ const d=LAYERS.find(x=>x.id===id); if(map.hasLayer(d.layer) && d.layer.bringToFront) d.layer.bringToFront(); });
   updateLabels();
   if(['crops','whp','nofert'].some(isOn)&&STAFF.tok&&!CULT&&typeof cwLoad==='function') cwLoad();
+  if(isOn('effapp')){ if(ENV&&ENV.board) effAppDraw(); else if(STAFF.tok&&!window._envMapLd){ window._envMapLd=true; fetch(SUGGEST_URL+'?farm='+encodeURIComponent(META.name)+'&env=1').then(r=>r.json()).then(d=>{ if(!ENV) ENV=d; effAppDraw(); }).catch(()=>{ window._envMapLd=false; }); } }
   if(typeof renderKey==='function') renderKey();
 }
 function isOn(id){ const d=LAYERS.find(x=>x.id===id); if(!d) return false; return id in state ? state[id] : d.on; }
@@ -1730,17 +1757,18 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13h pods on the checklist, unlimited shifts, season reset, solids recorder -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13i pod scale v2 + mm, pods prefill, effluent applied layer, nitrogen request -->
 </html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
 // Graduated pod run-time guide from Isla Bank soil moisture (Dave's scale): ~99% is field capacity = don't run; drier soil = longer runs.
-const POD_PTS=[[99,0],[98,1],[95,5],[92,10],[88,15],[86,20]];
-const POD_BANDS=[[99,101,'#7f0000','Field capacity','0 min – don’t run'],[98,99,'#c62828','98–99%','0–1 min'],[95,98,'#ef5350','95–98%','1–5 min'],[92,95,'#fb8c00','92–95%','5–10 min'],[88,92,'#fbc02d','88–92%','10–15 min'],[86,88,'#9ccc65','86–88%','15–20 min'],[0,86,'#2e7d32','Under 86%','20 min']];
+const POD_PTS=[[99.3,0],[99.2,1],[99.1,2],[99,3],[98,5],[97,7],[95,10],[92,13],[90,15],[88,17],[86,20]];   // 99.3% = field capacity at Isla Bank
+const POD_BANDS=[[99.3,101,'#7f0000','Field capacity','0 min – don’t run'],[99,99.3,'#c62828','99–99.2%','1–3 min'],[97,99,'#ef5350','97–99%','3–7 min'],[95,97,'#fb8c00','95–97%','7–10 min'],[90,95,'#fbc02d','90–95%','10–15 min'],[86,90,'#9ccc65','86–90%','15–20 min'],[0,86,'#2e7d32','Under 86%','20 min']];
+const podMm=(min,rate)=>min==null||!(rate>0)?null:Math.round(rate*min/60*100)/100;   // depth per pod run = bucket-test rate (mm/hr) × minutes
 function podMin(sm){ if(sm==null||isNaN(sm)) return null; if(sm>=POD_PTS[0][0]) return 0; for(let i=1;i<POD_PTS.length;i++){ const [a,ma]=POD_PTS[i-1],[b,mb]=POD_PTS[i]; if(sm>=b) return Math.round((ma+(a-sm)/(a-b)*(mb-ma))*2)/2; } return 20; }
 const podBand=sm=>sm==null?null:POD_BANDS.find(b=>sm>=b[0]&&sm<b[1])||POD_BANDS[POD_BANDS.length-1];
-const podTable=sm=>`<table class="bgd"><tr><th>Soil moisture</th><th>Pod run time guide</th></tr>${POD_BANDS.map(b=>`<tr class="${podBand(sm)===b?'cur':''}"><td><i style="background:${b[2]}"></i>${b[0]>=99?'99% + (field capacity)':b[3]}</td><td>${b[4]}${podBand(sm)===b?` ← today (${podMin(sm)} min)`:''}</td></tr>`).join('')}</table>`;
+const podTable=sm=>`<table class="bgd"><tr><th>Soil moisture</th><th>Pod run time guide</th></tr>${POD_BANDS.map(b=>`<tr class="${podBand(sm)===b?'cur':''}"><td><i style="background:${b[2]}"></i>${b[0]>=99.3?'99.3% + (field capacity)':b[3]}</td><td>${b[4]}${podBand(sm)===b?` ← today (${podMin(sm)} min)`:''}</td></tr>`).join('')}</table>`;
 const ESC=v=>String(v==null?'':v).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
 function ckState(){ const e=ENV&&ENV.eff; return { today:e&&e.today, last:e&&e.last, loaded:!!ENV }; }
 function ckBadge(){ const c=ckState(); if(!c.loaded) return ''; if(!c.today) return '<span class="ckb">not run today</span>';
@@ -1757,7 +1785,7 @@ function envBlock(){
   const r=ENV.rain||{}, pc=v=>v==null?'':`<span class="rpc ${v>=120?'hi':v<=70?'lo':''}">${v}%</span>`, pb=podBand(ENV.sm), pm=podMin(ENV.sm), col=pb?pb[2]:'#999';
   return `<div class="ofr"><div class="ofcat">Effluent spreading conditions · Isla Bank <span class="lvchip live">● live</span></div>
    <div class="envg"><div class="bcn" id="bcnTile" title="Open the soil moisture graph" style="border-color:${col}">
-      <i style="background:${col}"></i><div><small>Soil moisture (ES) · pod run guide</small><b style="color:${col}">${pm!=null?pm+' min':'No data'}</b>
+      <i style="background:${col}"></i><div><small>Soil moisture (ES) · pod run guide</small><b style="color:${col}">${pm!=null?pm+' min':'No data'}</b>${pm&&podMm(pm,+((ENV.calc||{}).rate||0))!=null?`<small>≈ ${podMm(pm,+ENV.calc.rate)} mm per run at ${ENV.calc.rate} mm/hr</small>`:''}
       <small>${ENV.sm!=null?ENV.sm+'% soil moisture'+(pm===0?' – at field capacity, don’t run':''):''}</small><small style="color:#999">${ESC(ENV.smAt||'')}</small><small style="color:#1565c0">📈 graph</small></div></div>
     <table class="rain" id="rainTbl" title="Open the rainfall graph"><tr><th>Rainfall <small style="color:#1565c0;font-weight:600">📈 graph</small></th><th>Actual</th><th>Normal</th><th>%</th></tr>
      <tr><td>Today</td><td><b>${r.today??'–'} mm</b></td><td></td><td></td></tr>
@@ -2371,6 +2399,7 @@ function officeEffBoard(){
      ${EB_SOLIDS.map(pd=>{ const r=ebGet('Solids',pd).map(x=>x.split('|')); return `<tr><td class="pd">${pd}</td><td class="ebc ${r.length?'set':''}" data-l="Solids" data-p="${pd}">${r.map(x=>dshort(x[0])).join('<br>')}</td><td class="ebc ebwho" data-l="Solids" data-p="${pd}">${r.map(x=>ESC((x[1]||'').split(' ')[0])).join('<br>')}</td></tr>`; }).join('')}</table></div>`;
   return `<div class="ofbd"><div class="ckh">Recording as</div><div style="display:flex;gap:8px">${signerSel('ebName')}<input id="ebOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
    <div class="ckh">Weekly photos <small>(replaces posting to the GV effluent group – green when taken in the last 7 days, flashing red after that)</small></div><div class="phg">${PH_KINDS.map(card).join('')}</div>
+   <div class="btns" style="margin:6px 0"><button class="btn alt" id="ebMap" type="button">🗺 ${isOn('effapp')?'Hide':'Show'} where effluent has been applied on the map</button></div>
    <div class="ckh">Effluent application board ${ebSeason()} <small>tap a paddock to add the date the pods went on (today is filled in) – the daily checklist adds it for you. A 5th shift goes back under shift 1. The board starts fresh on 1 June each season.</small></div>
    <div class="ebg">${EB_LINES.map(tbl).join('')}${sol}</div>
    <p class="note">Saved to the "Effluent application log" and "Effluent photos" tabs of the GV1 Farm Management sheet; photos go in the Farm task photos folder.</p></div>`;
@@ -2382,15 +2411,25 @@ function ebWire(){
   const post=b=>fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(x=>x.json());
   document.querySelectorAll('[data-ph]').forEach(inp=>inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const name=who(); if(!name) return;
     toast('Uploading photo…'); shrinkPhoto(f).then(ph=>post({action:'effphoto',farm:META.name,kind:inp.dataset.ph,photo:ph,name})).then(x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.photos=x.photos; officeRender(); toast('Photo saved'); }).catch(()=>toast('Could not upload the photo')); });
+  const em=document.getElementById('ebMap'); if(em) em.onclick=()=>{ state.effapp=!isOn('effapp'); try{ localStorage.setItem(STKEY,JSON.stringify(state)); }catch(e){} syncLayers(); if(isOn('effapp')){ effAppDraw(); fitFarm(); } officeRender(); };
   document.querySelectorAll('.ebc').forEach(td=>td.onclick=()=>{ const name=who(); if(!name) return; ebSheet(td.dataset.l,td.dataset.p,name,post); });
 }
+function effAppDraw(){ effAppLayer.clearLayers(); const B=(ENV&&ENV.board)||{}, td=Date.now(), P=n=>by('paddocks').find(f=>f.properties.num===+n);
+  const add=(pd,style,lab,info)=>{ const f=P(pd); if(!f) return; effAppLayer.addLayer(L.geoJSON(f,{style,onEachFeature:(ft,l)=>{ if(lab) l.bindTooltip(lab,{permanent:true,direction:'center',className:'pflab'}); l.bindPopup(info); }})); };
+  const done=new Set();
+  EB_LINES.forEach(([line,pads])=>pads.forEach(pd=>{ const ds=ebGet(line,pd).map(x=>x.slice(0,10)).sort(); done.add(pd);
+    if(!ds.length) return add(pd,{color:'#78909c',weight:1.5,dashArray:'4 4',fillOpacity:0},'',`<b>Paddock ${pd}</b><br>${line} – no effluent yet this season`);
+    const last=ds[ds.length-1], age=(td-new Date(last+'T12:00:00'))/864e5, col=age<=7?'#0d47a1':age<=21?'#1976d2':age<=60?'#64b5f6':'#bbdefb';
+    add(pd,{color:'#fff',weight:1.2,fillColor:col,fillOpacity:.65},`${ds.length}× · ${dshort(last)}`,`<b>Paddock ${pd}</b> – ${line}<br>${ds.length} shift${ds.length>1?'s':''} this season:<br>${ds.map(dshort).join(', ')}`); }));
+  EB_SOLIDS.forEach(pd=>{ const ds=ebGet('Solids',pd).map(x=>x.split('|')); if(!ds.length) return; const last=ds[ds.length-1][0];
+    add(pd,{color:'#5d4037',weight:2.5,fillColor:'#8d6e63',fillOpacity:done.has(pd)?0:.5,dashArray:'2 4'},done.has(pd)?'':`solids · ${dshort(last)}`,`<b>Paddock ${pd}</b> – solid effluent<br>${ds.map(x=>dshort(x[0])+(x[1]?' ('+ESC(x[1])+')':'')).join(', ')}`); }); }
 function ebSheet(line,pd,name,post){ const sol=line==='Solids', cur=ebGet(line,pd), today=ymdL(new Date());
   openSheet(`<h2>${sol?'Solid effluent':'Effluent '+line} · paddock ${pd}</h2><div class="sub">${sol?'Date the solids were spread and who recorded it':'Dates the pods went onto this paddock this season'} (season ${ebSeason()})</div>
     ${cur.length?`<table class="bgd" style="width:100%">${cur.map((x,i)=>{ const [d,w]=x.split('|'); return `<tr><td>${sol?'':'Shift '+(i+1)}</td><td><b>${new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</b>${sol&&w?' · '+ESC(w):''}</td><td style="text-align:right"><button class="btn alt" data-ebdel="${i}" style="padding:3px 10px">Remove</button></td></tr>`; }).join('')}</table>`:'<p>Nothing recorded yet this season.</p>'}
     <div class="ckh" style="margin-top:10px">Add ${sol?'a date':'shift '+(cur.length+1)}</div>
     <label class="field">Date<input id="ebD" type="date" value="${today}" max="${today}"></label>${sol?`<label class="field">Person recording<input id="ebP" maxlength="40" value="${ESC(name)}"></label>`:''}
     <div class="btns"><button class="btn" id="ebOk">Save</button></div>`);
-  const done=x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.board=x.board; closeSheet(); officeRender(); };
+  const done=x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.board=x.board; closeSheet(); effAppDraw(); officeRender(); };
   document.querySelectorAll('[data-ebdel]').forEach(b=>b.onclick=()=>{ b.disabled=true; post({action:'effboard',farm:META.name,op:'del',line,paddock:pd,index:+b.dataset.ebdel,name}).then(x=>{ done(x); toast('Removed'); }).catch(()=>toast('No connection – not saved')); });
   document.getElementById('ebOk').onclick=()=>{ const date=document.getElementById('ebD').value; if(!date) return toast('Pick a date'); document.getElementById('ebOk').disabled=true;
     post({action:'effboard',farm:META.name,op:'add',line,paddock:pd,date,recorder:sol?document.getElementById('ebP').value.trim():'',name}).then(x=>{ done(x); toast('Saved'); }).catch(()=>toast('No connection – not saved')); }; }
@@ -2417,7 +2456,7 @@ function smGraph(){
   const days=[]; for(let t=Math.ceil(t0/864e5/7)*864e5*7;t<t1;t+=7*864e5) days.push(t);
   return `<svg viewBox="-28 -4 ${W+34} ${H+20}" class="smg" role="img" aria-label="Isla Bank soil moisture, last 30 days">
    ${POD_BANDS.map(b=>band(Math.max(b[0],lo),Math.min(b[1],hi),b[2])).join('')}
-   ${[lo,86,92,99].filter(v=>v>=lo).map(v=>`<text x="-4" y="${y(v)+3}" text-anchor="end">${Math.round(v)}%</text><line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#ddd" stroke-width=".6"/>`).join('')}
+   ${[lo,86,90,95,99].filter(v=>v>=lo).map(v=>`<text x="-4" y="${y(v)+3}" text-anchor="end">${Math.round(v)}%</text><line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#ddd" stroke-width=".6"/>`).join('')}
    ${days.map(t=>`<text x="${x(t)}" y="${H+13}" text-anchor="middle">${new Date(t).toLocaleDateString('en-NZ',{day:'numeric',month:'short'})}</text>`).join('')}
    <polyline fill="none" stroke="#1565c0" stroke-width="2" points="${s.map(p=>x(p[0]).toFixed(1)+','+y(p[1]).toFixed(1)).join(' ')}"/>
    <circle cx="${W}" cy="${y(s[s.length-1][1])}" r="3.5" fill="#1565c0"/></svg>`;
@@ -2443,14 +2482,14 @@ function officeChecklistMain(){
    <div class="bcbox" style="border-color:${pb?pb[2]:'#ccc'}"><div class="bctop"><i style="background:${pb?pb[2]:'#999'}"></i><div><small>Soil moisture · Isla Bank (Environment Southland, live)</small><b style="color:${pb?pb[2]:'#333'}">${smv!=null?`${smv}% → pod run guide ${pm} min`:'Not available'}</b><small>${ESC((ENV&&ENV.smAt)||'')} · <a href="#" id="ckSmG">📈 more history</a></small></div></div>
      ${smGraph()}<div class="smk">Last 30 days · shading shows the pod run-time guide bands – around 99% is field capacity (don’t run), drier soil allows longer runs</div>
      ${podTable(smv)}</div>
-   ${pb?`<input type="hidden" name="beacon" value="${pb[3].replace('Field capacity','99%+')}"><div class="field">Soil moisture band <b style="color:${pb[2]}">${pb[3]}</b> <small>– filled in automatically from the live Isla Bank reading</small></div>`
-      :`<label class="field">Soil moisture band <small>(live reading not available – choose)</small><select name="beacon"><option value="">— choose —</option>${POD_BANDS.map(x=>`<option value="${x[3].replace('Field capacity','99%+')}">${x[3]} – ${x[4]}</option>`).join('')}</select></label>`}
+   ${pb?`<input type="hidden" name="beacon" value="${pb[3].replace('Field capacity','99.3%+')}"><div class="field">Soil moisture band <b style="color:${pb[2]}">${pb[3]}</b> <small>– filled in automatically from the live Isla Bank reading</small></div>`
+      :`<label class="field">Soil moisture band <small>(live reading not available – choose)</small><select name="beacon"><option value="">— choose —</option>${POD_BANDS.map(x=>`<option value="${x[3].replace('Field capacity','99.3%+')}">${x[3]} – ${x[4]}</option>`).join('')}</select></label>`}
    <label class="field">Pod run time setpoint (minutes) <small id="ckGuide"></small><input name="pod" type="number" inputmode="decimal" min="0" max="30" step="0.5" value="${ESC(pm!=null?pm:L['Pod run time (min)'])}"></label>
    <label class="field">Max run time setpoint (hours)<input name="maxrun" type="number" inputmode="decimal" min="0" max="24" step="0.5" value="${ESC(mx)}"></label>
    ${fc&&fc.rain72!=null&&fc.rain72>25?`<div class="ckl bad">⚠ Heavy rain coming: <b>${fc.rain72} mm</b> forecast over the next 3 days${fc.max24!=null?` (wettest 24 h ${fc.max24} mm${fc.max24From?' from '+ESC(fc.max24From):''})`:''}. Think about cutting the pod run time / application depth, keep pond storage in hand, and talk to Dave about the application rate if needed.</div>`:''}
    <label class="field">Rain forecast (total) today (mm) <small>${fc?`– filled in from ${ESC(fc.src)} for the rest of today, updated ${ESC(fc.at)} · tomorrow ${fc.tomorrow} mm${fc.rain72!=null?` · next 3 days <b style="color:${fc.rain72>25?'#c62828':'inherit'}">${fc.rain72} mm</b>`:''}`:'– forecast not available, please enter it'}</small><input name="rain" type="number" inputmode="decimal" min="0" step="0.1" value="${fc?fc.today:''}"></label>
    <div class="ckh">Where are the pods today? <small>(this goes straight onto the effluent application board)</small></div>
-   ${EB_LINES.map(([line,pads],i)=>{ const lt=ebLatest(line,pads); return `<label class="field">Pod ${i+1} – effluent ${line} paddock<select name="pod${i+1}"><option value="">Not running / not on this line today</option>${pads.map(pd=>`<option value="${pd}" ${lt&&lt.pd===pd?'selected':''}>Paddock ${pd}${lt&&lt.pd===pd?' (where it was last – '+dshort(lt.d)+')':''}</option>`).join('')}</select></label>`; }).join('')}
+   ${EB_LINES.map(([line,pads],i)=>{ const lp=String(L['Line '+(i+1)+' pods (paddock)']||''), lb=ebLatest(line,pads), lt=lp?{pd:+lp,d:L['Date']}:lp===''&&L['Date']&&('Line 1 pods (paddock)' in L)?null:lb; return `<label class="field">Pod ${i+1} – effluent ${line} paddock<select name="pod${i+1}"><option value="" ${!lt?'selected':''}>Not running / not on this line today</option>${pads.map(pd=>`<option value="${pd}" ${lt&&lt.pd===pd?'selected':''}>Paddock ${pd}${lt&&lt.pd===pd?' (same as the last checklist'+(lt.d?' – '+dshort(lt.d):'')+')':''}</option>`).join('')}</select></label>`; }).join('')}
    <div class="ckh">People <small>(filled in from the last checklist – change if needed)</small></div>
    <label class="field">Person in charge (PIC) who has approved the operator<input name="pic" maxlength="80" value="${ESC(L['Person in charge (PIC)'])}"></label>
    <label class="field">Relief PIC (fully trained)<input name="relief" maxlength="80" value="${ESC(L['Relief PIC'])}"></label>
@@ -2478,8 +2517,9 @@ function officeChecklistMain(){
 }
 function ckWire(){
   const f=document.getElementById('ckF'); if(!f) return;
-  const guide=()=>{ const sm=ENV&&ENV.sm!=null?ENV.sm:null, bd=sm!=null?podBand(sm):POD_BANDS.find(x=>x[3].replace('Field capacity','99%+')===f.beacon.value), gm=sm!=null?podMin(sm):null, el=document.getElementById('ckGuide'), v=parseFloat(f.pod.value);
-    el.innerHTML=bd?`guide at ${sm!=null?sm+'%':bd[3]}: <b>${gm!=null?gm+' min':bd[4]}</b>${gm!=null&&!isNaN(v)&&v>gm+1?' <b style="color:#d50000">– longer than the guide</b>':''}`:'99%+ 0 · 98% 1 · 95% 5 · 92% 10 · 88% 15 · under 86% 20 min'; };
+  const guide=()=>{ const sm=ENV&&ENV.sm!=null?ENV.sm:null, bd=sm!=null?podBand(sm):POD_BANDS.find(x=>x[3].replace('Field capacity','99.3%+')===f.beacon.value), gm=sm!=null?podMin(sm):null, el=document.getElementById('ckGuide'), v=parseFloat(f.pod.value);
+    const rate=parseFloat((f.c_rate||{}).value), mm=podMm(isNaN(v)?gm:v,rate);
+    el.innerHTML=((bd?`guide at ${sm!=null?sm+'%':bd[3]}: <b>${gm!=null?gm+' min':bd[4]}</b>${gm!=null&&!isNaN(v)&&v>gm+1?' <b style="color:#d50000">– longer than the guide</b>':''}`:'')+(mm!=null?` · <b>≈ ${mm} mm</b> per run at ${rate} mm/hr (bucket test)`:''))||'99.3%+ 0 · 99.2% 1 · 99% 3 · 98% 5 · 95% 10 · 90% 15 · under 86% 20 min'; };
   const warn=()=>{ document.getElementById('ckWarn').style.display=[...f.querySelectorAll('input[type=radio]:checked')].some(x=>x.value==='No')?'':'none'; };
   const calc=()=>{ const c={}; CALC_F.forEach(([l,k])=>{ if(k) c[k]=f['c_'+k].value.trim(); }); c.leak=f.leak.value; c.bucket=f.bucket.value; return c; };
   const recalc=()=>{ const v=calcVals(calc()); f.querySelectorAll('[data-calc]').forEach(b=>{ const x=v[b.dataset.calc==='undefined'?'':b.dataset.calc]; b.textContent=x==null||!isFinite(x)?'–':(Math.round(x*10)/10).toLocaleString('en-NZ'); }); };
@@ -2991,7 +3031,7 @@ const VIEWS = [
   {k:'water', n:'Stock water', d:'Water lines, troughs, valves, bores, taps', ids:()=>['paddocks','trough','valve','bore','gtap','divined',...WL()]},
   {k:'blocks', n:'Water blocks', d:'The 7 stock water blocks', ids:()=>['paddocks','trough','wb0','wb1','wb2','wb3','wb4','wb5','wb6']},
   {k:'drain', n:'Drainage', d:'Tile drains, main drain, creeks, culverts', ids:()=>['paddocks','tiles','maindrain','tilelabel','inspect','creek','bridge','storm','sbtiles']},
-  {k:'eff', n:'Effluent', d:'Pipes, hydrants, irrigation area, ponds', ids:()=>['paddocks','effpipe','hydrant','effarea','pond','effdrain','effpit','airline','septic','septicinfo']},
+  {k:'eff', n:'Effluent', d:'Pipes, hydrants, irrigation area, ponds, where it has been applied', ids:()=>['paddocks','effapp','effpipe','hydrant','effarea','pond','effdrain','effpit','airline','septic','septicinfo']},
   {k:'env', n:'Riparian & environment', d:'Plantings, trees, waterways, CSAs', ids:()=>['paddocks','riparian','trees','fencedww','csa','creek','offal']},
   {k:'hs', n:'Health & safety', d:'Hazards, first aid, assembly point, power', ids:()=>['paddocks','hzhaz','hzemerg','hzarea','hzaddr','power','cables','lanes','buildings','pond']},
   {k:'shed', n:'Dairy shed', d:'Shed & barn services, levels, cameras', ids:()=>['sbwashdown','sbeffpipe','sbdrain','sbtiles','cables','pond','buildings','cowshed','yards','lanes','farminfo','effpit','effdrain','valve','hzhaz','hzemerg','camera']},
