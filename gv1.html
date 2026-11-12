@@ -941,6 +941,8 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .rocov td{font-size:11px;color:#555;background:#f7faf8}.rocov td:first-child{text-align:left;padding-left:6px}.rocov td.gap{background:#ffebee;color:#c62828;font-weight:700}
 .roadd{display:flex;gap:6px;margin:10px 0}.roadd .btn{flex:none;width:auto}.roadd input{flex:1;max-width:260px}
 .gtile .gchg{display:block;font-style:normal;font-size:11.5px;font-weight:600}.gtile .gchg.up{color:#2e7d32}.gtile .gchg.dn{color:#c62828}
+.rosrc{font-size:12px;color:#666;margin:2px 0 6px}.ropat{margin:8px 0;border:1px solid #d3ddd5;border-radius:10px;background:#f7faf8;padding:6px 10px}.ropat summary{cursor:pointer;font-weight:700;color:#2c4a34;font-size:13px}
+.ropr{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0;font-size:13px}.ropr label{display:flex;gap:5px;align-items:center}.ropr input[type=number]{width:56px}.ropr small{color:#666}.ropr .btn{flex:none;width:auto}
 </style>
 </head>
 <body>
@@ -1702,7 +1704,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13 roster, nitrogen strip refresh, growth changes -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13b roster pattern, times, key person minimum from document -->
 </html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
@@ -2183,7 +2185,7 @@ const MT=[  // id, task, freq D/W/M/A, how: photo | done | auto, tab (for auto),
  ['jobs','Photo of jobs to do','D','photo'],
  ['fertmap','Photo of the fertiliser maps','D','photo'],
  ['effck','Effluent daily checklist (or "system not run today")','D','auto','ck'],
- ['roster','Roster filled in for next week (Roster tab – or a photo of your own roster)','W','auto','ro'],
+ ['roster','Roster filled in for next week and key person milking requirements met (Roster tab)','W','auto','ro'],
  ['feedbudget','Photo of the feed budget board','W','photo'],
  ['wedges','Photo of completed feed wedges incl. growth rates','W','photo'],
  ['ph_ponds','Photo of effluent pond levels','W','photo'],
@@ -2508,42 +2510,69 @@ function officeRender(){
   if(OFTAB==='eb'){ ebWire(); if(!window._ppl) loadPeople(()=>{ if(OFTAB==='eb') officeRender(); }); }
 }
 setInterval(()=>{ const c=document.getElementById('ofClock'); if(c) c.textContent=new Date().toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit',second:'2-digit'}); },1000);
-// ---- Staff roster: this week + next week, AM / PM milkings per person (CM key person: at least 4 full milkings a week, e.g. 2 AM + 2 PM)
+// ---- Staff roster: this week + next week, AM / PM milkings per person (CM key person: at least 4 full milkings a week, cups on to cups off)
 let ROSTER=null, ROSTER_STALE=false, roStart=0, roLoading=false, roTimer=null, roPend={};
-const RO_ROLES=['Staff','2IC','Relief','Contract milker'], CM_MIN=4;
+const RO_ROLES=['Staff','2IC','Relief','Contract milker']; let CMMIN=null; const cmN=()=>(CMMIN&&CMMIN.n)||4;
+const RO_PATS=[[6,2],[5,2],[5,3],[4,2],[11,3],[12,2],[8,2]];
 const roMon=off=>{ const d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)+7*off); return d; };
 const roDays=()=>{ const m=roMon(roStart), a=[]; for(let i=0;i<14;i++){ const d=new Date(m); d.setDate(m.getDate()+i); a.push(ymdL(d)); } return a; };
 function roPost(body){ return fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({action:'roster',farm:META.name},body))}).then(r=>r.json()); }
-function roLoad(){ if(roLoading||!STAFF.tok||Object.keys(roPend).length) return; roLoading=true; roPost({}).then(r=>{ roLoading=false; if(r.ok){ ROSTER=r.roster; ROSTER_STALE=false; if(r.tasks&&ENV) ENV.tasks=r.tasks; if(OFTAB==='ro'||OFTAB==='mt') officeRender(); } }).catch(()=>{ roLoading=false; }); }
+function roLoad(){ if(roLoading||!STAFF.tok||Object.keys(roPend).length) return; roLoading=true; roPost({}).then(r=>{ roLoading=false; if(r.ok){ ROSTER=r.roster; if(r.cmMin) CMMIN=r.cmMin; ROSTER_STALE=false; if(r.tasks&&ENV) ENV.tasks=r.tasks; if(OFTAB==='ro'||OFTAB==='mt') officeRender(); } }).catch(()=>{ roLoading=false; }); }
 const roGet=(day,n)=>((ROSTER&&ROSTER.days[day])||{})[n]||'';
 function roWeek(days){ const S=(ROSTER&&ROSTER.staff)||[], cov=days.map(d=>{ let a=0,p=0; S.forEach(x=>{ const v=roGet(d,x.name); if(v.includes('A')) a++; if(v.includes('P')) p++; }); return [a,p]; });
   return { cov, gaps:cov.filter(c=>!c[0]||!c[1]).length, per:S.map(x=>{ let a=0,p=0,l=0; days.forEach(d=>{ const v=roGet(d,x.name); if(v.includes('A')) a++; if(v.includes('P')) p++; if(v.includes('L')) l++; }); return {x,a,p,l}; }) }; }
-function roNextWeek(){ const m=roMon(1), days=[]; for(let i=0;i<7;i++){ const d=new Date(m); d.setDate(m.getDate()+i); days.push(ymdL(d)); } return {mon:days[0],w:roWeek(days)}; }
-function roBadge(){ if(!ROSTER){ if(STAFF.tok&&ENV&&(!ROSTER||ROSTER_STALE)) roLoad(); return ''; } const n=roNextWeek(); return n.w.gaps?`<span class="ckb wrn">next week ${n.w.gaps} gap${n.w.gaps>1?'s':''}</span>`:'<span class="ckb ok">✓</span>'; }
+function roNextWeek(){ const m=roMon(1), days=[]; for(let i=0;i<7;i++){ const d=new Date(m); d.setDate(m.getDate()+i); days.push(ymdL(d)); } const w=roWeek(days), cms=w.per.filter(r=>/milker/i.test(r.x.role));
+  const cmOk=cms.length>0&&cms.every(r=>r.a+r.p>=cmN()); return {mon:days[0],w,cmOk,cmMilk:cms.map(r=>r.a+r.p).join('/'),ok:!w.gaps&&cmOk}; }
+function roBadge(){ if(!ROSTER||ROSTER_STALE){ if(STAFF.tok&&ENV) roLoad(); if(!ROSTER) return ''; } const n=roNextWeek(); return n.w.gaps?`<span class="ckb wrn">next week ${n.w.gaps} gap${n.w.gaps>1?'s':''}</span>`:!n.cmOk?'<span class="ckb wrn">key person</span>':'<span class="ckb ok">✓</span>'; }
 function officeRoster(){
   if(!STAFF.tok) return '<div class="ofbd"><p>Sign in to see the roster.</p></div>';
   if(!ROSTER){ roLoad(); return '<div class="ofbd"><p>Loading the roster…</p></div>'; }
   const days=roDays(), S=ROSTER.staff, w1=roWeek(days.slice(0,7)), w2=roWeek(days.slice(7)), td=ymdL(new Date()), dl=d=>new Date(d+'T12:00:00');
   const cm=S.filter(x=>/milker/i.test(x.role)), wk=(w,i)=>w.per[i];
-  const cmLine=cm.map(c=>{ const i=S.indexOf(c), f=w=>{ const r=wk(w,i), n=r.a+r.p; return `<b class="${n>=CM_MIN?'tok':'tbad'}">${n} milking${n===1?'':'s'}</b> (${r.a} AM / ${r.p} PM)${r.l?` · ${r.l} day${r.l>1?'s':''} leave`:''}`; };
-    return `<div class="roln"><b>${ESC(c.name)}</b> (contract milker – key person: at least ${CM_MIN} full milkings a week, e.g. 2 AM + 2 PM): week 1 ${f(w1)} · week 2 ${f(w2)}</div>`; }).join('')||'<div class="roln tbad">No contract milker on the roster – add them below with the role "Contract milker".</div>';
+  const cmLine=cm.map(c=>{ const i=S.indexOf(c), f=w=>{ const r=wk(w,i), n=r.a+r.p; return `<b class="${n>=cmN()?'tok':'tbad'}">${n} milking${n===1?'':'s'}</b> (${r.a} AM / ${r.p} PM)${r.l?` · ${r.l} day${r.l>1?'s':''} leave`:''}`; };
+    return `<div class="roln"><b>${ESC(c.name)}</b> (contract milker – key person: at least ${cmN()} full milkings a week, cups on to cups off): week 1 ${f(w1)} · week 2 ${f(w2)}</div>`; }).join('')||'<div class="roln tbad">No contract milker on the roster – add them below with the role "Contract milker".</div>';
   const nw=roNextWeek(), cell=(d,n)=>{ const v=roGet(d,n); return `<td class="roc ${d===td?'td':''} ${v.includes('L')?'lv':''}">${['A','P'].map(k=>`<button data-ro="${d}|${ESC(n)}|${k}" class="${v.includes(k)?'on':''}" ${v.includes('L')?'disabled':''}>${k==='A'?'AM':'PM'}</button>`).join('')}<button data-ro="${d}|${ESC(n)}|L" class="lvb ${v.includes('L')?'on':''}" title="Leave">L</button></td>`; };
   return `<div class="ofbd">
    <div class="rohead"><div><b>Staff roster – ${META.name}</b><small>Tap AM / PM for each milking someone is doing, L for leave. Saves as you go. Fill in next week by Sunday – that ticks off the weekly roster task (a photo of your own roster also counts).</small></div>
-    <div class="ronav"><button class="btn alt" data-ronav="-1">◀ Earlier</button><button class="btn alt" data-ronav="0">This week</button><button class="btn alt" data-ronav="1">Later ▶</button></div></div>
-   <div class="rostat ${nw.w.gaps?'wrn':'ok'}">${nw.w.gaps?`● Next week (from ${dl(nw.mon).toLocaleDateString('en-NZ',{day:'numeric',month:'short'})}): ${nw.w.gaps} day${nw.w.gaps>1?'s have':' has'} an AM or PM milking with nobody rostered`:`✓ Next week (from ${dl(nw.mon).toLocaleDateString('en-NZ',{day:'numeric',month:'short'})}) is fully rostered`}</div>
+    <div class="ronav"><button class="btn alt" id="roPrint">🖨 Print</button><button class="btn alt" data-ronav="-1">◀ Earlier</button><button class="btn alt" data-ronav="0">This week</button><button class="btn alt" data-ronav="1">Later ▶</button></div></div>
+   <div class="rostat ${nw.ok?'ok':'wrn'}">${(()=>{ const f=dl(nw.mon).toLocaleDateString('en-NZ',{day:'numeric',month:'short'});
+     return nw.ok?`✓ Next week (from ${f}) is fully rostered and the key person milking requirement is met – the weekly roster task is ticked off`:`● Next week (from ${f}): ${[nw.w.gaps?`${nw.w.gaps} day${nw.w.gaps>1?'s have':' has'} an AM or PM milking with nobody rostered`:'',!nw.cmOk?`contract milker has fewer than ${cmN()} milkings`:''].filter(Boolean).join(' · ')}`; })()}</div>
+   ${CMMIN&&CMMIN.ok?`<div class="rosrc">Key person minimum (${cmN()} milkings a week) is read from <a href="${CMMIN.url}" target="_blank" rel="noopener">${ESC(CMMIN.src)}</a> (updated ${ESC(CMMIN.updated)}) – change the number there and the roster follows within an hour.</div>`:`<div class="rosrc">Key person minimum: ${cmN()} milkings a week (couldn't read the Contract Milker Responsibilities document just now, so using ${cmN()}).</div>`}
+   ${roPatternHTML()}
    ${cmLine}
    <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><b style="font-size:12px;color:#5b6b55">RECORDING AS</b>${signerSel('roName')}<input id="roOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
    <div class="rowrap"><table class="rot"><tr><th>Staff</th>${days.map((d,i)=>`<th class="${d===td?'td':''} ${i===7?'wk2':''}">${dl(d).toLocaleDateString('en-NZ',{weekday:'short'})}<br><small>${dl(d).getDate()} ${dl(d).toLocaleDateString('en-NZ',{month:'short'})}</small></th>`).join('')}<th>Week 1</th><th>Week 2</th></tr>
     ${S.map((x,i)=>`<tr><td class="ron"><b>${ESC(x.name)}</b><small>${ESC(x.role||'Staff')}</small><button class="rodel" data-rodel="${i}" title="Remove from roster">✕</button></td>${days.map(d=>cell(d,x.name)).join('')}
-      ${[w1,w2].map(w=>{ const r=w.per[i], n=r.a+r.p, bad=/milker/i.test(x.role)&&n<CM_MIN; return `<td class="rotot ${bad?'bad':''}">${n}<small>${r.a} AM · ${r.p} PM${r.l?` · ${r.l} L`:''}</small></td>`; }).join('')}</tr>`).join('')}
-    ${['AM','PM'].map((k,j)=>`<tr class="rocov"><td>${k} milking – people on</td>${days.map((d,i)=>{ const c=(i<7?w1:w2).cov[i%7][j]; return `<td class="${c?'':'gap'}">${c||'–'}</td>`; }).join('')}<td></td><td></td></tr>`).join('')}</table></div>
+      ${[w1,w2].map(w=>{ const r=w.per[i], n=r.a+r.p, bad=/milker/i.test(x.role)&&n<cmN(); return `<td class="rotot ${bad?'bad':''}">${n}<small>${r.a} AM · ${r.p} PM${r.l?` · ${r.l} L`:''}</small></td>`; }).join('')}</tr>`).join('')}
+    ${['AM','PM'].map((k,j)=>`<tr class="rocov"><td>${k} milking${roTimes(k)} – people on</td>${days.map((d,i)=>{ const c=(i<7?w1:w2).cov[i%7][j]; return `<td class="${c?'':'gap'}">${c||'–'}</td>`; }).join('')}<td></td><td></td></tr>`).join('')}</table></div>
    <div class="roadd"><input id="roNew" placeholder="Add a staff member" maxlength="60"><select id="roRole">${RO_ROLES.map(r=>`<option>${r}</option>`).join('')}</select><button class="btn" id="roAdd">+ Add</button></div>
    <p class="note">Saved on the farm sheet (every change is listed on the "Roster log" tab). The contract milker comes from the Contact Us page the first time; add the rest of the team here.</p></div>`;
 }
+const roTimes=k=>{ const t=(ROSTER&&ROSTER.times)||{}, a=t[k==='AM'?'amS':'pmS'], b=t[k==='AM'?'amF':'pmF']; return a?` (${a}${b?'–'+b:''})`:''; };
+function roPatDefaults(on,off){ const S=ROSTER.staff, m=roMon(0), cyc=on+off, st={}; S.forEach((x,i)=>{ const d=new Date(m); d.setDate(m.getDate()+on+Math.round(i*cyc/Math.max(1,S.length))%cyc); st[x.name]=ymdL(d); }); return st; }
+function roPatternHTML(){ const pt=ROSTER.pattern||{on:6,off:2,start:{}}, S=ROSTER.staff, t=ROSTER.times||{};
+  const st=Object.assign(roPatDefaults(pt.on,pt.off),pt.start||{});
+  return `<details class="ropat" ${ROSTER.pattern?'':'open'}><summary>⚙ Roster pattern &amp; milking times – set it once, then one click fills the roster</summary>
+   <div class="ropr"><label>Pattern <select id="roPat">${RO_PATS.map(([a,b])=>`<option value="${a}-${b}" ${a===pt.on&&b===pt.off?'selected':''}>${a} on / ${b} off</option>`).join('')}<option value="custom" ${RO_PATS.some(([a,b])=>a===pt.on&&b===pt.off)?'':'selected'}>Custom</option></select></label>
+     <label>Days on <input id="roOn" type="number" min="1" max="21" value="${pt.on}"></label><label>Days off <input id="roOff" type="number" min="1" max="7" value="${pt.off}"></label></div>
+   <div class="ropr"><b>First day off for each person</b> <small>(staggered automatically so someone is always on – change any of them)</small></div>
+   <div class="ropr">${S.map(x=>`<label>${ESC(x.name)} <input type="date" data-rostart="${ESC(x.name)}" value="${st[x.name]||''}"></label>`).join('')}</div>
+   <div class="ropr"><b>Milking times</b> <label>AM <input type="time" id="roAmS" value="${t.amS||''}"> – <input type="time" id="roAmF" value="${t.amF||''}"></label><label>PM <input type="time" id="roPmS" value="${t.pmS||''}"> – <input type="time" id="roPmF" value="${t.pmF||''}"></label></div>
+   <div class="ropr"><button class="btn" id="roFill">Fill these 2 weeks from the pattern</button><small>Days on get AM + PM, days off are left clear, leave (L) is kept. You can still tap any day to change it afterwards.</small></div></details>`; }
+function roReadPattern(panel){ const on=Math.max(1,+panel.querySelector('#roOn').value||6), off=Math.max(1,+panel.querySelector('#roOff').value||2), start={};
+  panel.querySelectorAll('[data-rostart]').forEach(i=>{ if(i.value) start[i.dataset.rostart]=i.value; }); return {on,off,start}; }
+function roFill(panel){ const pt=roReadPattern(panel), days=roDays(), cyc=pt.on+pt.off; ROSTER.pattern=pt;
+  ROSTER.staff.forEach(x=>{ const s0=pt.start[x.name]; if(!s0) return; const t0=new Date(s0+'T12:00:00');
+    days.forEach(d=>{ const k=Math.round((new Date(d+'T12:00:00')-t0)/864e5), pos=((k%cyc)+cyc)%cyc, off=pos<pt.off, day=ROSTER.days[d]=ROSTER.days[d]||{}, cur=day[x.name]||'';
+      if(cur.includes('L')) return; const v=off?'':'AP'; if(v) day[x.name]=v; else delete day[x.name]; (roPend[d]=roPend[d]||{})[x.name]=v; }); });
+  roSave({pattern:pt}); toast('Roster filled from the pattern'); officeRender(); }
+function roPrint(){ const days=roDays(), S=ROSTER.staff, dl=d=>new Date(d+'T12:00:00'), w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
+  w.document.write(`<html><head><title>${META.name} roster</title><style>body{font-family:Arial;font-size:12px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:4px;text-align:center}th{background:#2e6b3f;color:#fff}td.n{text-align:left}</style></head><body><h2>${META.name} staff roster – ${dl(days[0]).toLocaleDateString('en-NZ',{day:'numeric',month:'short'})} to ${dl(days[13]).toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'})}</h2><p>AM${roTimes('AM')} · PM${roTimes('PM')}</p>
+   <table><tr><th>Staff</th>${days.map(d=>`<th>${dl(d).toLocaleDateString('en-NZ',{weekday:'short',day:'numeric'})}</th>`).join('')}</tr>${S.map(x=>`<tr><td class="n">${ESC(x.name)}<br><small>${ESC(x.role||'')}</small></td>${days.map(d=>{ const v=roGet(d,x.name); return `<td>${v.includes('L')?'Leave':[v.includes('A')?'AM':'',v.includes('P')?'PM':''].filter(Boolean).join(' + ')||'off'}</td>`; }).join('')}</tr>`).join('')}</table></body></html>`);
+  w.document.close(); w.focus(); setTimeout(()=>w.print(),300); }
 function roSave(extra){ clearTimeout(roTimer); roTimer=setTimeout(()=>{ const name=signerName('roName','roOther')||'office view', nw=roNextWeek(), body={name,set:Object.assign({days:roPend},extra||{})};
-    if(!nw.w.gaps) body.nextWeekDone=nw.mon; roPend={};
-    roPost(body).then(r=>{ if(!r.ok) return toast(r.error||'Roster not saved'); ROSTER=r.roster; if(r.tasks&&ENV) ENV.tasks=r.tasks; }).catch(()=>toast('No connection – roster not saved')); }, extra?0:1200); }
+    if(nw.ok){ body.nextWeekDone=nw.mon; body.cmMilkings=nw.cmMilk; } roPend={};
+    roPost(body).then(r=>{ if(!r.ok) return toast(r.error||'Roster not saved'); ROSTER=r.roster; if(r.cmMin) CMMIN=r.cmMin; if(r.tasks&&ENV) ENV.tasks=r.tasks; }).catch(()=>toast('No connection – roster not saved')); }, extra?0:1200); }
 function roWire(panel){
   const sel=panel.querySelector('#roName'), oth=panel.querySelector('#roOther'); if(sel){ const so=()=>{ oth.style.display=sel.value==='__other'?'':'none'; try{ if(sel.value!=='__other') localStorage.setItem('gvmap.signer',sel.value); }catch(e){} }; sel.onchange=so; so(); }
   panel.querySelectorAll('[data-ronav]').forEach(b=>b.onclick=()=>{ const v=+b.dataset.ronav; roStart=v?roStart+v:0; officeRender(); });
@@ -2551,6 +2580,11 @@ function roWire(panel){
     if(k==='L') v=v.includes('L')?'':'L'; else v=v.includes(k)?v.replace(k,''):(v.replace('L','')+k).split('').sort().join('');
     if(v) day[n]=v; else delete day[n]; (roPend[d]=roPend[d]||{})[n]=v; roSave(); officeRender(); });
   panel.querySelectorAll('[data-rodel]').forEach(b=>b.onclick=()=>{ const x=ROSTER.staff[+b.dataset.rodel]; if(!x) return; ROSTER.staff.splice(+b.dataset.rodel,1); roSave({staff:ROSTER.staff}); toast(x.name+' removed from the roster'); officeRender(); });
+  const pat=panel.querySelector('#roPat'); if(pat) pat.onchange=()=>{ if(pat.value==='custom') return; const [a,b]=pat.value.split('-').map(Number); panel.querySelector('#roOn').value=a; panel.querySelector('#roOff').value=b;
+    const st=roPatDefaults(a,b); panel.querySelectorAll('[data-rostart]').forEach(i=>{ i.value=st[i.dataset.rostart]||i.value; }); };
+  const fb=panel.querySelector('#roFill'); if(fb) fb.onclick=()=>roFill(panel);
+  const pr=panel.querySelector('#roPrint'); if(pr) pr.onclick=roPrint;
+  ['#roAmS','#roAmF','#roPmS','#roPmF'].forEach(id=>{ const i=panel.querySelector(id); if(i) i.onchange=()=>{ ROSTER.times={amS:panel.querySelector('#roAmS').value,amF:panel.querySelector('#roAmF').value,pmS:panel.querySelector('#roPmS').value,pmF:panel.querySelector('#roPmF').value}; roSave({times:ROSTER.times}); }; });
   const add=panel.querySelector('#roAdd'); if(add) add.onclick=()=>{ const n=panel.querySelector('#roNew').value.trim(), r=panel.querySelector('#roRole').value; if(!n) return toast('Type a name first');
     if(ROSTER.staff.some(x=>x.name.toLowerCase()===n.toLowerCase())) return toast('Already on the roster'); ROSTER.staff.push({name:n,role:r}); roSave({staff:ROSTER.staff}); officeRender(); };
 }
