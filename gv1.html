@@ -910,6 +910,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .ntile{border:2px solid;border-left-width:8px;border-radius:10px;padding:8px 10px;margin:4px 0 6px;background:#fff}.ntile .nst{display:inline-block;color:#fff;font-weight:800;font-size:16px;padding:4px 12px;border-radius:14px}.ntile ul{list-style:none;margin:6px 0;padding:0;font-size:13px}.ntile li{padding:2px 0}.ntile li.g{color:#2e7d32}.ntile li.o{color:#e65100}.ntile li.r{color:#c62828;font-weight:600}.ntile small{color:#777;font-size:11px;display:block}
 .gtile{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:6px;margin:4px 0}.gtile>div{background:#f4f6f1;border-radius:8px;padding:6px 8px}.gtile .gmain{background:#e8f5e9;border:2px solid #2e7d32}.gtile small{display:block;color:#666;font-size:11px}.gtile b{font-size:22px;color:#1b5e20}.gtile span{display:block;font-size:11px;color:#666}
 .gtile .gar{font-style:normal;font-weight:800;font-size:13px;margin-left:6px;padding:2px 7px;border-radius:10px}.gar.up{background:#e8f5e9;color:#2e7d32}.gar.dn{background:#ffebee;color:#c62828}.gar.fl{background:#eceff1;color:#455a64}.gtile.g2{grid-template-columns:1fr 2.3fr}.gtile .gph{border:1px dashed #bbb;background:#fafafa}.gtile .lvchip{display:inline-block;margin-left:4px;vertical-align:middle}.gtile .gph b{color:#999}
+.etr{margin:14px 16px;padding:10px 12px;border:2px solid #2e5e2a;border-radius:10px;background:#f7faf5}.etab{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}.etab th{text-align:left;background:#e8f0e3;padding:4px}.etab td{padding:4px;border-bottom:1px solid #e3e3e3}.tok{color:#2e7d32;font-weight:700}.tbad{color:#c62828;font-weight:600}.ckbx{display:flex!important;gap:8px;align-items:flex-start;font-size:13.5px}.ckbx input{margin-top:3px;flex:none;width:18px;height:18px}.ckbx.disc{background:#fff8e1;padding:8px;border-radius:6px;margin-top:10px}.eqq{margin:10px 0;padding:8px 10px;background:#f4f6f1;border-radius:8px}.eqq b{display:block;margin-bottom:4px;font-size:14px}.eqq label{display:block;padding:3px 0;font-size:14px}.eqres{margin:16px;padding:14px;border-radius:10px;font-size:15px}.eqres.ok{background:#e8f5e9;border:2px solid #2e7d32}.eqres.bad{background:#fff3e0;border:2px solid #ef6c00}.eqres div{margin:6px 0}.ckl.wrn{background:#fff8e1;color:#5d4037}
 </style>
 </head>
 <body>
@@ -1671,21 +1672,21 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script><!-- build 2026-11-12 14:40 -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script><!-- build 2026-11-12 15:50 -->
 </body></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
 const ESC=v=>String(v==null?'':v).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
 function ckState(){ const e=ENV&&ENV.eff; return { today:e&&e.today, last:e&&e.last, loaded:!!ENV }; }
-function ckBadge(){ const c=ckState(); if(!c.loaded) return ''; if(!c.today) return '<span class="ckb bad">⚠ not done today</span>';
+function ckBadge(){ const c=ckState(); if(!c.loaded) return ''; if(!c.today) return '<span class="ckb">not run today</span>';
   return c.today['Permitted to start']==='Yes'?'<span class="ckb ok">✓ done</span>':'<span class="ckb bad">✕ not permitted</span>'; }
 function effCkLine(p){   // shown in the Effluent system box on the farm info tab
   const c=ckState(), lines=(p.lines||[]).some(l=>!/green/i.test(l[0])&&p.active===l[0]);
   if(!c.loaded) return '';
   if(c.today&&c.today['Permitted to start']==='Yes') return `<div class="ckl ok">✓ Daily effluent checklist done today by ${ESC(c.today['Operator today'])} – Lines 1–3 may run (pod run ${ESC(c.today['Pod run time (min)'])} min, beacon ${ESC(c.today['Beacon colour'])})</div>`;
   if(c.today) return `<div class="ckl bad flash">✕ Today's checklist says NOT permitted to start – Lines 1–3 must stay off (green wash is OK)</div>`;
-  return `<div class="ckl bad ${lines?'flash':''}">⚠ Daily effluent checklist not done today – complete it before starting Lines 1–3 (green wash is OK) <button class="btn" data-tab="ck" style="padding:3px 10px;font-size:12px;margin-left:4px">Open checklist</button></div>`;
+  return `<div class="ckl ${lines?'bad flash':'wrn'}">${lines?'⚠ Lines 1–3 look to be running but there is no effluent checklist today – complete it now':'No effluent checklist today – Lines 1–3 assumed NOT run. Complete it before starting them (green wash is OK)'} <button class="btn" data-tab="ck" style="padding:3px 10px;font-size:12px;margin-left:4px">Open checklist</button></div>`;
 }
 function envBlock(){
   if(!ENV) return `<div class="ofr"><div class="ofcat">Effluent spreading conditions</div><div class="ofg"><div class="oft"><small>Loading Environment Southland data…</small></div></div></div>`;
@@ -1750,6 +1751,68 @@ function growTile(){
     <div class="gph"><small>Average cover next week <span class="lvchip ph">placeholder</span></small><b>–</b><span>Will be: cover now + 7 days × predicted growth − what the grazing board says the herd will eat (hectares grazed × cover eaten). Fills in once GV1 is on the grazing board.</span></div></div>
    <small style="color:#777;font-size:11px;display:block;margin:2px 0 6px">${G.pred?`Inputs: 3-day soil temperature at Isla Bank ${ENV.soilT3}° and soil moisture ${ENV.sm!=null?ENV.sm+'%':'–'} (${dryNow?'drying – below '+DRY+'%':'not limiting'}). Fitted to ${G.n} GV1 farm-walk periods since ${f(G.from)} (MINDA), accuracy about ±${R0(G.rmse)} kg, explains ${Math.round(G.r2*100)}% of the ups and downs. ${G.useDry?`Dry spells in the record (${G.dryN} periods): each % below ${DRY}% has cut growth by about ${(-G.c).toFixed(1)} kg.`:`Soil moisture is in the model but there hasn't been a dry spell since the soil records started (Nov 2025), so it can't weigh it yet – it will start reducing the prediction automatically once dry periods are recorded.`} Soil temperature also carries the seasonal effects that go with it (day length, sunshine), so treat it as a guide.`:`Not enough overlapping soil and farm-walk data yet (${G.n} periods).`}</small></div>`;
 }
+// ---- Effluent training form + effluent quiz (replace the Google Forms). Saved and marked by the backend, emailed to the person, Dave and Johno.
+const EFF_TRAIN_ITEMS=['Understands the regional council rules and farm policies for effluent management','Understands health and safety around the effluent system','Understands record keeping for irrigator runs and maintenance','Use of the stormwater diversion system (where applicable)','Good hosing practice and water management','Animal handling to minimise effluent volume','Cleaning the stone trap','Sump, pump & pond monitoring & management (including float switches)','When to irrigate: assessing soil and weather conditions','Where to irrigate: runs, paddock rotations, high risk vs low risk soils etc','Where not to irrigate: near waterways, drains, boundaries, slopes etc','How the irrigation system works, set up, hose layout and performance checks','Measuring the depth of effluent application','Maintenance systems','Hose, hydrant and pod condition'];
+const EFF_QUIZ=[   // [question, options, multi]  – answers are marked by the backend
+ ['Which document contains information on our effluent management history and details how to maintain the effluent system?',['Effluent Management Plan','Discharge Permit','Farm Environment Plan']],
+ ['How do we measure our effluent application rate?',['Using a rain gauge','Bucket rate test','Measuring the level of the pond']],
+ ['If there is a problem which results in a small effluent spill, or nearly results in a small effluent spill, what should you do? (select all that apply)',['Do your best to fix the problem','Notify the farm manager','Notify the directors','Fill out the effluent non-compliance form'],1],
+ ['When is normally the best time to apply effluent, and when should I be aiming to have the ponds empty?',['Winter - empty pond at the beginning of September','Summer/Autumn - empty pond at the beginning of April','Spring - empty pond at the beginning of December']],
+ ['What is the maximum effluent application depth for each individual application?',['10mm','18mm','25mm']],
+ ['What is the maximum instantaneous rate of effluent per hour?',['5mm','10mm','15mm']],
+ ['What is the minimum exclusion zone from a property boundary?',['20m','50m','100m']],
+ ['What is the minimum exclusion zone from surface water?',['20m','50m','100m']],
+ ['What is the minimum exclusion zone from a water extraction point?',['50m','100m','200m']],
+ ['What is the minimum exclusion zone from a place of assembly or dwelling not on the subject property?',['50m','100m','200m']],
+ ['What is the minimum return period for the discharge of effluent?',['20 days','28 days','35 days','Not Specified']],
+ ['How should you decide when to apply effluent?',["When its not raining",'Only in Spring and Summer','By checking the Environment Southland beacon website']]];
+const EFF_DISC='I understand the effluent system and the importance of operating the system in compliance with all regional rules and farm policies. By submitting this form, I agree to take equal responsibility of the effluent system – along with other fully trained staff and directors. I understand that failure to follow the rules and plans above may result in disciplinary action from my employer, with instant dismissal from employment being a possibility in serious cases.';
+function effTrainSection(){
+  const T=(ENV&&ENV.efftrain)||{people:[]}, ESCs=ESC, f=d=>d?new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}):'–';
+  const rows=T.people.map(p=>`<tr><td>${ESCs(p.name)}</td><td>${p.train?f(p.train):'<span class="tbad">not done</span>'}</td><td>${p.quiz?`${f(p.quiz)} · ${p.score}/${p.outOf}`:'<span class="tbad">not done</span>'}</td><td>${p.ok?'<span class="tok">✓ compliant</span>':`<span class="tbad">✕ ${p.why||'not compliant'}</span>`}</td></tr>`).join('');
+  return `<div class="etr"><div class="ckh">Staff effluent training</div>
+   <p style="margin:4px 0 8px;font-size:13px;color:#555">Anyone who runs the effluent system needs a completed training form (trainer signs them off) and a passed effluent quiz (all ${EFF_QUIZ.length} correct). Both are saved here and emailed to the staff member, Dave and Johno.</p>
+   <div class="btns"><button class="btn" id="etTrain">📝 Effluent training form</button><button class="btn" id="etQuiz">✅ Effluent quiz</button></div>
+   <table class="etab"><tr><th>Staff member</th><th>Training form</th><th>Quiz</th><th>Status</th></tr>${rows||'<tr><td colspan="4">No training records yet</td></tr>'}</table>
+   <small style="color:#888">Compliant = training form done and quiz passed within the last 12 months. Earlier Google Form results aren't included.</small></div>`; }
+function effFormHTML(){
+  const ppl=(window._ppl||[]).map(p=>p.name), opt=n=>`<option>${ESC(n)}</option>`, today=ymdL(new Date());
+  const who=(id,lab)=>`<label class="field">${lab}<input name="${id}" list="etPpl" required autocomplete="off"></label>`;
+  const head=`<datalist id="etPpl">${ppl.map(opt).join('')}</datalist><div class="btns" style="margin:10px 16px 0"><button class="btn alt" type="button" id="etBack">← Back to the checklist</button></div>`;
+  if(window._effForm==='train') return head+`<form id="etF" class="ckf" autocomplete="off"><div class="ckh">${ESC(META.name)} Effluent Training Form</div>
+    <label class="field">Date<input type="date" name="date" value="${today}" required></label>${who('trainer','Name of trainer')}${who('trainee','Name of trainee')}
+    <label class="field">Trainee email<input type="email" name="email" required></label><label class="field">Trainee phone number<input name="phone" inputmode="tel"></label>
+    <div class="ckh" style="margin-top:12px">The trainee confirms they understand the following</div>
+    ${EFF_TRAIN_ITEMS.map((t,i)=>`<label class="ckq ckbx"><input type="checkbox" name="it${i}" required> <span>${ESC(t)}</span></label>`).join('')}
+    <label class="field">Comments<textarea name="comments" rows="2"></textarea></label>
+    <label class="ckq ckbx disc"><input type="checkbox" name="agree" required> <span>${EFF_DISC}</span></label>
+    <label class="field">Trainee signature – type your full name<input name="sign" required></label>
+    <div class="btns"><button class="btn" type="submit">Submit training form</button></div></form>`;
+  return head+`<form id="etF" class="ckf" autocomplete="off"><div class="ckh">${ESC(META.name)} Effluent Quiz</div>
+    ${who('name','Your name')}<label class="field">Date<input type="date" name="date" value="${today}" required></label>
+    <label class="field">Email<input type="email" name="email" required></label><label class="field">Phone number<input name="phone" inputmode="tel" required></label>
+    <label class="field">Who is the person in charge (PIC) of the effluent system on your farm?<input name="pic" required></label>
+    <label class="field">Who is the relief person in charge (PIC) of the effluent system on your farm?<input name="relief" required></label>
+    ${EFF_QUIZ.map((q,i)=>`<div class="eqq"><b>${i+1}. ${ESC(q[0])}</b>${q[1].map(o=>`<label><input type="${q[2]?'checkbox':'radio'}" name="q${i}" value="${ESC(o)}" ${q[2]?'':'required'}> ${ESC(o)}</label>`).join('')}</div>`).join('')}
+    <label class="ckq ckbx disc"><input type="checkbox" name="agree" required> <span>${EFF_DISC.replace('By submitting this form, I agree','By submitting this quiz, I agree that I have completed the Effluent Training Form relevant to my farm, and I agree')}</span></label>
+    <div class="btns"><button class="btn" type="submit">Submit quiz</button></div></form>`; }
+function effWire(panel){
+  const go=k=>{ window._effForm=k; if(!window._ppl) loadPeople(()=>officeRender()); officeRender(); panel.scrollTop=0; };
+  const t=panel.querySelector('#etTrain'), q=panel.querySelector('#etQuiz'), bk=panel.querySelector('#etBack');
+  if(t) t.onclick=()=>go('train'); if(q) q.onclick=()=>go('quiz'); if(bk) bk.onclick=()=>{ window._effForm=null; officeRender(); };
+  const f=panel.querySelector('#etF'); if(!f) return;
+  f.onsubmit=e=>{ e.preventDefault(); const fd=new FormData(f), d={action:window._effForm==='train'?'efftrain':'effquiz', farm:META.name};
+    fd.forEach((v,k)=>{ if(/^q\d+$/.test(k)) (d.ans=d.ans||{})[k]=(d.ans[k]?d.ans[k]+'|':'')+v; else d[k]=v; });
+    if(d.action==='effquiz'){ const miss=EFF_QUIZ.map((q,i)=>(d.ans||{})['q'+i]?null:i+1).filter(Boolean); if(miss.length){ toast('Please answer question'+(miss.length>1?'s ':' ')+miss.join(', ')); return; } }
+    const b=f.querySelector('button[type=submit]'); b.disabled=true; b.textContent='Saving…';
+    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d)}).then(r=>r.json()).then(r=>{
+      if(!r.ok){ toast(r.error||'Could not save'); b.disabled=false; b.textContent='Try again'; return; }
+      if(ENV&&r.efftrain) ENV.efftrain=r.efftrain;
+      if(d.action==='effquiz'){ const box=document.createElement('div'); box.className='eqres '+(r.pass?'ok':'bad');
+        box.innerHTML=`<b>${r.pass?'✓ Passed':'✕ Not passed yet'} – ${r.score}/${r.outOf}</b>${r.wrong&&r.wrong.length?'<div>Have another look at question'+(r.wrong.length>1?'s ':' ')+r.wrong.join(', ')+'. You can take the quiz again.</div>':''}<div>Saved and emailed to you, Dave and Johno.</div><button class="btn alt" type="button">Back to the checklist</button>`;
+        f.replaceWith(box); box.querySelector('button').onclick=()=>{ window._effForm=null; officeRender(); }; }
+      else { toast('Training form saved and emailed'); window._effForm=null; officeRender(); } })
+     .catch(()=>{ toast('No connection – try again'); b.disabled=false; b.textContent='Try again'; }); }; }
 // Nitrogen application conditions (Dave's rules): 3-day average soil temperature, rain in the next 72 h, wettest 24 h, beacon
 function nTile(){
   const f=ENV.fc||{}, t3=ENV.soilT3, r72=f.rain72, m24=f.max24, mo=new Date().getMonth()+1, early=mo>=6&&mo<=9, why=[]; let c='green';
@@ -2027,7 +2090,6 @@ function weatherBlock(){
 // ---- Management tasks (from "Gladvale Farms Ltd Dairy Management Tasks") ----
 const MT_START='2026-11-09', MT_TARGET=95;
 const MT=[  // id, task, freq D/W/M/A, how: photo | done | auto, tab (for auto), months (seasonal)
- ['grazing','Photo of the pasture grazing board','D','photo'],
  ['jobs','Photo of jobs to do / roster','D','photo'],
  ['fertmap','Photo of the fertiliser maps','D','photo'],
  ['effck','Effluent daily checklist (or "system not run today")','D','auto','ck'],
@@ -2064,13 +2126,15 @@ function mtMonth(y,m){   // compliance for one calendar month (m 1-12)
     if(t[2]==='D'){ for(let d=pd(first>MT_START?first:MT_START); ymdL(d)<=last&&ymdL(d)<=today; d.setDate(d.getDate()+1)) keys.push([ymdL(d),ymdL(d)<today]); }
     else if(t[2]==='W'){ for(let d=pd(first); ymdL(d)<=last; d.setDate(d.getDate()+1)) if(d.getDay()===0){ const sun=ymdL(d); if(sun>=MT_START&&monKey(sun)<=today) keys.push([monKey(sun),sun<today]); } }
     else keys.push([first.slice(0,7),last<today]);
-    let a=0,b=0; keys.forEach(([k,ended])=>{ const ok=ds.has(k); if(ended||ok){ b++; if(ok) a++; } }); due+=b; done+=a; per[t[0]]=[a,b]; });
+    let a=0,b=0; keys.forEach(([k,ended])=>{ const ok=ds.has(k)||(t[0]==='effck'&&ended);   // no checklist on a past day = effluent was not run (compliant)
+      if(ended||ok){ b++; if(ok) a++; } }); due+=b; done+=a; per[t[0]]=[a,b]; });
   return {due,done,pct:due?Math.round(done/due*100):null,per};
 }
 const pctCls=p=>p==null?'':p>=MT_TARGET?'ok':p>=85?'wrn':'bad';
 function mtStatus(t){ const today=ymdL(new Date()), now=new Date();
   if(t[2]==='A') return ['','as required'];
   if(mtNow(t)) return ['ok','✓ done '+(t[2]==='D'?'today':t[2]==='W'?'this week':'this month')];
+  if(t[0]==='effck') return ['','no checklist yet – effluent assumed NOT run today'];
   if(t[2]==='D') return ['bad','due today'];
   if(t[2]==='W'){ const left=(7-now.getDay())%7; return [left<=1?'bad':'wrn',left===0?'due today (Sunday)':`due by Sunday (${left} day${left===1?'':'s'})`]; }
   const left=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate(); return [left<=3?'bad':left<=7?'wrn':'',`due by month end (${left} days)`];
@@ -2220,14 +2284,15 @@ function smGraph(){
    <circle cx="${W}" cy="${y(s[s.length-1][1])}" r="3.5" fill="#1565c0"/></svg>`;
 }
 const BEACON_T={red:90,orange:80};   // must match BEACON in the Apps Script
-function officeChecklist(){
+function officeChecklist(){ return window._effForm?effFormHTML():officeChecklistMain()+effTrainSection(); }
+function officeChecklistMain(){
   const c=ckState(), L=c.last||{}, b=(ENV&&ENV.beacon)||'', fc=ENV&&ENV.fc, cal=(ENV&&ENV.calc)||{}, eff=by('farminfo').find(f=>f.properties.kind==='eff');
   const mx=L['Max run time (h)']||(eff?eff.properties.maxrun:''), cv=calcVals(cal);
   const yn=(id,q)=>`<div class="ckq"><span>${q}</span><label><input type="radio" name="${id}" value="Yes" checked> Yes</label><label><input type="radio" name="${id}" value="No"> No</label></div>`;
   let st;
   if(!c.loaded) st='<div class="ckst">Loading…</div>';
   else if(c.today) st=`<div class="ckst ${c.today['Permitted to start']==='Yes'?'ok':'bad'}">${c.today['Permitted to start']==='Yes'?'✓ Checklist completed today':'✕ Checklist completed today – NOT permitted to start'}<small>by ${ESC(c.today['Operator today'])} (signed ${ESC(c.today['Signed by'])}, ${ESC(String(c.today['Submitted']).slice(11))}) · beacon ${ESC(c.today['Beacon colour'])} · pod run ${ESC(c.today['Pod run time (min)'])} min · max run ${ESC(c.today['Max run time (h)'])} h · rain forecast ${ESC(c.today['Rain forecast today (mm)'])} mm</small><small>You can submit it again below if something changes.</small></div>`;
-  else st=`<div class="ckst bad">⚠ Not completed today<small>Must be completed before Lines 1–3 are started. Green wash can run without it.${c.last?` Last done ${ESC(c.last['Date'])} by ${ESC(c.last['Operator today'])}.`:''}</small>${mtNow(MT[3])?'<small>✓ Already recorded for today on Management tasks (checklist or “system not run today”).</small>':`<div style="margin-top:6px">${signerSel('nrName')} <button class="btn alt" id="ckNR" type="button" style="padding:4px 10px;font-size:12px">Lines 1–3 not running today</button></div>`}</div>`;
+  else st=`<div class="ckst">No checklist yet today – effluent assumed NOT run<small>Must be completed before Lines 1–3 are started. Green wash can run without it.${c.last?` Last done ${ESC(c.last['Date'])} by ${ESC(c.last['Operator today'])}.`:''}</small>${mtNow(MT[3])?'<small>✓ Already recorded for today on Management tasks (checklist or “system not run today”).</small>':`<div style="margin-top:6px">${signerSel('nrName')} <button class="btn alt" id="ckNR" type="button" style="padding:4px 10px;font-size:12px">Lines 1–3 not running today</button></div>`}</div>`;
   const fmt=v=>v==null||!isFinite(v)?'–':(Math.round(v*10)/10).toLocaleString('en-NZ');
   const lk=ENV?leakState():null;
   return `${st}${lk&&lk.al!=='ok'?`<div style="margin:0 16px">${leakLine()}</div>`:''}<form id="ckF" class="ckf" autocomplete="off">
@@ -2327,7 +2392,7 @@ function officeRender(){
   panel.querySelectorAll('.ofc').forEach(c=>c.onclick=()=>{ const s=sgData.find(x=>x.id===c.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} sgShow(s); });
   panel.querySelectorAll('[data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
-  if(OFTAB==='ck') ckWire();
+  if(OFTAB==='ck'){ ckWire(); effWire(panel); }
   if(OFTAB==='cam') camWire(panel);
   if(OFTAB==='pf') pfWire(panel);
   pfMapSync();
