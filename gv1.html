@@ -909,6 +909,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 @media(min-width:821px){.office .ofp .oftabs{flex-wrap:wrap;row-gap:4px}.office .ofp .oftabs button{flex:1 1 calc(25% - 4px);padding:7px 4px;font-size:13px;line-height:1.2;border-radius:8px 8px 0 0}.office.wide .ofp .oftabs button{flex:1 1 0}}
 .ntile{border:2px solid;border-left-width:8px;border-radius:10px;padding:8px 10px;margin:4px 0 6px;background:#fff}.ntile .nst{display:inline-block;color:#fff;font-weight:800;font-size:16px;padding:4px 12px;border-radius:14px}.ntile ul{list-style:none;margin:6px 0;padding:0;font-size:13px}.ntile li{padding:2px 0}.ntile li.g{color:#2e7d32}.ntile li.o{color:#e65100}.ntile li.r{color:#c62828;font-weight:600}.ntile small{color:#777;font-size:11px;display:block}
 .gtile{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:6px;margin:4px 0}.gtile>div{background:#f4f6f1;border-radius:8px;padding:6px 8px}.gtile .gmain{background:#e8f5e9;border:2px solid #2e7d32}.gtile small{display:block;color:#666;font-size:11px}.gtile b{font-size:22px;color:#1b5e20}.gtile span{display:block;font-size:11px;color:#666}
+.gtile .gar{font-style:normal;font-weight:800;font-size:13px;margin-left:6px;padding:2px 7px;border-radius:10px}.gar.up{background:#e8f5e9;color:#2e7d32}.gar.dn{background:#ffebee;color:#c62828}.gar.fl{background:#eceff1;color:#455a64}.gtile.g2{grid-template-columns:1fr 2.3fr}.gtile .gph{border:1px dashed #bbb;background:#fafafa}.gtile .lvchip{display:inline-block;margin-left:4px;vertical-align:middle}.gtile .gph b{color:#999}
 </style>
 </head>
 <body>
@@ -1033,7 +1034,7 @@ function officePF(){
   const totHa=ps.reduce((a,p)=>a+p.ha,0);
   const rows=ps.map(p=>({p,o:PFR.pads[String(p.num)]})).sort((a,b)=>PF.sort==='num'?a.p.num-b.p.num:(pfVal(b.o,PF.mode)||-1)-(pfVal(a.o,PF.mode)||-1));
   const lastWalk=Object.keys(MINDA.walks).sort().pop();
-  return `<div class="pf">
+  return `<div class="pf">${growTile()}
    <div class="pfmodes">${[['grow','🌱 Grass grown'],['n','🧪 Nitrogen applied <small>(placeholder)</small>'],['graze','🐄 Paddocks grazed <small>(placeholder)</small>']].map(([k,t])=>`<button data-pfm="${k}" class="${PF.mode===k?'on':''}">${t}</button>`).join('')}</div>
    <div class="pfp">${[['7d','Last 7 days'],['10d','Last 10 days'],['14d','Last 14 days'],['mtd','Month to date'],['season','Season to date']].map(([k,t])=>`<button data-pfp="${k}" class="${PF.preset===k?'on':''}">${t}</button>`).join('')}</div>
    <div class="pfd">From <input type="date" id="pfFrom" value="${PF.from}"> to <input type="date" id="pfTo" value="${PF.to}"></div>
@@ -1670,7 +1671,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script><!-- build 2026-11-12 14:10 -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script><!-- build 2026-11-12 14:40 -->
 </body></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
@@ -1702,36 +1703,52 @@ function envBlock(){
 }
 // ---- Pasture growth outlook: GV1 growth (MINDA farm walks) against Isla Bank soil temperature + soil moisture, fitted on the last 12 months
 let GROW=null, growLoading=false;
+const DRY=90;   // soil moisture (water-filled pores %) below this counts as drying – Isla Bank sits at 85–99% in a normal year
 function growLoad(){ if(GROW||growLoading||!STAFF.tok) return; growLoading=true; if(!MINDA) pfLoad();
-  serGet('soilT',365).then(t=>{ GROW={t:((t.sites||[])[0]||{}).pts||[]}; growLoading=false; if(OFTAB==='info') officeRender(); }).catch(()=>{ growLoading=false; }); }
+  Promise.all([serGet('soilT',365),serGet('sm',365)]).then(([t,m])=>{ GROW={t:((t.sites||[])[0]||{}).pts||[], m:((m.sites||[])[0]||{}).pts||[]}; growLoading=false; if(OFTAB==='info'||OFTAB==='pf') officeRender(); }).catch(()=>{ growLoading=false; }); }
 function walkGrowth(){   // farm growth for each walk-to-walk interval: trimmed mean of paddock regrowth (paddocks not grazed in between)
   const W=MINDA.walks, ds=Object.keys(W).sort(), out=[];
   for(let i=1;i<ds.length;i++){ const d0=ds[i-1], d1=ds[i], days=(new Date(d1)-new Date(d0))/864e5; if(days<4||days>28) continue;
     const v=[]; Object.keys(W[d1]).forEach(k=>{ if(!(k in W[d0])) return; const r=(W[d1][k]-W[d0][k])/days; if(r>0&&r<150) v.push(r); });
     if(v.length<8) continue; v.sort((a,b)=>a-b); const t=v.slice(Math.floor(v.length*.1),Math.ceil(v.length*.9)); out.push([d0,d1,t.reduce((a,b)=>a+b,0)/t.length]); }
   return out; }
-function growModel(){   // growth = a + b × soil temperature (average over each walk-to-walk period). Soil moisture at Isla Bank sits at 85–99% all year so adds nothing yet.
-  const T={}; GROW.t.forEach(p=>T[p[0]]=p[1]);
-  const iv=walkGrowth(), rows=iv.map(([d0,d1,g])=>{ const v=Object.keys(T).filter(k=>k>d0&&k<=d1).map(k=>T[k]); return v.length?[v.reduce((a,b)=>a+b,0)/v.length,g,d1]:null; }).filter(Boolean);
+function lsq(X,y){   // least squares for small models (Gaussian elimination)
+  const p=X[0].length, A=Array.from({length:p},()=>Array(p+1).fill(0));
+  X.forEach((x,r)=>{ for(let i=0;i<p;i++){ A[i][p]+=x[i]*y[r]; for(let j=0;j<p;j++) A[i][j]+=x[i]*x[j]; } });
+  for(let c=0;c<p;c++){ let m=c; for(let r=c+1;r<p;r++) if(Math.abs(A[r][c])>Math.abs(A[m][c])) m=r; [A[c],A[m]]=[A[m],A[c]]; if(Math.abs(A[c][c])<1e-9) return null;
+    for(let r=0;r<p;r++) if(r!==c){ const f=A[r][c]/A[c][c]; for(let k=c;k<=p;k++) A[r][k]-=f*A[c][k]; } }
+  return A.map((r,i)=>r[p]/r[i]); }
+function growModel(){   // growth = a + b × soil temperature (− c × dryness once dry spells are in the record)
+  const T={}, M={}; GROW.t.forEach(p=>T[p[0]]=p[1]); GROW.m.forEach(p=>M[p[0]]=p[1]);
+  const mean=(o,d0,d1)=>{ const v=Object.keys(o).filter(k=>k>d0&&k<=d1).map(k=>o[k]); return v.length?v.reduce((a,b)=>a+b,0)/v.length:null; };
+  const iv=walkGrowth(), rows=iv.map(([d0,d1,g])=>[mean(T,d0,d1),mean(M,d0,d1),g,d1]).filter(r=>r[0]!=null);
   if(rows.length<10) return {iv, n:rows.length};
-  const n=rows.length, mx=rows.reduce((a,r)=>a+r[0],0)/n, my=rows.reduce((a,r)=>a+r[1],0)/n, b=rows.reduce((a,r)=>a+(r[0]-mx)*(r[1]-my),0)/rows.reduce((a,r)=>a+(r[0]-mx)**2,0), a0=my-b*mx;
-  const pred=t=>a0+b*t, err=rows.map(r=>r[1]-pred(r[0])), rmse=Math.sqrt(err.reduce((a,e)=>a+e*e,0)/n), r2=1-err.reduce((a,e)=>a+e*e,0)/rows.reduce((a,r)=>a+(r[1]-my)**2,0);
-  return {iv, n, pred, rmse, r2, b, from:rows[0][2]}; }
+  const dry=r=>r[1]==null?0:Math.max(0,DRY-r[1]), dryN=rows.filter(r=>dry(r)>1).length, useDry=dryN>=3;
+  const k=lsq(rows.map(r=>useDry?[1,r[0],dry(r)]:[1,r[0]]),rows.map(r=>r[2])); if(!k) return {iv, n:rows.length};
+  const pred=(t,m)=>k[0]+k[1]*t+(useDry&&m!=null?k[2]*Math.max(0,DRY-m):0);
+  const err=rows.map(r=>r[2]-pred(r[0],r[1])), my=rows.reduce((a,r)=>a+r[2],0)/rows.length, rmse=Math.sqrt(err.reduce((a,e)=>a+e*e,0)/rows.length), r2=1-err.reduce((a,e)=>a+e*e,0)/rows.reduce((a,r)=>a+(r[2]-my)**2,0);
+  return {iv, n:rows.length, pred, rmse, r2, b:k[1], c:useDry?k[2]:null, useDry, dryN, from:rows[0][3]}; }
+function avgCover(d){ const W=MINDA.walks[d]||{}, A=MINDA.area||{}; let a=0,s=0; Object.keys(W).forEach(k=>{ const w=+A[k]||1; a+=w; s+=W[k]*w; }); return a?s/a:null; }
 function growTile(){
-  if(!STAFF.tok) return '';
+  if(!STAFF.tok||!ENV) return '';
   if(!MINDA||!GROW){ growLoad(); return `<div class="ofr"><div class="ofcat">Pasture growth outlook <span class="lvchip ph">early model</span></div><div class="ntile" style="border-color:#9ccc65"><small>Loading MINDA farm walks and soil history…</small></div></div>`; }
   const G=growModel(), iv=G.iv, last=iv[iv.length-1], doy=d=>{ const x=new Date(d+'T12:00:00'); return Math.round((x-new Date(x.getFullYear(),0,1))/864e5); }, td=new Date(), tdoy=doy(ymdL(td)), mid=r=>ymdL(new Date((new Date(r[0])-0+(new Date(r[1])-0))/2));
   const near=(r,dd)=>{ const x=Math.abs(doy(mid(r))-dd); return Math.min(x,365-x)<=10; };
   const norm=iv.filter(r=>r[0]>='2020-01-01'&&r[1]<ymdL(new Date(td-200*864e5))&&near(r,(tdoy+3)%365)), normV=norm.length?norm.reduce((a,r)=>a+r[2],0)/norm.length:null;
   const ly=ymdL(new Date(td-365*864e5)), lyR=iv.filter(r=>r[0]<=ly&&r[1]>=ly)[0]||iv.filter(r=>near(r,tdoy)&&r[1].slice(0,4)===ly.slice(0,4))[0];
-  let pv=null, lo=null, hi=null; if(G.pred&&ENV.soilT3!=null){ pv=Math.max(0,G.pred(ENV.soilT3)); lo=Math.max(0,pv-G.rmse); hi=pv+G.rmse; }
+  let pv=null, lo=null, hi=null; if(G.pred&&ENV.soilT3!=null){ pv=Math.max(0,G.pred(ENV.soilT3,ENV.sm)); lo=Math.max(0,pv-G.rmse); hi=pv+G.rmse; }
   const R0=v=>v==null?'–':Math.round(v), f=d=>new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short'});
+  const lg=last&&last[2], dir=pv==null||lg==null?null:pv>lg+3?'up':pv<lg-3?'down':'flat';
+  const arrow=dir==='up'?'<em class="gar up">▲ increase</em>':dir==='down'?'<em class="gar dn">▼ decrease</em>':dir==='flat'?'<em class="gar fl">▶ about the same</em>':'';
+  const lastWalk=Object.keys(MINDA.walks).sort().pop(), cov=avgCover(lastWalk), dryNow=ENV.sm!=null&&ENV.sm<DRY;
   return `<div class="ofr"><div class="ofcat">Pasture growth outlook <span class="lvchip ph">early model</span></div>
-   <div class="gtile"><div class="gmain"><small>Predicted growth, next 7 days</small><b>${R0(pv)}</b><span>kg DM/ha/day${pv!=null?` · likely ${R0(lo)}–${R0(hi)}`:''}</span></div>
-    <div><small>Last farm walks${last?` (${f(last[0])} – ${f(last[1])})`:''}</small><b>${R0(last&&last[2])}</b><span>measured</span></div>
+   <div class="gtile"><div class="gmain"><small>Predicted growth, next 7 days</small><b>${R0(pv)}</b> ${arrow}<span>kg DM/ha/day${pv!=null?` · likely ${R0(lo)}–${R0(hi)}`:''}${lg!=null&&pv!=null?` · vs ${R0(lg)} last walks`:''}</span></div>
+    <div><small>Last farm walks${last?` (${f(last[0])} – ${f(last[1])})`:''}</small><b>${R0(lg)}</b><span>measured</span></div>
     <div><small>This time last year</small><b>${R0(lyR&&lyR[2])}</b><span>${lyR?f(lyR[0])+' – '+f(lyR[1])+' '+lyR[1].slice(0,4):''}</span></div>
     <div><small>Average for this week</small><b>${R0(normV)}</b><span>${norm.length} walks, 2020–${ly.slice(0,4)}</span></div></div>
-   <small style="color:#777;font-size:11px;display:block;margin:2px 0 6px">${G.pred?`Based on the 3-day soil temperature at Isla Bank (${ENV.soilT3}°): each extra degree has meant about ${G.b.toFixed(1)} kg DM/ha/day more growth on GV1. Fitted to ${G.n} GV1 farm-walk periods since ${f(G.from)} (MINDA) – accuracy about ±${R0(G.rmse)} kg, explains ${Math.round(G.r2*100)}% of the ups and downs. Gets better as more seasons of soil data are saved, and rainfall/forecast can be added once there's a dry summer in the record.`:`Not enough overlapping soil-temperature and farm-walk data yet to fit the model (${G.n} periods).`}</small></div>`;
+   <div class="gtile g2"><div><small>Average pasture cover now</small><b>${R0(cov)}</b><span>kg DM/ha · farm walk ${f(lastWalk)}</span></div>
+    <div class="gph"><small>Average cover next week <span class="lvchip ph">placeholder</span></small><b>–</b><span>Will be: cover now + 7 days × predicted growth − what the grazing board says the herd will eat (hectares grazed × cover eaten). Fills in once GV1 is on the grazing board.</span></div></div>
+   <small style="color:#777;font-size:11px;display:block;margin:2px 0 6px">${G.pred?`Inputs: 3-day soil temperature at Isla Bank ${ENV.soilT3}° and soil moisture ${ENV.sm!=null?ENV.sm+'%':'–'} (${dryNow?'drying – below '+DRY+'%':'not limiting'}). Fitted to ${G.n} GV1 farm-walk periods since ${f(G.from)} (MINDA), accuracy about ±${R0(G.rmse)} kg, explains ${Math.round(G.r2*100)}% of the ups and downs. ${G.useDry?`Dry spells in the record (${G.dryN} periods): each % below ${DRY}% has cut growth by about ${(-G.c).toFixed(1)} kg.`:`Soil moisture is in the model but there hasn't been a dry spell since the soil records started (Nov 2025), so it can't weigh it yet – it will start reducing the prediction automatically once dry periods are recorded.`} Soil temperature also carries the seasonal effects that go with it (day length, sunshine), so treat it as a guide.`:`Not enough overlapping soil and farm-walk data yet (${G.n} periods).`}</small></div>`;
 }
 // Nitrogen application conditions (Dave's rules): 3-day average soil temperature, rain in the next 72 h, wettest 24 h, beacon
 function nTile(){
