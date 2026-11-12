@@ -907,6 +907,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .sgpin{width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .sgpin span{display:block;transform:rotate(45deg);color:#fff;font-weight:900;font-size:13px;text-align:center;line-height:18px}
 @media(min-width:821px){.office .ofp .oftabs{flex-wrap:wrap;row-gap:4px}.office .ofp .oftabs button{flex:1 1 calc(25% - 4px);padding:7px 4px;font-size:13px;line-height:1.2;border-radius:8px 8px 0 0}.office.wide .ofp .oftabs button{flex:1 1 0}}
+.ntile{border:2px solid;border-left-width:8px;border-radius:10px;padding:8px 10px;margin:4px 0 6px;background:#fff}.ntile .nst{display:inline-block;color:#fff;font-weight:800;font-size:16px;padding:4px 12px;border-radius:14px}.ntile ul{list-style:none;margin:6px 0;padding:0;font-size:13px}.ntile li{padding:2px 0}.ntile li.g{color:#2e7d32}.ntile li.o{color:#e65100}.ntile li.r{color:#c62828;font-weight:600}.ntile small{color:#777;font-size:11px;display:block}
 </style>
 </head>
 <body>
@@ -1021,7 +1022,7 @@ function pfSheet(num){ const o=PFR&&PFR.pads[String(num)], f=by('paddocks').find
     <p><b>Grazed:</b> ${o&&o.gz.length?o.gz.length+' time'+(o.gz.length>1?'s':'')+'</p><ul>'+o.gz.map(g=>`<li>between the walks on ${g[0]} and ${g[1]}</li>`).join('')+'</ul>':'not grazed between farm walks in this period</p>'}`); }
 function pfLoad(){ if(MINDA||pfLoading||!STAFF.tok) return; pfLoading=true; pfErr='';
   fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'minda',farm:META.name})}).then(r=>r.json())
-    .then(r=>{ pfLoading=false; if(r.ok){ MINDA=r.data; } else pfErr=r.error||'Could not load the MINDA data'; if(OFTAB==='pf') officeRender(); })
+    .then(r=>{ pfLoading=false; if(r.ok){ MINDA=r.data; } else pfErr=r.error||'Could not load the MINDA data'; if(OFTAB==='pf'||(OFTAB==='info'&&r.ok)) officeRender(); })
     .catch(()=>{ pfLoading=false; pfErr='No connection'; if(OFTAB==='pf') officeRender(); }); }
 function pfMapSync(){ if(OFTAB==='pf'&&MINDA){ pfDraw(); if(!map.hasLayer(pfLayer)) pfLayer.addTo(map); } else if(map.hasLayer(pfLayer)) map.removeLayer(pfLayer); }
 function officePF(){
@@ -1668,7 +1669,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script><!-- build 2026-11-12 10:36 -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script><!-- build 2026-11-12 13:25 -->
 </body></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
@@ -1696,7 +1697,29 @@ function envBlock(){
      <tr><td>${ESC(r.month||'This month')} to date <small>(${r.day||''} days)</small></td><td><b>${r.mtd??'–'} mm</b></td><td>${r.mtdNorm!=null?`${r.mtdNorm} mm<small>(month avg ${r.monthAvg})</small>`:''}</td><td>${pc(r.mtdPct)}</td></tr>
      <tr><td>${ESC(r.prevMonth||'Last month')}</td><td><b>${r.prev??'–'} mm</b></td><td>${r.prevAvg!=null?r.prevAvg+' mm':''}</td><td>${pc(r.prevPct)}</td></tr>
      <tr><td>Season to date <small>(from ${ESC(r.seasonFrom||'1 June')})</small></td><td><b>${r.season??'–'} mm</b></td><td>${r.seasonNorm!=null?Math.round(r.seasonNorm)+' mm':''}</td><td>${pc(r.seasonPct)}</td></tr>
-     <tr><td colspan="4" class="rn">Otahuti rain gauge (3 km from Isla Bank). Normal = ES long-term average for the same period; month to date is pro-rata</td></tr></table></div></div>`;
+     <tr><td colspan="4" class="rn">Otahuti rain gauge (3 km from Isla Bank). Normal = ES long-term average for the same period; month to date is pro-rata</td></tr></table></div></div>${nTile()}`;
+}
+// Nitrogen application conditions (Dave's rules): 3-day average soil temperature, rain in the next 72 h, wettest 24 h, beacon
+function nTile(){
+  const f=ENV.fc||{}, t3=ENV.soilT3, r72=f.rain72, m24=f.max24, mo=new Date().getMonth()+1, early=mo>=6&&mo<=9, why=[]; let c='green';
+  const lvl=x=>{ if(x==='red') c='red'; else if(x==='orange'&&c!=='red') c='orange'; };
+  if(t3==null){ lvl('orange'); why.push(['o','Soil temperature not available yet']); }
+  else if(t3<7){ lvl('red'); why.push(['r',`Soil ${t3}° (3-day average) – below 7°`]); }
+  else if(t3<=9){ lvl('orange'); why.push(['o',`Soil ${t3}° (3-day average) – 7–9° is marginal`]); }
+  else why.push(['g',`Soil ${t3}° (3-day average) – above 9°`]);
+  if(r72==null){ lvl('orange'); why.push(['o','Rain forecast not available']); }
+  else if(m24!=null&&m24>40){ lvl('red'); why.push(['r',`${m24} mm in 24 h from ${ESC(f.max24From||'')} – over 40 mm, likely to wash off`]); }
+  else if(early){ if(r72>=20){ lvl('orange'); why.push(['o',`${r72} mm forecast in the next 72 h – 20 mm or more on wet Jun–Sep soils`]); } else why.push(['g',`${r72} mm forecast in the next 72 h – under 20 mm (Jun–Sep, soils already moist)`]); }
+  else if(r72<5){ lvl('red'); why.push(['r',`Only ${r72} mm forecast in the next 72 h – wait for rain`]); }
+  else why.push(['g',`${r72} mm forecast in the next 72 h (wettest 24 h ${m24} mm)`]);
+  if(ENV.beacon==='Red'){ lvl('red'); why.push(['r','Soil beacon is Red – saturated, runoff risk']); }
+  let lastN='';
+  if(MINDA){ const ns=MINDA.fert.filter(x=>x[3]>0).map(x=>x[0]).sort(); const d=ns[ns.length-1]; if(d){ const n=Math.round((Date.now()-new Date(d+'T12:00:00'))/864e5); lastN=`Last nitrogen on the farm: ${d} (${n} day${n===1?'':'s'} ago, MINDA)`; } }
+  else if(STAFF.tok) pfLoad();
+  const lab={green:'Good to apply',orange:'Marginal',red:"Don't apply"}[c], col={green:'#2e7d32',orange:'#ef6c00',red:'#c62828'}[c];
+  return `<div class="ofr"><div class="ofcat">Nitrogen application conditions <span class="lvchip live">● live</span></div>
+   <div class="ntile" style="border-color:${col}"><div class="nst" style="background:${col}">${lab}</div><ul>${why.map(w=>`<li class="${w[0]}">${w[0]==='g'?'✓':w[0]==='o'?'●':'✕'} ${w[1]}</li>`).join('')}</ul>
+   <small>${lastN?lastN+' · ':''}Rules: green = soil over 9° (3-day average) with rain due in 72 h${early?' (Jun–Sep: under 20 mm)':''}; orange = 7–9° or marginal rain; red = under 7°, over 40 mm in 24 h${early?'':', no rain due'} or beacon Red. Forecast: Yr.</small></div></div>`;
 }
 function officeFarmInfo(){
   const fs=by('farminfo'), K=k=>{ const v=fs.filter(f=>f.properties.kind===k); return k==='vat'?v.sort((a,b)=>a.properties.name.localeCompare(b.properties.name,'en',{numeric:true})):k==='tank'?v.sort((a,b)=>(/^Dairy/.test(b.properties.name))-(/^Dairy/.test(a.properties.name))):v; };
