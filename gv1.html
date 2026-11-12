@@ -963,6 +963,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .cwwhp>div{margin:4px 0;padding:6px 10px;border-radius:8px;font-size:13px}.cwwhp .bad{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}.cwwhp .wrn{background:#fff4e5;color:#8a5000;border:1px solid #ffcc80}.cwwhp .ok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}
 .cwt td.cwneed{background:#ffebee}.cwt td.cwtx select{max-width:120px}
 .idf{border:1px solid #d3ddd5;border-radius:10px;background:#f7faf8;padding:10px;margin:8px 0}.idt td{vertical-align:top}
+.pflab.whpl{background:#b71c1c!important;color:#fff!important}.pflab.nfl{background:#e65100!important;color:#fff!important}
 </style>
 </head>
 <body>
@@ -1040,7 +1041,7 @@ const paddocks = gj('paddocks',{style:padStyle,onEachFeature:(f,l)=>{
   l.on('click',e=>{L.DomEvent.stopPropagation(e);selectPaddock(f.properties.num,false);});
 }});
 // ---- Pasture & fertiliser (office view tab): per-paddock grass grown, N applied and paddocks grazed over a date range. MINDA data, signed-in staff only.
-const pfLayer=L.layerGroup();
+const pfLayer=L.layerGroup(), cropLayer=L.layerGroup(), whpLayer=L.layerGroup(), nofertLayer=L.layerGroup();   // crops / withholding / sown-no-fert come from the cultivation whiteboard
 let MINDA=null, pfLoading=false, pfErr='';
 const PF={preset:'4w',from:'',to:'',mode:'grow',sort:'num'};
 const pfYmd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -1330,6 +1331,9 @@ const LAYERS = [
   {id:'offal', name:'Offal / rubbish pits', cnt:by('offal').length+' pits (with years)', sw:SVG_OFFAL, on:false, layer:icoPt('offal',SVG_OFFAL,22,22,'Offal / rubbish pit')},
   {grp:'Winter management'},
   {id:'wsupp', name:'Winter supplement rows', cnt:by('wsupp').length+' rows – arrows show grazing direction', sw:'<i style="background:#1b5e20;height:5px"></i>', on:false, layer:wsuppLayer()},
+  {id:'crops', name:'Crops & cultivation', cnt:'crop type and progress – from the cultivation whiteboard (staff sign-in)', sw:'<i class="box" style="background:linear-gradient(90deg,#ab47bc 50%,#7cb342 50%)"></i>', on:false, layer:cropLayer},
+  {id:'whp', name:'Spray withholding', cnt:'paddocks that must not be grazed yet', sw:'<i class="box" style="background:#e53935;opacity:.7"></i>', on:false, layer:whpLayer},
+  {id:'nofert', name:'Sown – no fertiliser yet', cnt:'drilled but no base or side-dressing fert recorded', sw:'<i class="box" style="background:repeating-linear-gradient(45deg,#ff6f00 0 3px,#fff3e0 3px 6px)"></i>', on:false, layer:nofertLayer},
   {grp:'Dairy shed & barn services (2019 plan)'},
   {id:'sbwashdown', name:'Washdown', cnt:'', sw:'<i style="background:#ffa000;height:3px"></i>', on:false, layer:Ln('sbwashdown','Washdown (shed & barn, 2019 plan)',{color:'#ffa000',weight:3,dashArray:'5 4'})},
   {id:'sbeffpipe', name:'Effluent pipes', cnt:'to the effluent shed at the sand traps', sw:'<i style="background:#00897b"></i>', on:false, layer:Ln('sbeffpipe','Effluent pipe (shed & barn, 2019 plan)',{color:'#00897b',weight:3})},
@@ -1381,7 +1385,7 @@ const VIEW = new URLSearchParams(location.search).get('view') || '';
 const STKEY = 'gvmap.layers.v2' + (VIEW ? '.'+VIEW : '');
 let state = {};
 try{ state = JSON.parse(localStorage.getItem(STKEY)||'{}'); }catch(e){}
-const order = ['effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','camera','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
+const order = ['effarea','csa','lanes','creek','fencedww','buildings','yards','cowshed','pond','paddocks','crops','nofert','whp','wsupp','trees','tiles','maindrain','tilelabel','cables','airline','effdrain','power','effpipe',...Object.keys(WATER_COL).map(s=>'w'+s.replace(/\W/g,'')),'hydrant','trough','valve','gtap','bore','divined','effpit','septic','septicinfo','storm','inspect','bridge','camera','riparian','offal','houses','sbwashdown','sbeffpipe','sbdrain','sbtiles','wb0','wb1','wb2','wb3','wb4','wb5','wb6','hzarea','hzaddr','hzhaz','hzemerg','mapnote','farminfo','sghist','sugg'];
 const MINZ = {trough:15, trees:15, riparian:14.5, valve:15.5, hydrant:15, gtap:16, effpit:16, inspect:16, storm:16, septic:16, septicinfo:16, offal:15, sghist:16, hzaddr:14.5, divined:15, camera:17};
 if(URLVIEW==='water'){ delete MINZ.trough; delete MINZ.valve; }
 
@@ -1392,6 +1396,7 @@ function syncLayers(){
     if(on){ if(!map.hasLayer(d.layer)) d.layer.addTo(map);} else map.removeLayer(d.layer); });
   order.forEach(id=>{ const d=LAYERS.find(x=>x.id===id); if(map.hasLayer(d.layer) && d.layer.bringToFront) d.layer.bringToFront(); });
   updateLabels();
+  if(['crops','whp','nofert'].some(isOn)&&STAFF.tok&&!CULT&&typeof cwLoad==='function') cwLoad();
   if(typeof renderKey==='function') renderKey();
 }
 function isOn(id){ const d=LAYERS.find(x=>x.id===id); if(!d) return false; return id in state ? state[id] : d.on; }
@@ -1724,7 +1729,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13e crops, seasons, tap = today, withholding, suggestions tab -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13f winter view: crops, withholding, sown-no-fert layers -->
 </html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
@@ -2653,7 +2658,7 @@ const CW_ST={ready:['Ready to go','----','#ef6c00'],wet:['Too wet','o','#1565c0'
 // starting paddocks for GV1 (from the "202526 Crop/Re-grass" tab of Regrassing/Stock Feed & Wintering Plans) – edit freely
 const CW_SEED={GV1:[['32','3.1','Turnips'],['35','3.31','Turnips'],['36','3.24','Turnips'],['76','4.77','Grass'],['77','4.8','Grass'],['38','4.7','Grass'],['39','4.1','Grass']]};
 function cwPost(body){ return fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({action:'cult',farm:META.name,season:CW_SEASON||''},body))}).then(r=>r.json()); }
-function cwLoad(){ if(cwLoading||!STAFF.tok||cwTimer) return; cwLoading=true; cwPost({}).then(r=>{ cwLoading=false; if(r.ok){ CW_SEASON=r.season; CW_CUR=r.current; CW_SEASONS=r.seasons||[]; CULT=r.board||{season:r.season,rows:r.season===r.current?(CW_SEED[META.name]||[]).map(([p,a,c])=>({pdk:p,area:a,crop:c,c:{}})):[],seeded:r.season===r.current}; if(r.tasks&&ENV) ENV.tasks=r.tasks; if(PFG.includes(OFTAB)||OFTAB==='mt') officeRender(); } }).catch(()=>{ cwLoading=false; }); }
+function cwLoad(){ if(cwLoading||!STAFF.tok||cwTimer) return; cwLoading=true; cwPost({}).then(r=>{ cwLoading=false; if(r.ok){ CW_SEASON=r.season; CW_CUR=r.current; CW_SEASONS=r.seasons||[]; CULT=r.board||{season:r.season,rows:r.season===r.current?(CW_SEED[META.name]||[]).map(([p,a,c])=>({pdk:p,area:a,crop:c,c:{}})):[],seeded:r.season===r.current}; if(r.tasks&&ENV) ENV.tasks=r.tasks; cwMapDraw(); if(PFG.includes(OFTAB)||OFTAB==='mt') officeRender(); } }).catch(()=>{ cwLoading=false; }); }
 function cwBadge(){ if(!CULT){ if(STAFF.tok&&ENV&&PFG.includes(OFTAB)) cwLoad(); return ''; } let r=0,w=0; CULT.rows.forEach(x=>Object.values(x.c).forEach(v=>{ if(v==='ready') r++; if(v==='wet') w++; })); return r?`<span class="ckb wrn">${r} ready</span>`:''; }
 const cwCell=v=>{ if(!v) return ['','','']; if(CW_ST[v]) return [CW_ST[v][1],CW_ST[v][0],CW_ST[v][2]]; if(/^\d{4}-\d{2}-\d{2}$/.test(v)){ const d=new Date(v+'T12:00:00'); return ['✓ '+d.getDate()+' '+d.toLocaleDateString('en-NZ',{month:'short'}),'Done '+d.toLocaleDateString('en-NZ'),'#2e7d32']; } return [v,v,'#333']; };
 function officeCult(){
@@ -2668,7 +2673,7 @@ function officeCult(){
    ${(()=>{ const w=R.map(r=>[r,cwWhp(r)]).filter(x=>x[1]); return w.length?`<div class="cwwhp">${w.map(([r,x])=>x.need?`<div class="bad">⚠ Paddock ${ESC(r.pdk)} was sprayed ${dshort(x.sp)} – enter the withholding period (days) so we know when it expires.</div>`:x.active?`<div class="wrn">⏳ Paddock ${ESC(r.pdk)}: spray withholding until <b>${new Date(x.end+'T12:00:00').toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</b> (${x.days} days from ${dshort(x.sp)}) – do not graze or harvest before then.</div>`:`<div class="ok">✓ Paddock ${ESC(r.pdk)}: withholding period ended ${dshort(x.end)}.</div>`).join('')}</div>`:''; })()}
    <div class="cwkey">${Object.keys(CW_ST).map(k=>`<span><i style="color:${CW_ST[k][2]}">${CW_ST[k][1]}</i> ${CW_ST[k][0]}</span>`).join('')}<span><i style="color:#2e7d32">✓</i> Done (date)</span></div>
    <div class="rowrap cwwrap"><table class="cwt"><tr><th class="cwp">Paddock</th>${CW_COLS.map(c=>`<th>${c[1]}</th>`).join('')}<th>Progress</th><th></th></tr>
-    ${R.map((r,i)=>`<tr><td class="cwp"><b>${ESC(r.pdk)}</b>${r.area?`<small>${ESC(r.area)} ha</small>`:''}</td>${CW_COLS.map(c=>{ const v=r.c[c[0]]||(c[0]==='crop'?r.crop:'');
+    ${R.map((r,i)=>`<tr><td class="cwp"><b>${ESC(r.pdk)}</b>${r.area?`<small>${ESC(r.area)} ha</small>`:''}${by('paddocks').some(f=>String(f.properties.num)===String(r.pdk).trim())?'':'<small style="color:#c62828">not on the map</small>'}</td>${CW_COLS.map(c=>{ const v=r.c[c[0]]||(c[0]==='crop'?r.crop:'');
       if(c[0]==='crop') return `<td class="cwtx"><select data-cwt="${i}|crop"><option value="">–</option>${CW_CROPS.concat(r.crop&&!CW_CROPS.includes(r.crop)?[r.crop]:[]).map(x=>`<option ${x===r.crop?'selected':''}>${ESC(x)}</option>`).join('')}</select></td>`;
       if(c[0]==='whp'){ const x=cwWhp(r); return `<td class="cwtx ${x&&x.need?'cwneed':''}"><input data-cwt="${i}|whp" inputmode="numeric" placeholder="days" value="${ESC(v)}" style="width:52px">${x&&!x.need?`<small style="display:block;color:${x.active?'#c62828':'#2e7d32'}">${x.active?'until':'ended'} ${dshort(x.end)}</small>`:''}</td>`; }
       if(c[2]==='text') return `<td class="cwtx"><input data-cwt="${i}|${c[0]}" value="${ESC(v)}"></td>`;
@@ -2679,7 +2684,22 @@ function officeCult(){
    <div class="roadd"><input id="cwNew" placeholder="Paddock number" maxlength="10" style="max-width:140px"><input id="cwArea" placeholder="ha (fills in)" maxlength="6" style="max-width:100px"><select id="cwCrop"><option value="">Crop…</option>${CW_CROPS.map(x=>`<option>${x}</option>`).join('')}</select><button class="btn" id="cwAdd">+ Add paddock</button></div>
    <p class="note">Saved on the farm sheet (every change is listed on the “Cultivation whiteboard log” tab). Columns and key follow the Cultivation Board Template.</p></div>`;
 }
-function cwSave(now){ clearTimeout(cwTimer); CULT.seeded=false; cwTimer=setTimeout(()=>{ cwTimer=null; const name=(typeof signerName==='function'&&signerName('mtName','mtOther'))||(()=>{ try{ return localStorage.getItem('gvmap.signer')||''; }catch(e){ return ''; } })()||'office view';
+const CROP_COL={Grass:'#7cb342',Turnips:'#ab47bc',Swedes:'#6a1b9a',Kale:'#00897b','Chou moellier':'#26a69a','Fodder beet':'#d81b60',Rape:'#fdd835',Oats:'#ffb300',Barley:'#f9a825',Chicory:'#42a5f5',Plantain:'#5c6bc0',Clover:'#ec407a',Maize:'#ff7043',Other:'#8d6e63'};
+const CW_DRILL=['oats','grass','beet','other'], CW_FERT=['bfDone','sd1Done','sd2Done'], isD=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'');
+function cwProg(r){ const v=CW_COLS.filter(c=>c[2]==='op').map(c=>r.c[c[0]]||''), need=v.filter(x=>x&&x!=='nr'&&x!=='cx'); return need.length?Math.round(need.filter(isD).length/need.length*100):null; }
+function cwMapDraw(){ [cropLayer,whpLayer,nofertLayer].forEach(l=>l.clearLayers()); if(!CULT) return;
+  const P=n=>by('paddocks').find(f=>String(f.properties.num)===String(n).trim()), td=ymdL(new Date());
+  CULT.rows.forEach(r=>{ const f=P(r.pdk); if(!f) return; const fc={type:'FeatureCollection',features:[f]}, col=CROP_COL[r.crop]||'#8d6e63', pg=cwProg(r), x=cwWhp(r);
+    const sown=CW_DRILL.filter(k=>isD(r.c[k])), fert=CW_FERT.some(k=>isD(r.c[k]));
+    cropLayer.addLayer(L.geoJSON(fc,{style:{color:'#fff',weight:1.5,fillColor:col,fillOpacity:.6},onEachFeature:(ft,l)=>{ l.bindTooltip(`${ESC(r.crop||'Crop?')}${pg!=null?' · '+pg+'%':''}`,{permanent:true,direction:'center',className:'pflab'}); l.on('click',e=>{ L.DomEvent.stopPropagation(e); cwPadSheet(r); }); }}));
+    if(x&&(x.need||x.active)) whpLayer.addLayer(L.geoJSON(fc,{style:{color:'#b71c1c',weight:3,fillColor:'#e53935',fillOpacity:.45,dashArray:x.need?'6 4':null},onEachFeature:(ft,l)=>{ l.bindTooltip(x.need?'Sprayed – WHP?':'No grazing until '+dshort(x.end),{permanent:true,direction:'bottom',className:'pflab whpl'}); l.on('click',e=>{ L.DomEvent.stopPropagation(e); cwPadSheet(r); }); }}));
+    if(sown.length&&!fert) nofertLayer.addLayer(L.geoJSON(fc,{style:{color:'#e65100',weight:3,fillColor:'#ff6f00',fillOpacity:.35,dashArray:'2 5'},onEachFeature:(ft,l)=>{ l.bindTooltip('Sown – no fert',{permanent:true,direction:'top',className:'pflab nfl'}); l.on('click',e=>{ L.DomEvent.stopPropagation(e); cwPadSheet(r); }); }})); }); }
+function cwPadSheet(r){ const x=cwWhp(r), pg=cwProg(r), sown=CW_DRILL.filter(k=>isD(r.c[k])), fert=CW_FERT.some(k=>isD(r.c[k]));
+  openSheet(`<h2>Paddock ${ESC(r.pdk)} – ${ESC(r.crop||'crop not set')}</h2><div class="sub">${r.area?ESC(r.area)+' ha · ':''}Cultivation whiteboard ${ESC((CULT.season||'').replace('-','–'))}${pg!=null?' · '+pg+'% done':''}</div>
+   ${x?(x.need?`<p class="tbad">⚠ Sprayed ${dshort(x.sp)} – withholding period not entered.</p>`:x.active?`<p class="tbad"><b>Do not graze or harvest until ${new Date(x.end+'T12:00:00').toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</b> (sprayed ${dshort(x.sp)}, ${x.days}-day withholding).</p>`:`<p class="tok">✓ Withholding ended ${dshort(x.end)}.</p>`):''}
+   ${sown.length&&!fert?'<p class="twrn">● Sown but no base fertiliser or side dressing recorded yet.</p>':''}
+   <table class="bgd" style="width:100%">${CW_COLS.filter(c=>c[0]!=='crop'&&(r.c[c[0]])).map(c=>`<tr><td>${ESC(c[1])}</td><td>${c[2]==='op'?ESC(cwCell(r.c[c[0]])[1]):ESC(r.c[c[0]])}</td></tr>`).join('')||'<tr><td>Nothing recorded yet</td></tr>'}</table>`); }
+function cwSave(now){ clearTimeout(cwTimer); CULT.seeded=false; cwMapDraw(); cwTimer=setTimeout(()=>{ cwTimer=null; const name=(typeof signerName==='function'&&signerName('mtName','mtOther'))||(()=>{ try{ return localStorage.getItem('gvmap.signer')||''; }catch(e){ return ''; } })()||'office view';
   cwPost({name,set:{rows:CULT.rows}}).then(r=>{ if(!r.ok) return toast(r.error||'Whiteboard not saved'); if(!cwTimer&&r.board) CULT=r.board; if(r.tasks&&ENV) ENV.tasks=r.tasks; }).catch(()=>toast('No connection – whiteboard not saved')); }, now?0:900); }
 function cwWire(panel){
   const g=id=>panel.querySelector(id);
@@ -2963,7 +2983,7 @@ const VIEWS = [
   {k:'env', n:'Riparian & environment', d:'Plantings, trees, waterways, CSAs', ids:()=>['paddocks','riparian','trees','fencedww','csa','creek','offal']},
   {k:'hs', n:'Health & safety', d:'Hazards, first aid, assembly point, power', ids:()=>['paddocks','hzhaz','hzemerg','hzarea','hzaddr','power','cables','lanes','buildings','pond']},
   {k:'shed', n:'Dairy shed', d:'Shed & barn services, levels, cameras', ids:()=>['sbwashdown','sbeffpipe','sbdrain','sbtiles','cables','pond','buildings','cowshed','yards','lanes','farminfo','effpit','effdrain','valve','hzhaz','hzemerg','camera']},
-  {k:'winter', n:'Winter', d:'Winter grazing & supplements', ids:()=>['paddocks','wsupp','creek','trough','lanes']},
+  {k:'winter', n:'Winter', d:'Winter grazing, supplements, crops & withholding', ids:()=>['paddocks','wsupp','crops','whp','nofert','creek','trough','lanes']},
   {k:'sugg', n:'Suggestions', d:'Just the staff suggestions (open & closed)', ids:()=>['paddocks']},
   {k:'clear', n:'Paddocks only', d:'Start from a clean map', ids:()=>['paddocks'], nosugg:true},
   {k:'all', n:'All layers', d:'Everything on – very busy!', ids:()=>LAYERS.filter(d=>d.id).map(d=>d.id)}];
