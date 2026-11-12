@@ -964,6 +964,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .cwt td.cwneed{background:#ffebee}.cwt td.cwtx select{max-width:120px}
 .idf{border:1px solid #d3ddd5;border-radius:10px;background:#f7faf8;padding:10px;margin:8px 0}.idt td{vertical-align:top}
 .pflab.whpl{background:#b71c1c!important;color:#fff!important}.pflab.nfl{background:#e65100!important;color:#fff!important}
+.eb td.ebc{line-height:1.25;vertical-align:top}.ebsol td.ebwho{font-size:11px;color:#555}
 </style>
 </head>
 <body>
@@ -1729,7 +1730,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13g graduated pod run guide, 3-day heavy rain warning, paddock 35 removed -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13h pods on the checklist, unlimited shifts, season reset, solids recorder -->
 </html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
@@ -2353,23 +2354,24 @@ const PH_KINDS=[['ponds','Effluent pond levels'],['sand','Sand traps'],['solids'
 function phState(k){ const p=((ENV&&ENV.photos)||{})[k], n=p?daysSince(p.date):null; return {p,n,al:n==null||n>7?'crit':'ok'}; }
 
 // ---- Effluent application board (from the "Effluent/Irrigation/Cultivation Board Templates" GV1 tab) ----
-const EB_LINES=[['Line 1',[2,3,4,5,18,19,34,35,36,37,44,45,46,47,48,49,50]],['Line 2',[21,22,23,24,30,31,32,33,52,53,54,55,56]],['Line 3',[25,26,65,66,67,68,70,78,79,80,81,82,84,86]]];
+const EB_LINES=[['Line 1',[2,3,4,5,18,19,34,36,37,44,45,46,47,48,49,50]],['Line 2',[21,22,23,24,30,31,32,33,52,53,54,55,56]],['Line 3',[25,26,65,66,67,68,70,78,79,80,81,82,84,86]]];
 const EB_SOLIDS=[1,6,7,8,9,10,11,12,14,15,16,17,20,27,28,29,38,39,40,41,42,43,51,52,54,57,58,59,60,71,72,73,74,75,76,77];
-const ebGet=(line,pd)=>(((ENV&&ENV.board)||{})[line+'|'+pd])||['','','',''];
+const ebGet=(line,pd)=>{ const v=(((ENV&&ENV.board)||{})[line+'|'+pd])||[]; return Array.isArray(v)?v.filter(Boolean):[]; };   // all dates this season, any number of shifts
 const dshort=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short'}):'';
-function ebLatest(line,pads){ let best=null; pads.forEach(pd=>ebGet(line,pd).forEach((d,i)=>{ if(d&&(!best||d>best.d)) best={d,pd,i}; })); return best; }
+function ebLatest(line,pads){ let best=null; pads.forEach(pd=>ebGet(line,pd).forEach((d,i)=>{ d=d.slice(0,10); if(d&&(!best||d>best.d)) best={d,pd,i}; })); return best; }
+const ebSeason=()=>((ENV&&ENV.board&&ENV.board._season)||'').replace('-','–');
 function officeEffBoard(){
   const card=([k,lab])=>{ const s=phState(k); return `<div class="phc ${s.al==='crit'?'crit flash':s.al==='warn'?'wrn flasho':''}">
      ${s.p?`<a href="https://drive.google.com/file/d/${s.p.id}/view" target="_blank" rel="noopener"><img src="https://drive.google.com/thumbnail?id=${s.p.id}&sz=w300" alt=""></a>`:'<div class="phn">no photo yet</div>'}
      <b>${lab}</b><small>${s.p?`${dshort(s.p.date)} · ${s.n} day${s.n===1?'':'s'} ago · ${ESC(s.p.by)}`:'Weekly photo needed'}</small>
      <label class="btn alt phb">📷 Take photo<input type="file" accept="image/*" capture="environment" data-ph="${k}" hidden></label></div>`; };
   const tbl=([line,pads])=>{ const lt=ebLatest(line,pads); return `<div class="ebt"><table class="eb"><tr><th colspan="5">Effluent ${line}${lt?`<small>pods now: paddock ${lt.pd} (since ${dshort(lt.d)})</small>`:''}</th></tr><tr><th>Pdk</th><th>Shift 1</th><th>Shift 2</th><th>Shift 3</th><th>Shift 4</th></tr>
-     ${pads.map(pd=>{ const r=ebGet(line,pd); return `<tr class="${lt&&lt.pd===pd?'now':''}"><td class="pd">${pd}</td>${r.map((d,i)=>`<td class="ebc ${d?'set':''}" data-l="${line}" data-p="${pd}" data-s="${i}">${dshort(d)}</td>`).join('')}</tr>`; }).join('')}</table></div>`; };
-  const sol=`<div class="ebt"><table class="eb"><tr><th colspan="3">Solid effluent paddocks</th></tr><tr><th>Pdk</th><th>Date</th><th>Person spreading</th></tr>
-     ${EB_SOLIDS.map(pd=>{ const r=ebGet('Solids',pd); return `<tr><td class="pd">${pd}</td><td class="ebc ${r[0]?'set':''}" data-l="Solids" data-p="${pd}" data-s="0">${dshort(r[0])}</td><td class="ebc" data-l="Solids" data-p="${pd}" data-s="0">${ESC(r[1])}</td></tr>`; }).join('')}</table></div>`;
+     ${pads.map(pd=>{ const r=ebGet(line,pd), col=[[],[],[],[]]; r.forEach((d,i)=>col[i%4].push(d)); return `<tr class="${lt&&lt.pd===pd?'now':''}"><td class="pd">${pd}</td>${col.map((ds,i)=>`<td class="ebc ${ds.length?'set':''}" data-l="${line}" data-p="${pd}" title="${ds.length>1?'Shift '+(i+1)+' and shift '+(i+5)+'…':''}">${ds.map(dshort).join('<br>')}</td>`).join('')}</tr>`; }).join('')}</table></div>`; };
+  const sol=`<div class="ebt ebsol"><table class="eb"><tr><th colspan="3">Solid effluent paddocks</th></tr><tr><th>Pdk</th><th>Date</th><th>Recorded by</th></tr>
+     ${EB_SOLIDS.map(pd=>{ const r=ebGet('Solids',pd).map(x=>x.split('|')); return `<tr><td class="pd">${pd}</td><td class="ebc ${r.length?'set':''}" data-l="Solids" data-p="${pd}">${r.map(x=>dshort(x[0])).join('<br>')}</td><td class="ebc ebwho" data-l="Solids" data-p="${pd}">${r.map(x=>ESC((x[1]||'').split(' ')[0])).join('<br>')}</td></tr>`; }).join('')}</table></div>`;
   return `<div class="ofbd"><div class="ckh">Recording as</div><div style="display:flex;gap:8px">${signerSel('ebName')}<input id="ebOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
    <div class="ckh">Weekly photos <small>(replaces posting to the GV effluent group – green when taken in the last 7 days, flashing red after that)</small></div><div class="phg">${PH_KINDS.map(card).join('')}</div>
-   <div class="ckh">Effluent application board <small>tap a box to record the date the pods were shifted onto that paddock</small></div>
+   <div class="ckh">Effluent application board ${ebSeason()} <small>tap a paddock to add the date the pods went on (today is filled in) – the daily checklist adds it for you. A 5th shift goes back under shift 1. The board starts fresh on 1 June each season.</small></div>
    <div class="ebg">${EB_LINES.map(tbl).join('')}${sol}</div>
    <p class="note">Saved to the "Effluent application log" and "Effluent photos" tabs of the GV1 Farm Management sheet; photos go in the Farm task photos folder.</p></div>`;
 }
@@ -2380,17 +2382,18 @@ function ebWire(){
   const post=b=>fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(x=>x.json());
   document.querySelectorAll('[data-ph]').forEach(inp=>inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const name=who(); if(!name) return;
     toast('Uploading photo…'); shrinkPhoto(f).then(ph=>post({action:'effphoto',farm:META.name,kind:inp.dataset.ph,photo:ph,name})).then(x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.photos=x.photos; officeRender(); toast('Photo saved'); }).catch(()=>toast('Could not upload the photo')); });
-  document.querySelectorAll('.ebc').forEach(td=>td.onclick=()=>{ const name=who(); if(!name) return; const line=td.dataset.l, pd=td.dataset.p, sh=+td.dataset.s, cur=ebGet(line,pd), sol=line==='Solids';
-    const today=new Date(), ymd=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-    openSheet(`<h2>${sol?'Solid effluent':line} · paddock ${pd}</h2><div class="sub">${sol?'Date spread and who spread it':'Shift '+(sh+1)+' – date the pods went onto this paddock'}</div>
-      <label class="field">Date<input id="ebD" type="date" value="${ESC(cur[sh]||ymd)}"></label>${sol?`<label class="field">Person spreading<input id="ebP" maxlength="40" value="${ESC(cur[1]||name)}"></label>`:''}
-      <div class="btns"><button class="btn alt" id="ebClr">Clear</button><button class="btn" id="ebOk">Save</button></div>`);
-    const save=clear=>{ const date=clear?'':document.getElementById('ebD').value; const calls=[post({action:'effboard',farm:META.name,line,paddock:pd,shift:sh,date,name})];
-      if(sol) calls.push(post({action:'effboard',farm:META.name,line,paddock:pd,shift:1,date:clear?'':document.getElementById('ebP').value.trim(),name}));
-      document.getElementById('ebOk').disabled=true;
-      Promise.all(calls).then(rs=>{ const x=rs[rs.length-1]; if(!x.ok) return toast(x.error||'Could not save'); ENV.board=x.board; closeSheet(); officeRender(); toast(clear?'Cleared':'Saved'); }).catch(()=>toast('No connection – not saved')); };
-    document.getElementById('ebOk').onclick=()=>save(false); document.getElementById('ebClr').onclick=()=>save(true); });
+  document.querySelectorAll('.ebc').forEach(td=>td.onclick=()=>{ const name=who(); if(!name) return; ebSheet(td.dataset.l,td.dataset.p,name,post); });
 }
+function ebSheet(line,pd,name,post){ const sol=line==='Solids', cur=ebGet(line,pd), today=ymdL(new Date());
+  openSheet(`<h2>${sol?'Solid effluent':'Effluent '+line} · paddock ${pd}</h2><div class="sub">${sol?'Date the solids were spread and who recorded it':'Dates the pods went onto this paddock this season'} (season ${ebSeason()})</div>
+    ${cur.length?`<table class="bgd" style="width:100%">${cur.map((x,i)=>{ const [d,w]=x.split('|'); return `<tr><td>${sol?'':'Shift '+(i+1)}</td><td><b>${new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</b>${sol&&w?' · '+ESC(w):''}</td><td style="text-align:right"><button class="btn alt" data-ebdel="${i}" style="padding:3px 10px">Remove</button></td></tr>`; }).join('')}</table>`:'<p>Nothing recorded yet this season.</p>'}
+    <div class="ckh" style="margin-top:10px">Add ${sol?'a date':'shift '+(cur.length+1)}</div>
+    <label class="field">Date<input id="ebD" type="date" value="${today}" max="${today}"></label>${sol?`<label class="field">Person recording<input id="ebP" maxlength="40" value="${ESC(name)}"></label>`:''}
+    <div class="btns"><button class="btn" id="ebOk">Save</button></div>`);
+  const done=x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.board=x.board; closeSheet(); officeRender(); };
+  document.querySelectorAll('[data-ebdel]').forEach(b=>b.onclick=()=>{ b.disabled=true; post({action:'effboard',farm:META.name,op:'del',line,paddock:pd,index:+b.dataset.ebdel,name}).then(x=>{ done(x); toast('Removed'); }).catch(()=>toast('No connection – not saved')); });
+  document.getElementById('ebOk').onclick=()=>{ const date=document.getElementById('ebD').value; if(!date) return toast('Pick a date'); document.getElementById('ebOk').disabled=true;
+    post({action:'effboard',farm:META.name,op:'add',line,paddock:pd,date,recorder:sol?document.getElementById('ebP').value.trim():'',name}).then(x=>{ done(x); toast('Saved'); }).catch(()=>toast('No connection – not saved')); }; }
 const CALC_F=[  // pond calculator – rows 40–60 of the old Effluent Daily Checklist sheet
   ['A','rate','Application rate from the bucket test','mm/hr'],
   ['B','maxdepth','Maximum application depth allowed by consent','mm'],
@@ -2446,6 +2449,8 @@ function officeChecklistMain(){
    <label class="field">Max run time setpoint (hours)<input name="maxrun" type="number" inputmode="decimal" min="0" max="24" step="0.5" value="${ESC(mx)}"></label>
    ${fc&&fc.rain72!=null&&fc.rain72>25?`<div class="ckl bad">⚠ Heavy rain coming: <b>${fc.rain72} mm</b> forecast over the next 3 days${fc.max24!=null?` (wettest 24 h ${fc.max24} mm${fc.max24From?' from '+ESC(fc.max24From):''})`:''}. Think about cutting the pod run time / application depth, keep pond storage in hand, and talk to Dave about the application rate if needed.</div>`:''}
    <label class="field">Rain forecast (total) today (mm) <small>${fc?`– filled in from ${ESC(fc.src)} for the rest of today, updated ${ESC(fc.at)} · tomorrow ${fc.tomorrow} mm${fc.rain72!=null?` · next 3 days <b style="color:${fc.rain72>25?'#c62828':'inherit'}">${fc.rain72} mm</b>`:''}`:'– forecast not available, please enter it'}</small><input name="rain" type="number" inputmode="decimal" min="0" step="0.1" value="${fc?fc.today:''}"></label>
+   <div class="ckh">Where are the pods today? <small>(this goes straight onto the effluent application board)</small></div>
+   ${EB_LINES.map(([line,pads],i)=>{ const lt=ebLatest(line,pads); return `<label class="field">Pod ${i+1} – effluent ${line} paddock<select name="pod${i+1}"><option value="">Not running / not on this line today</option>${pads.map(pd=>`<option value="${pd}" ${lt&&lt.pd===pd?'selected':''}>Paddock ${pd}${lt&&lt.pd===pd?' (where it was last – '+dshort(lt.d)+')':''}</option>`).join('')}</select></label>`; }).join('')}
    <div class="ckh">People <small>(filled in from the last checklist – change if needed)</small></div>
    <label class="field">Person in charge (PIC) who has approved the operator<input name="pic" maxlength="80" value="${ESC(L['Person in charge (PIC)'])}"></label>
    <label class="field">Relief PIC (fully trained)<input name="relief" maxlength="80" value="${ESC(L['Relief PIC'])}"></label>
@@ -2496,7 +2501,7 @@ function ckWire(){
   f.onsubmit=e=>{ e.preventDefault();
     const v=n=>(f[n]&&f[n].value||'').trim(), r=n=>(f.querySelector(`input[name=${n}]:checked`)||{}).value||'';
     const d={beacon:v('beacon'),sm:ENV&&ENV.sm!=null?String(ENV.sm):'',pod:v('pod'),maxrun:v('maxrun'),rain:v('rain'),pic:v('pic'),relief:v('relief'),op:v('op'),
-             training:r('training'),quiz:r('quiz'),pods:r('pods'),leak:v('leak'),bucket:v('bucket'),notes:v('notes')};
+             training:r('training'),quiz:r('quiz'),pods:r('pods'),leak:v('leak'),bucket:v('bucket'),notes:v('notes'),pod1:v('pod1'),pod2:v('pod2'),pod3:v('pod3')};
     const miss=[['beacon','beacon colour'],['pod','pod run time'],['maxrun','max run time'],['rain','rain forecast'],['pic','PIC'],['op','operator']].filter(x=>!d[x[0]]).map(x=>x[1]);
     if(miss.length) return toast('Please fill in: '+miss.join(', '));
     if(needPh()) return toast('Please take a photo of the pond leak check (System checks section)');
@@ -2504,7 +2509,7 @@ function ckWire(){
     const b=document.getElementById('ckGo'); b.disabled=true; b.textContent='Saving…'; const c=calc();
     post({action:'checklist',farm:META.name,name,f:d,calc:c,leakPhoto:leakPh||undefined}).then(x=>{
       if(!x.ok){ b.disabled=false; b.textContent='Submit today\'s checklist'; return toast(x.error||'Could not save'); }
-      if(ENV){ ENV.eff=x.eff; ENV.calc=Object.assign({},ENV.calc,c,leakPh?{leakPhoto:'pending',leakPhotoDate:c.leak}:{}); if(leakPh) setTimeout(officeLoad,4000); } window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
+      if(ENV){ ENV.eff=x.eff; if(x.board) ENV.board=x.board; ENV.calc=Object.assign({},ENV.calc,c,leakPh?{leakPhoto:'pending',leakPhotoDate:c.leak}:{}); if(leakPh) setTimeout(officeLoad,4000); } window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
      .catch(()=>{ b.disabled=false; b.textContent='Submit today\'s checklist'; toast('No connection – not saved'); }); };
 }
 function officeRender(){
