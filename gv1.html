@@ -911,10 +911,25 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .gtile{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:6px;margin:4px 0}.gtile>div{background:#f4f6f1;border-radius:8px;padding:6px 8px}.gtile .gmain{background:#e8f5e9;border:2px solid #2e7d32}.gtile small{display:block;color:#666;font-size:11px}.gtile b{font-size:22px;color:#1b5e20}.gtile span{display:block;font-size:11px;color:#666}
 .gtile .gar{font-style:normal;font-weight:800;font-size:13px;margin-left:6px;padding:2px 7px;border-radius:10px}.gar.up{background:#e8f5e9;color:#2e7d32}.gar.dn{background:#ffebee;color:#c62828}.gar.fl{background:#eceff1;color:#455a64}.gtile.g2{grid-template-columns:1fr 2.3fr}.gtile .gph{border:1px dashed #bbb;background:#fafafa}.gtile .lvchip{display:inline-block;margin-left:4px;vertical-align:middle}.gtile .gph b{color:#999}
 .etr{margin:14px 16px;padding:10px 12px;border:2px solid #2e5e2a;border-radius:10px;background:#f7faf5}.etab{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}.etab th{text-align:left;background:#e8f0e3;padding:4px}.etab td{padding:4px;border-bottom:1px solid #e3e3e3}.tok{color:#2e7d32;font-weight:700}.tbad{color:#c62828;font-weight:600}.ckbx{display:flex!important;gap:8px;align-items:flex-start;font-size:13.5px}.ckbx input{margin-top:3px;flex:none;width:18px;height:18px}.ckbx.disc{background:#fff8e1;padding:8px;border-radius:6px;margin-top:10px}.eqq{margin:10px 0;padding:8px 10px;background:#f4f6f1;border-radius:8px}.eqq b{display:block;margin-bottom:4px;font-size:14px}.eqq label{display:block;padding:3px 0;font-size:14px}.eqres{margin:16px;padding:14px;border-radius:10px;font-size:15px}.eqres.ok{background:#e8f5e9;border:2px solid #2e7d32}.eqres.bad{background:#fff3e0;border:2px solid #ef6c00}.eqres div{margin:6px 0}.ckl.wrn{background:#fff8e1;color:#5d4037}
-.office .effsub{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px 0;background:#f3f6f4;border-bottom:1px solid #dde5df}
-.office .effsub button{border:1px solid #c9d6cc;background:#fff;color:#245;border-radius:16px 16px 0 0;border-bottom:none;padding:7px 12px;font-size:13px;cursor:pointer}
-.office .effsub button.on{background:#2e6b3f;color:#fff;border-color:#2e6b3f;font-weight:600}
+.office .effsub{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px;background:linear-gradient(#eef3ef,#f7faf8);border-bottom:1px solid #dde5df}
+.office .effsub button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:64px;border:1px solid #d3ddd5;background:#fff;color:#2c4a34;border-radius:12px;padding:8px 6px;font:600 13px inherit;font-family:inherit;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.06);transition:background .15s,box-shadow .15s,transform .1s;text-align:center;line-height:1.2}
+.office .effsub button:hover{background:#f2f8f3;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.office .effsub button i{font-style:normal;font-size:20px;line-height:1}
+.office .effsub button em{font-style:normal;font-size:11px}
+.office .effsub button.on{background:#2e6b3f;color:#fff;border-color:#2e6b3f;box-shadow:0 3px 8px rgba(46,107,63,.35)}
+.office .effsub button.on .ckb{background:rgba(255,255,255,.92)}
+@media(max-width:600px){.office .effsub{grid-template-columns:repeat(2,1fr)}}
 .ckf .elnk{white-space:nowrap;font-size:12px;color:#1a5fb4;text-decoration:none;border:1px solid #b8cbe6;border-radius:10px;padding:1px 7px;margin-left:4px}
+.etr .twrn{color:#b26a00;font-weight:600}
+.etr .eallst{margin:4px 0 10px;padding:8px 10px;border-radius:8px;background:#fff4e5;border:1px solid #ffcc80;color:#8a5000;font-size:13px}.etr .eallst.ok{background:#e8f5e9;border-color:#a5d6a7;color:#1b5e20}
+.ckf .etph{margin:10px 0;padding:10px;border:1px dashed #b7c7bb;border-radius:10px;background:#f8fbf9}.ckf .etph small{color:#666}.ckf .etph label{margin-top:6px;display:inline-block}.ckf .etph img{display:block;max-width:220px;max-height:220px;margin-top:8px;border-radius:8px}
+.ckf .eallbox{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:8px}
+.ntile .nhist,.gtile .nhist{display:block;margin-top:6px}.nstrip{display:flex;height:16px;border-radius:4px;overflow:hidden;margin:6px 0 2px;cursor:pointer}.nstrip i{flex:1}
+.nlegend{display:flex;justify-content:space-between;font-size:10.5px;color:#777}.nhbtn{border:1px solid #c9d6cc;background:#fff;border-radius:12px;padding:2px 9px;font-size:12px;cursor:pointer;color:#245}
+.nchg{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}.nchg td{border-bottom:1px solid #eee;padding:4px 6px;vertical-align:top}.nchg .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.mtt small.mtlv,.note small.mtlv{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7;border-radius:8px;padding:0 6px;font-size:10.5px;font-weight:700}
+.mtt small.mtph,.note small.mtph{background:#f3f3f3;color:#777;border:1px dashed #bbb;border-radius:8px;padding:0 6px;font-size:10.5px;font-weight:700}
+.mtt tr.mtph td{color:#999}.mtt tr.mtph .btn{opacity:.6}
 </style>
 </head>
 <body>
@@ -1676,7 +1691,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-12 effluent sub-tabs + training links -->
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-12b effluent v2, conditions history, live/placeholder tasks -->
 </html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
@@ -1732,16 +1747,48 @@ function growModel(){   // growth = a + b × soil temperature (− c × dryness 
   const k=lsq(rows.map(r=>useDry?[1,r[0],dry(r)]:[1,r[0]]),rows.map(r=>r[2])); if(!k) return {iv, n:rows.length};
   const pred=(t,m)=>k[0]+k[1]*t+(useDry&&m!=null?k[2]*Math.max(0,DRY-m):0);
   const err=rows.map(r=>r[2]-pred(r[0],r[1])), my=rows.reduce((a,r)=>a+r[2],0)/rows.length, rmse=Math.sqrt(err.reduce((a,e)=>a+e*e,0)/rows.length), r2=1-err.reduce((a,e)=>a+e*e,0)/rows.reduce((a,r)=>a+(r[2]-my)**2,0);
-  return {iv, n:rows.length, pred, rmse, r2, b:k[1], c:useDry?k[2]:null, useDry, dryN, from:rows[0][3]}; }
+  return {iv, n:rows.length, pred, rmse, r2, a:k[0], b:k[1], c:useDry?k[2]:null, useDry, dryN, from:rows[0][3]}; }
+function growSave(G,walk){   // hand the fitted model to the backend so the hourly Conditions log records the predicted growth too
+  if(!G.pred||!STAFF.tok||window._growSaved) return; window._growSaved=true; const k={a:+G.a.toFixed(3),b:+G.b.toFixed(3),c:G.c!=null?+G.c.toFixed(3):0,useDry:!!G.useDry,rmse:+G.rmse.toFixed(2),n:G.n,walk:walk||''};
+  let last=''; try{ last=localStorage.getItem('gvmap.growk')||''; }catch(e){} const sig=JSON.stringify(k)+ymdL(new Date()); if(last===sig) return;
+  fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'growmodel',k})}).then(r=>r.json()).then(r=>{ if(r.ok){ try{ localStorage.setItem('gvmap.growk',sig); }catch(e){} if(r.grow&&ENV){ ENV.grow=r.grow; if(OFTAB==='info'||OFTAB==='pf') officeRender(); } } }).catch(()=>{}); }
+// Conditions history (hourly log kept by the backend): nitrogen colour + predicted growth
+let COND=null, condLoading=false;
+function condLoad(days,cb){ if(!STAFF.tok) return; if(!cb&&(COND||condLoading)) return; condLoading=true;
+  fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'condhist',days:days||7})}).then(r=>r.json()).then(r=>{ condLoading=false; if(!r.ok) return;
+    if(!cb||(days||7)<=7){ COND=r.rows||[]; } if(cb) cb(r.rows||[]); else if(OFTAB==='info'||OFTAB==='pf') officeRender(); }).catch(()=>{ condLoading=false; }); }
+const NCOL={Green:'#2e7d32',Orange:'#ef6c00',Red:'#c62828'}, NLAB={Green:'Good to apply',Orange:'Marginal',Red:"Don't apply"};
+const condMs=h=>new Date(h.replace(' ','T')+':00').getTime();
+function condStrip(rows,days){ const t1=Date.now(), t0=t1-days*864e5, by={}; rows.forEach(r=>{ by[Math.floor(condMs(r[0])/36e5)]=r[5]; });
+  const cells=[]; let cur=null; for(let h=Math.floor(t0/36e5); h<=Math.floor(t1/36e5); h++){ if(by[h]) cur=by[h]; else if(cur==null){ const pr=rows.filter(r=>condMs(r[0])<=h*36e5).pop(); cur=pr?pr[5]:null; } cells.push(by[h]||cur); }
+  return `<div class="nstrip" title="Nitrogen conditions, last ${days} days (hourly)">${cells.map(c=>`<i style="background:${c?NCOL[c]:'#e0e0e0'}"></i>`).join('')}</div><div class="nlegend"><span>${new Date(t0).toLocaleDateString('en-NZ',{weekday:'short',day:'numeric'})}</span><span>now</span></div>`; }
+function condSheet(days){ days=days||7;
+  openSheet(`<h2>Nitrogen conditions & growth outlook – history</h2><div class="sub">Logged every hour (Conditions log tab of the farm sheet). Grey = before logging started.</div>
+   <div class="sgr">${[3,7,14,30,90].map(d=>`<button class="btn ${d===days?'':'alt'}" data-cd="${d}">${d} days</button>`).join('')}</div><div id="cdBox">Loading…</div>`);
+  document.querySelectorAll('[data-cd]').forEach(b=>b.onclick=()=>condSheet(+b.dataset.cd));
+  condLoad(days,rows=>{ const box=document.getElementById('cdBox'); if(!box) return; if(!rows.length){ box.innerHTML='<p>No history yet – the hourly log has only just started.</p>'; return; }
+    const ch=[]; rows.forEach((r,i)=>{ if(!i||r[5]!==rows[i-1][5]) ch.push(r); });
+    const share={}; rows.forEach(r=>share[r[5]]=(share[r[5]]||0)+1);
+    box.innerHTML=`<div class="ofcat">Nitrogen application conditions</div>${condStrip(rows,days)}
+      <div style="font-size:12px;color:#555;margin:4px 0">${['Green','Orange','Red'].map(c=>`<span style="margin-right:12px"><i class="dot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${NCOL[c]}"></i> ${NLAB[c]} ${Math.round((share[c]||0)/rows.length*100)}%</span>`).join('')}</div>
+      <div class="ofcat" style="margin-top:10px">When it changed (${ch.length-1} change${ch.length===2?'':'s'})</div>
+      <table class="nchg">${ch.slice().reverse().slice(0,60).map(r=>`<tr><td style="white-space:nowrap">${new Date(condMs(r[0])).toLocaleString('en-NZ',{weekday:'short',day:'numeric',month:'short',hour:'numeric'})}</td><td style="white-space:nowrap"><i class="dot" style="background:${NCOL[r[5]]}"></i>${NLAB[r[5]]||r[5]}</td><td>${ESC(r[6])}</td></tr>`).join('')}</table>
+      <div class="ofcat" style="margin-top:12px">Inputs</div><div id="cdIn" class="chbox"></div>
+      <div class="ofcat">Predicted pasture growth (kg DM/ha/day)</div><div id="cdGr" class="chbox"></div>`;
+    const P=i=>rows.filter(r=>r[i]!=null).map(r=>[condMs(r[0]),r[i]]);
+    drawChart(document.getElementById('cdIn'),{hourly:days<=14,h:150,yMin:0,series:[{name:'Rain forecast next 72 h',color:'#1565c0',unit:' mm',pts:P(3)},{name:'Soil 3-day average',color:'#6d4c41',unit:' °C',pts:P(1)}],refs:[[7,'#c62828','7°'],[9,'#2e7d32','9°']]});
+    drawChart(document.getElementById('cdGr'),{hourly:days<=14,h:140,unit:' kg',series:[{name:'Predicted growth',color:'#558b2f',pts:P(7)}]}); }); }
 function avgCover(d){ const W=MINDA.walks[d]||{}, A=MINDA.area||{}; let a=0,s=0; Object.keys(W).forEach(k=>{ const w=+A[k]||1; a+=w; s+=W[k]*w; }); return a?s/a:null; }
 function growTile(){
   if(!STAFF.tok||!ENV) return '';
   if(!MINDA||!GROW){ growLoad(); return `<div class="ofr"><div class="ofcat">Pasture growth outlook <span class="lvchip ph">early model</span></div><div class="ntile" style="border-color:#9ccc65"><small>Loading MINDA farm walks and soil history…</small></div></div>`; }
-  const G=growModel(), iv=G.iv, last=iv[iv.length-1], doy=d=>{ const x=new Date(d+'T12:00:00'); return Math.round((x-new Date(x.getFullYear(),0,1))/864e5); }, td=new Date(), tdoy=doy(ymdL(td)), mid=r=>ymdL(new Date((new Date(r[0])-0+(new Date(r[1])-0))/2));
+  const G=growModel(); growSave(G,Object.keys(MINDA.walks).sort().pop()); const iv=G.iv, last=iv[iv.length-1], doy=d=>{ const x=new Date(d+'T12:00:00'); return Math.round((x-new Date(x.getFullYear(),0,1))/864e5); }, td=new Date(), tdoy=doy(ymdL(td)), mid=r=>ymdL(new Date((new Date(r[0])-0+(new Date(r[1])-0))/2));
   const near=(r,dd)=>{ const x=Math.abs(doy(mid(r))-dd); return Math.min(x,365-x)<=10; };
   const norm=iv.filter(r=>r[0]>='2020-01-01'&&r[1]<ymdL(new Date(td-200*864e5))&&near(r,(tdoy+3)%365)), normV=norm.length?norm.reduce((a,r)=>a+r[2],0)/norm.length:null;
   const ly=ymdL(new Date(td-365*864e5)), lyR=iv.filter(r=>r[0]<=ly&&r[1]>=ly)[0]||iv.filter(r=>near(r,tdoy)&&r[1].slice(0,4)===ly.slice(0,4))[0];
-  let pv=null, lo=null, hi=null; if(G.pred&&ENV.soilT3!=null){ pv=Math.max(0,G.pred(ENV.soilT3,ENV.sm)); lo=Math.max(0,pv-G.rmse); hi=pv+G.rmse; }
+  let pv=null, lo=null, hi=null; const SN=ENV.grow&&ENV.grow.walk===Object.keys(MINDA.walks).sort().pop()?ENV.grow:null;   // 6-hourly figure from the backend
+  if(SN){ pv=SN.v; lo=SN.lo; hi=SN.hi; } else if(G.pred&&ENV.soilT3!=null){ pv=Math.max(0,G.pred(ENV.soilT3,ENV.sm)); lo=Math.max(0,pv-G.rmse); hi=pv+G.rmse; }
+  const nextUp=SN?new Date(SN.ms+6*36e5).toLocaleString('en-NZ',{weekday:'short',hour:'numeric',minute:'2-digit'}):'';
   const R0=v=>v==null?'–':Math.round(v), f=d=>new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short'});
   const lg=last&&last[2], dir=pv==null||lg==null?null:pv>lg+3?'up':pv<lg-3?'down':'flat';
   const arrow=dir==='up'?'<em class="gar up">▲ increase</em>':dir==='down'?'<em class="gar dn">▼ decrease</em>':dir==='flat'?'<em class="gar fl">▶ about the same</em>':'';
@@ -1753,7 +1800,8 @@ function growTile(){
     <div><small>Average for this week</small><b>${R0(normV)}</b><span>${norm.length} walks, 2020–${ly.slice(0,4)}</span></div></div>
    <div class="gtile g2"><div><small>Average pasture cover now</small><b>${R0(cov)}</b><span>kg DM/ha · farm walk ${f(lastWalk)}</span></div>
     <div class="gph"><small>Average cover next week <span class="lvchip ph">placeholder</span></small><b>–</b><span>Will be: cover now + 7 days × predicted growth − what the grazing board says the herd will eat (hectares grazed × cover eaten). Fills in once GV1 is on the grazing board.</span></div></div>
-   <small style="color:#777;font-size:11px;display:block;margin:2px 0 6px">${G.pred?`Inputs: 3-day soil temperature at Isla Bank ${ENV.soilT3}° and soil moisture ${ENV.sm!=null?ENV.sm+'%':'–'} (${dryNow?'drying – below '+DRY+'%':'not limiting'}). Fitted to ${G.n} GV1 farm-walk periods since ${f(G.from)} (MINDA), accuracy about ±${R0(G.rmse)} kg, explains ${Math.round(G.r2*100)}% of the ups and downs. ${G.useDry?`Dry spells in the record (${G.dryN} periods): each % below ${DRY}% has cut growth by about ${(-G.c).toFixed(1)} kg.`:`Soil moisture is in the model but there hasn't been a dry spell since the soil records started (Nov 2025), so it can't weigh it yet – it will start reducing the prediction automatically once dry periods are recorded.`} Soil temperature also carries the seasonal effects that go with it (day length, sunshine), so treat it as a guide.`:`Not enough overlapping soil and farm-walk data yet (${G.n} periods).`}</small></div>`;
+   <small style="color:#777;font-size:11px;display:block;margin:2px 0 6px">${G.pred?`Inputs: 3-day soil temperature at Isla Bank ${ENV.soilT3}° and soil moisture ${ENV.sm!=null?ENV.sm+'%':'–'} (${dryNow?'drying – below '+DRY+'%':'not limiting'}). Fitted to ${G.n} GV1 farm-walk periods since ${f(G.from)} (MINDA), accuracy about ±${R0(G.rmse)} kg, explains ${Math.round(G.r2*100)}% of the ups and downs. ${G.useDry?`Dry spells in the record (${G.dryN} periods): each % below ${DRY}% has cut growth by about ${(-G.c).toFixed(1)} kg.`:`Soil moisture is in the model but there hasn't been a dry spell since the soil records started (Nov 2025), so it can't weigh it yet – it will start reducing the prediction automatically once dry periods are recorded.`} Soil temperature also carries the seasonal effects that go with it (day length, sunshine), so treat it as a guide.`:`Not enough overlapping soil and farm-walk data yet (${G.n} periods).`}</small>
+   <div class="nlegend" style="margin:0 0 6px"><span>${SN?`Prediction updated ${ESC(SN.at)} · next update about ${nextUp}. `:''}Updates every 6 hours, and straight away when a new MINDA farm walk is loaded (the model is refitted from the walks then).</span><button class="nhbtn" data-cond="1">History ›</button></div></div>`;
 }
 // ---- Effluent training form + effluent quiz (replace the Google Forms). Saved and marked by the backend, emailed to the person, Dave and Jono.
 const EFF_FEP='https://www.gladvalefarms.co.nz/farm-environment-plan-dashboard.html', EFF_WIN='https://www.gladvalefarms.co.nz/winter-cropping--grazing-plans.html', EFF_FARMPG='https://www.gladvalefarms.co.nz/'+META.name.toLowerCase()+'.html';
@@ -1777,13 +1825,17 @@ const EFF_QUIZ=[   // [question, options, multi]  – answers are marked by the 
  ['How should you decide when to apply effluent?',["When its not raining",'Only in Spring and Summer','By checking the Environment Southland beacon website']]];
 const EFF_DISC='I understand the effluent system and the importance of operating the system in compliance with all regional rules and farm policies. By submitting this form, I agree to take equal responsibility of the effluent system – along with other fully trained staff and directors. I understand that failure to follow the rules and plans above may result in disciplinary action from my employer, with instant dismissal from employment being a possibility in serious cases. I understand that I may also face legal action from the Regional Council if serious breaches of consents/plans were caused through my actions (or lack of action).';
 function effTrainSection(){
-  const T=(ENV&&ENV.efftrain)||{people:[]}, ESCs=ESC, f=d=>d?new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}):'–';
-  const rows=T.people.map(p=>`<tr><td>${ESCs(p.name)}</td><td>${p.train?f(p.train):'<span class="tbad">not done</span>'}</td><td>${p.quiz?`${f(p.quiz)} · ${p.score}/${p.outOf}`:'<span class="tbad">not done</span>'}</td><td>${p.ok?'<span class="tok">✓ compliant</span>':`<span class="tbad">✕ ${p.why||'not compliant'}</span>`}</td></tr>`).join('');
+  const T=(ENV&&ENV.efftrain)||{people:[]}, f=d=>d?new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}):'–';
+  const due=T.trainDue?f(T.trainDue):'31 July', me=T.monthEnd?f(T.monthEnd):'month end', mon=new Date().toLocaleDateString('en-NZ',{month:'long'});
+  const tCell=p=>p.trainState==='done'?`<span class="tok">✓ ${f(p.train)}</span>`:p.trainState==='due'?`<span class="twrn">${f(p.train)} · next due by ${due}</span>`:`<span class="tbad">${p.train?f(p.train)+' – overdue':'not done'}</span>`;
+  const qCell=p=>p.quizState==='done'?`<span class="tok">✓ ${mon} passed</span>`:p.quizState==='due'?`<span class="twrn">due by ${me}</span>`:`<span class="tbad">${p.quiz&&!p.passed?`not passed (${p.score}/${p.outOf})`:'not done'}</span>`;
+  const rows=T.people.map(p=>`<tr><td>${ESC(p.name)}</td><td>${tCell(p)}</td><td>${qCell(p)}</td><td>${p.ok?'<span class="tok">✓ compliant</span>':`<span class="tbad">✕ ${p.why||'not compliant'}</span>`}</td></tr>`).join('');
   return `<div class="etr"><div class="ckh">Staff effluent training</div>
-   <p style="margin:4px 0 8px;font-size:13px;color:#555">Anyone who runs the effluent system needs a completed training form (trainer signs them off) and a passed effluent quiz (all ${EFF_QUIZ.length} correct). Both are saved here and emailed to the staff member, Dave and Jono.</p>
-   <div class="btns"><button class="btn" id="etTrain">📝 Effluent training form</button><button class="btn" id="etQuiz">✅ Effluent quiz</button></div>
-   <table class="etab"><tr><th>Staff member</th><th>Training form</th><th>Quiz</th><th>Status</th></tr>${rows||'<tr><td colspan="4">No training records yet</td></tr>'}</table>
-   <small style="color:#888">Compliant = training form done and quiz passed within the last 12 months. Earlier Google Form results aren't included.</small></div>`; }
+   <p style="margin:4px 0 8px;font-size:13px;color:#555"><b>Training form:</b> once a year for everyone who runs the effluent system – due by <b>31 July</b> (trainer signs them off, photo with ID). <b>Effluent quiz:</b> every staff member, <b>every month</b> by month end (all ${EFF_QUIZ.length} correct). Both are saved here and emailed to the staff member, Dave and Jono.</p>
+   <div class="eallst ${T.allStaff?'ok':''}">${T.allStaff?`✓ ${ESC(T.allStaff.name)} (contract milker) confirmed on ${f(T.allStaff.date)} that all staff on farm have done the ${mon} quiz`:`● Waiting for the contract milker to confirm that all staff on farm have done the ${mon} quiz (tick box on their own quiz) – due by ${me}`}</div>
+   <div class="btns"><button class="btn" id="etQuiz">✅ Effluent quiz</button><button class="btn" id="etTrain">📝 Effluent training form</button></div>
+   <table class="etab"><tr><th>Staff member</th><th>Training form (yearly)</th><th>Quiz (${mon})</th><th>Status</th></tr>${rows||'<tr><td colspan="4">No training records yet</td></tr>'}</table>
+   <small style="color:#888">Compliant = training form done for the year to 31 July (last year's still counts until this 31 July) and the quiz passed this month or last month (until this month ends). Earlier Google Form results aren't included.</small></div>`; }
 function effFormHTML(){
   const ppl=(window._ppl||[]).map(p=>p.name), opt=n=>`<option>${ESC(n)}</option>`, today=ymdL(new Date());
   const who=(id,lab)=>`<label class="field">${lab}<input name="${id}" list="etPpl" required autocomplete="off"></label>`;
@@ -1799,6 +1851,8 @@ function effFormHTML(){
     <label class="field">Comments<textarea name="comments" rows="2"></textarea></label>
     <label class="ckq ckbx disc"><input type="checkbox" name="agree" required> <span>${EFF_DISC}</span></label>
     <label class="field">Trainee signature – type your full name<input name="sign" required></label>
+    <div class="etph"><b>Photo of the trainee holding their photo ID</b> <small>(driver licence or passport – required, kept private and attached to the email)</small>
+      <label class="btn alt">📷 Take / choose photo<input type="file" accept="image/*" capture="user" id="etPhoto" hidden></label><img id="etPrev" alt="" style="display:none"></div>
     <div class="btns"><button class="btn" type="submit">Submit training form</button></div></form>`;
   return head+`<form id="etF" class="ckf" autocomplete="off"><div class="ckh">${ESC(META.name)} Effluent Quiz</div>
     ${who('name','Your name')}<label class="field">Date<input type="date" name="date" value="${today}" required></label>
@@ -1807,14 +1861,21 @@ function effFormHTML(){
     <label class="field">Who is the relief person in charge (PIC) of the effluent system on your farm?<input name="relief" required></label>
     ${EFF_QUIZ.map((q,i)=>`<div class="eqq"><b>${i+1}. ${ESC(q[0])}</b>${q[1].map(o=>`<label><input type="${q[2]?'checkbox':'radio'}" name="q${i}" value="${ESC(o)}" ${q[2]?'':'required'}> ${ESC(o)}</label>`).join('')}</div>`).join('')}
     <label class="ckq ckbx disc"><input type="checkbox" name="agree" required> <span>${EFF_DISC.replace('By submitting this form, I agree','By submitting this quiz, I agree that I have completed the Effluent Training Form relevant to my farm, and I agree')}</span></label>
+    <div id="etAllRow" style="display:none"><label class="ckq ckbx eallbox"><input type="checkbox" name="allstaff"> <span><b>Contract milker:</b> I have ensured that all staff on farm have completed the effluent quiz this month. <small>(This is what ticks off the monthly quiz on Management tasks.)</small></span></label></div>
     <div class="btns"><button class="btn" type="submit">Submit quiz</button></div></form>`; }
 function effWire(panel){
   const go=k=>{ window._etDirty=false; OFTAB=k; try{ localStorage.setItem('gvmap.oftab',k); localStorage.setItem('gvmap.effsub',k); }catch(e){} officeRender(); panel.scrollTop=0; };
   const t=panel.querySelector('#etTrain'), q=panel.querySelector('#etQuiz'), bk=panel.querySelector('#etBack');
   if(t) t.onclick=()=>go('et'); if(q) q.onclick=()=>go('eq'); if(bk) bk.onclick=()=>go('ck');
   const f=panel.querySelector('#etF'); if(!f) return; f.addEventListener('input',()=>{ window._etDirty=true; });
+  let photo=null; const pi=f.querySelector('#etPhoto'), pv=f.querySelector('#etPrev');
+  if(pi) pi.onchange=()=>{ if(!pi.files[0]) return; shrinkPhoto(pi.files[0]).then(u=>{ photo=u; pv.src=u; pv.style.display='block'; window._etDirty=true; }).catch(()=>toast('Could not read that photo')); };
+  const nm=f.querySelector('input[name=name]'), ar=f.querySelector('#etAllRow');
+  if(nm&&ar){ const chk=()=>{ const k=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' '), p=(window._ppl||[]).find(x=>k(x.name)===k(nm.value)); const on=!!(p&&/milker/i.test(p.role||'')); ar.style.display=on?'':'none'; if(!on) ar.querySelector('input').checked=false; };
+    nm.addEventListener('input',chk); nm.addEventListener('change',chk); chk(); }
   f.onsubmit=e=>{ e.preventDefault(); const fd=new FormData(f), d={action:window._effForm==='train'?'efftrain':'effquiz', farm:META.name};
-    fd.forEach((v,k)=>{ if(/^q\d+$/.test(k)) (d.ans=d.ans||{})[k]=(d.ans[k]?d.ans[k]+'|':'')+v; else d[k]=v; });
+    fd.forEach((v,k)=>{ if(v instanceof File) return; if(/^q\d+$/.test(k)) (d.ans=d.ans||{})[k]=(d.ans[k]?d.ans[k]+'|':'')+v; else d[k]=v; });
+    if(d.action==='efftrain'){ if(!photo){ toast('Please add the photo of the trainee holding their ID'); return; } d.photo=photo; }
     if(d.action==='effquiz'){ const miss=EFF_QUIZ.map((q,i)=>(d.ans||{})['q'+i]?null:i+1).filter(Boolean); if(miss.length){ toast('Please answer question'+(miss.length>1?'s ':' ')+miss.join(', ')); return; } }
     const b=f.querySelector('button[type=submit]'); b.disabled=true; b.textContent='Saving…';
     fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d)}).then(r=>r.json()).then(r=>{
@@ -1846,6 +1907,7 @@ function nTile(){
   const lab={green:'Good to apply',orange:'Marginal',red:"Don't apply"}[c], col={green:'#2e7d32',orange:'#ef6c00',red:'#c62828'}[c];
   return `<div class="ofr"><div class="ofcat">Nitrogen application conditions <span class="lvchip live">● live</span></div>
    <div class="ntile" style="border-color:${col}"><div class="nst" style="background:${col}">${lab}</div><ul>${why.map(w=>`<li class="${w[0]}">${w[0]==='g'?'✓':w[0]==='o'?'●':'✕'} ${w[1]}</li>`).join('')}</ul>
+   ${COND&&COND.length?condStrip(COND,7):(condLoad(7),'')}<div class="nlegend" style="margin-top:4px"><span>Last 7 days, hourly${COND&&COND.length>1?` · changed ${COND.filter((r,i)=>i&&r[5]!==COND[i-1][5]).length}× this week`:''}</span><button class="nhbtn" data-cond="1">History ›</button></div>
    <small>${lastN?lastN+' · ':''}Rules: green = soil over 9° (3-day average) and ${early?'under 20 mm forecast in 72 h (Jun–Sep)':'5–25 mm forecast in 72 h'}; orange = soil 7–9°${early?' or 20 mm+':', 3–5 mm or over 25 mm'}; red = soil under 7°, over 40 mm in any 24 h${early?'':' or under 3 mm (wait for more rain)'}. Forecast: Yr.</small></div></div>`;
 }
 function officeFarmInfo(){
@@ -2119,11 +2181,14 @@ const MT=[  // id, task, freq D/W/M/A, how: photo | done | auto, tab (for auto),
  ['monthend','Trev Month End Report downloaded & circulated','M','done'],
  ['hs','Health & Safety meeting','M','done'],
  ['leak','Check effluent pond leak detection system (photo)','M','auto','ck'],
- ['quiz','Effluent training quiz (all dairy staff)','M','done'],
+ ['quiz','Effluent quiz – all staff (contract milker confirms on their quiz)','M','auto','eq'],
  ['hygiene','Monthly hygiene check of dairy shed','M','done'],
- ['cams','Clean security cameras','M','done'],
+ ['cams','Clean all security cameras (photo of one camera – confirms they are all cleaned)','M','photo'],
+ ['efftrain','Effluent training form – everyone running the effluent system, yearly by 31 July','A','auto','et'],
  ['asd','ASD uploaded for stock movements','A','done']];
 const MTF={D:'Daily',W:'Weekly',M:'Monthly',A:'As required'};
+const MT_LIVE=new Set(['effck','ph_ponds','ph_sand','ph_solids','effboard','leak','quiz','efftrain','cams']);   // the rest are placeholders – shown but not scored yet
+const mtLive=t=>MT_LIVE.has(t[0]);
 const ymdL=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const pd=s=>new Date(s+'T00:00:00');
 const monKey=s=>{ const d=pd(s), w=(d.getDay()+6)%7; d.setDate(d.getDate()-w); return ymdL(d); };
@@ -2134,7 +2199,7 @@ function mtNow(t){ const today=ymdL(new Date()); return mtDoneSet(t).has(perKey(
 function mtMonth(y,m){   // compliance for one calendar month (m 1-12)
   const today=ymdL(new Date()), first=ymdL(new Date(y,m-1,1)), last=ymdL(new Date(y,m,0)); let due=0, done=0; const per={};
   if(last<MT_START||first>today) return null;
-  MT.forEach(t=>{ if(t[2]==='A'||(t[5]&&t[5].indexOf(m)<0)) return; const ds=mtDoneSet(t), keys=[];
+  MT.forEach(t=>{ if(t[2]==='A'||!mtLive(t)||(t[5]&&t[5].indexOf(m)<0)) return; const ds=mtDoneSet(t), keys=[];
     if(t[2]==='D'){ for(let d=pd(first>MT_START?first:MT_START); ymdL(d)<=last&&ymdL(d)<=today; d.setDate(d.getDate()+1)) keys.push([ymdL(d),ymdL(d)<today]); }
     else if(t[2]==='W'){ for(let d=pd(first); ymdL(d)<=last; d.setDate(d.getDate()+1)) if(d.getDay()===0){ const sun=ymdL(d); if(sun>=MT_START&&monKey(sun)<=today) keys.push([monKey(sun),sun<today]); } }
     else keys.push([first.slice(0,7),last<today]);
@@ -2144,6 +2209,8 @@ function mtMonth(y,m){   // compliance for one calendar month (m 1-12)
 }
 const pctCls=p=>p==null?'':p>=MT_TARGET?'ok':p>=85?'wrn':'bad';
 function mtStatus(t){ const today=ymdL(new Date()), now=new Date();
+  if(t[0]==='efftrain'){ const T=ENV&&ENV.efftrain; if(!T||!T.people) return ['','yearly, by 31 July']; const n=T.people.filter(p=>p.trainState==='needed').length, d=T.people.filter(p=>p.trainState==='due').length;
+    return n?['bad',`${n} staff need a training form`]:d?['wrn',`${d} due again by 31 July`]:['ok','✓ all trained for this year']; }
   if(t[2]==='A') return ['','as required'];
   if(mtNow(t)) return ['ok','✓ done '+(t[2]==='D'?'today':t[2]==='W'?'this week':'this month')];
   if(t[0]==='effck') return ['','no checklist yet – effluent assumed NOT run today'];
@@ -2152,10 +2219,11 @@ function mtStatus(t){ const today=ymdL(new Date()), now=new Date();
   const left=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate(); return [left<=3?'bad':left<=7?'wrn':'',`due by month end (${left} days)`];
 }
 function mtOutstanding(){ const now=new Date(), left=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate();
-  return MT.filter(t=>t[2]!=='A'&&!(t[5]&&t[5].indexOf(now.getMonth()+1)<0)&&!mtNow(t)&&(t[2]!=='M'||left<=7)&&t[0]!=='effck'); }
+  return MT.filter(t=>t[2]!=='A'&&mtLive(t)&&!(t[5]&&t[5].indexOf(now.getMonth()+1)<0)&&!mtNow(t)&&(t[2]!=='M'||left<=7)&&t[0]!=='effck'); }
 function mtBtn(t){
   if(t[3]==='auto') return t[0]==='effck'?`<button class="btn alt mtb" data-tab="ck">Checklist</button><button class="btn alt mtb" data-mtnr="1">Not run today</button>`
-                                          :t[0]==='effboard'?`<button class="btn alt mtb" data-tab="eb">Open board</button><button class="btn alt mtb" data-mt="effboard" data-note="no shifts this week">No shifts this week</button>`:`<button class="btn alt mtb" data-tab="${t[4]}">Open</button>`;
+                                          :t[0]==='effboard'?`<button class="btn alt mtb" data-tab="eb">Effluent board</button><button class="btn alt mtb" data-mt="effboard" data-note="no shifts this week">No shifts this week</button>`:`<button class="btn alt mtb" data-tab="${t[4]}">${{ck:'Effluent checklist',eq:'Effluent quiz',et:'Training form',eb:'Effluent board'}[t[4]]||'Open'}</button>`;
+  if(t[0].startsWith('ph_')) return `<label class="btn mtb">📷 Photo<input type="file" accept="image/*" capture="environment" data-mtph="${t[0]}" hidden></label><button class="btn alt mtb" data-tab="eb">Effluent board</button>`;
   return t[3]==='photo'?`<label class="btn mtb">📷 Photo<input type="file" accept="image/*" capture="environment" data-mtph="${t[0]}" hidden></label>`
                        :`<button class="btn mtb" data-mt="${t[0]}">✓ Done</button><label class="btn alt mtb" title="Add a photo">📷<input type="file" accept="image/*" capture="environment" data-mtph="${t[0]}" hidden></label>`;
 }
@@ -2164,14 +2232,15 @@ function officeTasks(){
   const hist=[]; for(let i=1;i<=6;i++){ const d=new Date(now.getFullYear(),now.getMonth()-i,1), r=mtMonth(d.getFullYear(),d.getMonth()+1); if(r&&r.due) hist.push([d.toLocaleDateString('en-NZ',{month:'short',year:'2-digit'}),r.pct]); }
   const last=t=>{ const a=mtDone(t[0]); return a.length?a.slice().sort().pop():''; };
   const row=t=>{ const [c,txt]=mtStatus(t), l=last(t), p=ph[t[0]], m=cur&&cur.per[t[0]];
-    return `<tr><td>${ESC(t[1])}${t[3]==='auto'?' <small class="mta">auto</small>':''}</td><td><span class="mts ${c}">${txt}</span></td>
+    if(!mtLive(t)) return `<tr class="mtph"><td>${ESC(t[1])} <small class="mtph">placeholder</small></td><td><span class="mts">not scored yet</span></td><td>${l?dshort(l):'–'}</td><td>–</td><td class="mtact">${mtBtn(t)}</td></tr>`;
+    return `<tr><td>${ESC(t[1])} <small class="mtlv">live</small>${t[3]==='auto'?' <small class="mta">auto</small>':''}</td><td><span class="mts ${c}">${txt}</span></td>
       <td>${l?dshort(l):'–'}${p?` <a href="https://drive.google.com/file/d/${p.id}/view" target="_blank" rel="noopener">📷</a>`:''}</td><td>${m&&m[1]?`<b class="${pctCls(Math.round(m[0]/m[1]*100))}">${m[0]}/${m[1]}</b>`:'–'}</td><td class="mtact">${mtBtn(t)}</td></tr>`; };
   return `<div class="ofbd">
    <div class="mth"><div class="mtsc ${pctCls(cur&&cur.pct)}"><small>${now.toLocaleDateString('en-NZ',{month:'long'})} compliance</small><b>${cur&&cur.pct!=null?cur.pct+'%':'–'}</b><small>target ${MT_TARGET}% · ${cur?cur.done:0} of ${cur?cur.due:0} jobs done on time</small>
       <i class="mtbar"><i style="width:${cur&&cur.pct!=null?cur.pct:0}%"></i><u style="left:${MT_TARGET}%"></u></i></div>
      <div class="mthist">${hist.length?hist.map(h=>`<div><small>${h[0]}</small><b class="${pctCls(h[1])}">${h[1]}%</b></div>`).join(''):'<small>Monthly history builds up from here – scoring started '+dshort(MT_START)+'.</small>'}</div></div>
    <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><b style="font-size:12px;color:#5b6b55">RECORDING AS</b>${signerSel('mtName')}<input id="mtOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
-   <p class="note" style="margin:0 0 6px">A daily job counts once the day is over, a weekly job once Sunday has passed, a monthly job at month end. Doing a job late in its day/week/month still counts; skipping it lowers the score.</p>
+   <p class="note" style="margin:0 0 6px"><small class="mtlv">live</small> jobs are working and count toward the score. <small class="mtph">placeholder</small> jobs are shown so you can see what's coming – they aren't scored until they're set up properly. A daily job counts once the day is over, a weekly job once Sunday has passed, a monthly job at month end. Doing a job late in its day/week/month still counts; skipping it lowers the score.</p>
    ${['D','W','M','A'].map(f=>`<table class="mtt"><tr><th>${MTF[f]}</th><th>This ${f==='D'?'day':f==='W'?'week':f==='M'?'month':'–'}</th><th>Last done</th><th>Month</th><th></th></tr>${MT.filter(t=>t[2]===f).map(row).join('')}</table>`).join('')}
    <p class="note">Every job is recorded on the "Management tasks log" tab of the GV1 Farm Management sheet (photos in the Farm task photos folder).</p></div>`;
 }
@@ -2296,7 +2365,9 @@ function smGraph(){
    <circle cx="${W}" cy="${y(s[s.length-1][1])}" r="3.5" fill="#1565c0"/></svg>`;
 }
 const BEACON_T={red:90,orange:80};   // must match BEACON in the Apps Script
-const EFFG=['ck','et','eq','eb'];
+const EFFG=['ck','eb','eq','et'];
+function effQuizBadge(){ const T=ENV&&ENV.efftrain; if(!T||!T.people) return ''; const n=T.people.filter(p=>p.quizState!=='done').length; return T.allStaff?'<span class="ckb ok">all staff ✓</span>':n?`<span class="ckb wrn">${n} to do</span>`:''; }
+function effTrainBadge(){ const T=ENV&&ENV.efftrain; if(!T||!T.people) return ''; const n=T.people.filter(p=>p.trainState==='needed').length; return n?`<span class="ckb bad">${n} needed</span>`:''; }
 function ebBadge(){ return ENV&&PH_KINDS.some(([k])=>phState(k).al!=='ok')?` <span class="ckb ${PH_KINDS.some(([k])=>phState(k).al==='crit')?'bad':'wrn'}">photos due</span>`:''; }
 function officeChecklist(){ return officeChecklistMain()+effTrainSection(); }
 function officeChecklistMain(){
@@ -2384,16 +2455,17 @@ function officeRender(){
   const rows=boardRows(), now=new Date(), crit=rows.filter(s=>s.rating==='Critical').length;
   const mcur=ENV?mtMonth(new Date().getFullYear(),new Date().getMonth()+1):null;
   const tabs=[['info','Farm dashboard',''],['mt','Management tasks',mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['eff','Effluent',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')+ebBadge()],['pf','Pasture & fertiliser','']];
-  const effSubs=[['ck','Effluent checklist',ckBadge()],['et','Effluent training form',''],['eq','Effluent quiz',''],['eb','Effluent board',ebBadge()]];
+  const effSubs=[['ck','📋','Effluent checklist',ckBadge()],['eb','🗺️','Effluent board',ebBadge()],['eq','✅','Effluent quiz',effQuizBadge()],['et','📝','Effluent training form',effTrainBadge()]];
   const panel=document.getElementById('ofp');
   if((OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')) || ((OFTAB==='et'||OFTAB==='eq') && window._etDirty && document.getElementById('etF'))){   // don't wipe a half-filled checklist on the 10-minute refresh
     const tb=panel.querySelector('.oftabs'); if(tb) tb.querySelectorAll('button').forEach((b,i)=>b.innerHTML=tabs[i][1]+' '+tabs[i][2]); return; }
   panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><div class="ofclock"><b id="ofClock">${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit',second:'2-digit'})}</b> <span>${now.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</span></div><small>data updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
     <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]||(t[0]==='eff'&&EFFG.includes(OFTAB))?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
-   ${EFFG.includes(OFTAB)?`<div class="effsub">${effSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div>`:''}
+   ${EFFG.includes(OFTAB)?`<div class="effsub">${effSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
    <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklistMain()+effTrainSection():OFTAB==='et'?(window._effForm='train',effFormHTML()):OFTAB==='eq'?(window._effForm='quiz',effFormHTML()):OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():OFTAB==='cam'?officeCams():OFTAB==='pf'?officePF():officeFarmInfo()}</div>`;
   const goSheet=fn=>()=>{ if(innerWidth<=820) document.body.classList.add('mapmode'); fn(); };
   const st=document.getElementById('soilTile'); if(st) st.onclick=goSheet(()=>soilGraph('season'));
+  panel.querySelectorAll('[data-cond],.nstrip').forEach(b=>b.onclick=e=>{ e.stopPropagation(); goSheet(()=>condSheet(7))(); });
   const bt=document.getElementById('bcnTile'); if(bt) bt.onclick=goSheet(()=>smSheet(30));
   const rt=document.getElementById('rainTbl'); if(rt) rt.onclick=goSheet(()=>rainSheet(30));
   panel.querySelectorAll('.wday,#wxMet').forEach(w=>w.onclick=goSheet(wxSheet));
