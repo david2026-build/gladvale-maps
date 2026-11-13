@@ -1778,7 +1778,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13r compliance edits + environmental plan review form --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13s plan links, compliance colours, no start-up prompt --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
@@ -2412,9 +2412,11 @@ function mtYear(t){ const now=new Date(); now.setHours(0,0,0,0); const ds=mtDues
   const gap=next&&prev?(next-prev)/864e5:365, lead=Math.round(gap/2), f=d=>d.toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}), left=Math.round((next-now)/864e5);
   const doneFor=d=>l&&pd(l)>=new Date(d.getTime()-lead*864e5);
   if(doneFor(next)) return ['ok',`✓ done ${dshort(l)} for ${f(next)}`];
-  if(!l) return [left<=30?'wrn':'',`no record yet · next due ${f(next)} (${left} days)`];
-  if(!doneFor(prev)) return ['bad',`overdue – was due ${f(prev)} (last done ${dshort(l)})`];
-  return left<=30?['wrn',`due by ${f(next)} (${left} days)`]:['ok',`✓ done ${dshort(l)} · next due ${f(next)}`]; }
+  const late=Math.round((now-prev)/864e5), miss=!doneFor(prev)&&ymdL(prev)>=MT_START;
+  if(miss) return ['bad',late===0?`due today – ${f(prev)}`:`overdue – was due ${f(prev)}${l?` (last done ${dshort(l)})`:''}`];
+  if(!l) return [left<=30?'wrn':'',`${left<=30?'ready to be done · ':'no record yet · '}due ${f(next)} (${left} days)`];
+  if(!doneFor(prev)) return [left<=30?'wrn':'',`due ${f(next)} (${left} days)`];
+  return left<=30?['wrn',`ready to be done · due ${f(next)} (${left} days)`]:['ok',`✓ done ${dshort(l)} · next due ${f(next)}`]; }
 function mtStatus(t){ const today=ymdL(new Date()), now=new Date();
   if(t[0]==='efftrain'){ const T=ENV&&ENV.efftrain; if(!T||!T.people) return ['','yearly, by 31 July']; const n=T.people.filter(p=>p.trainState==='needed').length, d=T.people.filter(p=>p.trainState==='due').length;
     return n?['bad',`${n} staff need a training form`]:d?['wrn',`${d} due again by 31 July`]:['ok','✓ all trained for this year']; }
@@ -2429,10 +2431,11 @@ function mtStatus(t){ const today=ymdL(new Date()), now=new Date();
 function mtOutstanding(){ const now=new Date(), left=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()-now.getDate();
   return MT.filter(t=>t[2]!=='A'&&(t[2]!=='Y'||mtYear(t)[0]==='bad')&&mtLive(t)&&!MT_MEASURE.has(t[0])&&!(t[5]&&t[5].indexOf(now.getMonth()+1)<0)&&!mtNow(t)&&(t[2]!=='M'||left<=7)&&t[0]!=='effck'); }
 function mtBtn(t){
+  if(t[0]==='bucket') return `${docLink('bucket','📄 Info ↗')} <button class="btn alt mtb" data-tab="ck">Bucket test</button>`;
   if(t[3]==='auto') return t[0]==='effck'?`<button class="btn alt mtb" data-tab="ck">Checklist</button><button class="btn alt mtb" data-mtnr="1">Not run today</button>`
                                           :t[0]==='effboard'?`<button class="btn alt mtb" data-tab="eb">Effluent board</button><button class="btn alt mtb" data-mt="effboard" data-note="no shifts this week">No shifts this week</button>`:`<button class="btn alt mtb" data-tab="${t[4]}">${{ck:'Effluent checklist',eq:'Effluent quiz',et:'Training form',eb:'Effluent board',jb:'Jobs to do',ro:'Roster',cw:'Cultivation whiteboard'}[t[4]]||'Open'}</button>`;
   if(t[0]==='planrev') return `<button class="btn mtb" data-prf="1">📝 Review form</button>`;
-  if(t[0]==='effsample') return `<button class="btn mtb" data-mt="effsample" data-note="samples collected">✓ Samples collected</button>`;
+  if(t[0]==='effsample') return `${docLink('loading','📄 Info ↗')} <button class="btn mtb" data-mt="effsample" data-note="samples collected">✓ Samples collected</button>`;
   if(t[0]==='jobs') return `<button class="btn alt mtb" data-tab="jb">Jobs to do</button><label class="btn alt mtb" title="Photo of your own jobs list instead">📷<input type="file" accept="image/*" capture="environment" data-mtph="jobs" hidden></label>`;
   if(t[0]==='roster') return `<button class="btn alt mtb" data-tab="ro">Roster</button><label class="btn alt mtb" title="Photo of your own roster instead">📷<input type="file" accept="image/*" capture="environment" data-mtph="roster" hidden></label>`;
   if(t[0].startsWith('ph_')) return `<label class="btn mtb">📷 Photo<input type="file" accept="image/*" capture="environment" data-mtph="${t[0]}" hidden></label><button class="btn alt mtb" data-tab="eb">Effluent board</button>`;
@@ -2468,12 +2471,13 @@ function mtDo(id,file,note,scope){ const t=MT.find(x=>x[0]===id); if(!t) return;
       if(x.photos) ENV.photos=x.photos; toast('Recorded ✓'); if(scope==='prompt') mtPrompt(true); else officeRender(); }).catch(()=>toast('No connection – not saved')); };
   if(file) shrinkPhoto(file).then(go).catch(()=>toast('Could not read that photo')); else go(''); }
 // Environmental plan review (replaces the "Environmental Policy Review Form" Google Form on the staff dashboard)
-const PLANS=['Effluent Management Plan','Farm Environment Plan','Winter Grazing Plan','Farm Freshwater Plan','Nutrient Management Plan'];
+const PLANS=['Effluent Management Plan','Farm Environment Plan','Winter Grazing Plan','Farm Freshwater Plan','Nutrient Management Plan'], PLAN_K=['emp','fep','winter','freshwater','nutrient'];
+const docLink=(k,txt)=>{ const u=ENV&&ENV.links&&ENV.links[k]; return u?`<a href="${ESC(u)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${txt||'open ↗'}</a>`:''; };
 function planRevForm(){ const fm=META.name;
-  openSheet(`<h2>Environmental plan review – ${ESC(fm)}</h2><div class="sub">Read each plan (Staff dashboard → Farm Environment Plan) and record the review. Sent to the General Manager and the Director.</div>
+  openSheet(`<h2>Environmental plan review – ${ESC(fm)}</h2><div class="sub">Open and read each plan (📄 links below), then record the review. Sent to the General Manager and the Director.</div>
    <form id="prF" class="ckf" autocomplete="off">
     <label class="field">Date<input name="date" type="date" value="${ymdL(new Date())}"></label>
-    <div class="field prck">Which ${ESC(fm)} plans have been reviewed?${PLANS.map(p=>`<label style="display:flex;gap:8px;align-items:center;font-weight:400;margin:4px 0"><input type="checkbox" name="plan" value="${p}" checked> ${ESC(fm)} ${p}</label>`).join('')}</div>
+    <div class="field prck">Which ${ESC(fm)} plans have been reviewed?${PLANS.map((p,i)=>`<div style="display:flex;gap:8px;align-items:center;justify-content:space-between"><label style="display:flex;gap:8px;align-items:center;font-weight:400;margin:4px 0"><input type="checkbox" name="plan" value="${p}" checked> ${ESC(fm)} ${p}</label><small>${docLink(PLAN_K[i],'📄 open ↗')}</small></div>`).join('')}</div>
     <div class="field">Do any of the plans require changes or updates?<div class="ckyn prck" style="display:flex;gap:16px;margin-top:4px;font-weight:400"><label><input type="radio" name="chg" value="No"> No</label><label><input type="radio" name="chg" value="Yes"> Yes</label></div></div>
     <div id="prYes" style="display:none"><div class="field">Have you updated the plan?<div class="ckyn prck" style="display:flex;gap:16px;margin-top:4px;font-weight:400"><label><input type="radio" name="upd" value="Yes"> Yes</label><label><input type="radio" name="upd" value="No"> No</label></div></div>
      <label class="field">Changes required or suggestions<div style="display:flex;gap:6px;align-items:flex-start"><textarea name="det" rows="3" style="flex:1" placeholder="What needs changing – type it or tap the mic"></textarea><button class="jbmic" id="prMic" type="button" title="Talk">${MIC_SVG}</button></div></label></div>
@@ -2667,7 +2671,7 @@ function officeChecklistMain(){
    <label class="field">Date of last application-rate bucket test <small>(at least once a year)</small><input name="bucket" type="date" value="${ESC(cal.bucket||L['Last bucket test'])}"></label>
    ${(()=>{ const t=MT.find(x=>x[0]==='bucket'), s=t?mtYear(t):['','']; return `<div class="ckl ${s[0]==='ok'?'ok':s[0]==='wrn'?'wrn':'bad'}" style="margin:0 0 6px">Bucket test: ${s[1]}</div>`; })()}
    <details class="bkt"${(()=>{ const t=MT.find(x=>x[0]==='bucket'); return t&&mtYear(t)[0]!=='ok'?' open':''; })()}><summary>🪣 Do a bucket test</summary>
-     <p class="note">Set straight-sided containers out under one pod's spray, run the pod for a timed test, then measure what is in each container.</p>
+     <p class="note">Set straight-sided containers out under one pod's spray, run the pod for a timed test, then measure what is in each container. ${docLink('bucket','📄 Bucket rate test information ↗')}</p>
      <div class="bkg"><label>Container opening (mm across)<input id="bkD" type="number" inputmode="decimal" value="200"></label>
        <label>Test run time (minutes)<input id="bkT" type="number" inputmode="decimal" value="10"></label>
        <label style="grid-column:1/-1">Amount in each container (mL) – separate with commas<input id="bkV" inputmode="decimal" placeholder="e.g. 25, 30, 22, 28"></label></div>
@@ -2730,7 +2734,7 @@ function ckWire(){
 function officeRender(){
   const rows=boardRows(), now=new Date(), crit=rows.filter(s=>s.rating==='Critical').length;
   const mcur=ENV?mtMonth(new Date().getFullYear(),new Date().getMonth()+1):null;
-  const tabs=[['info','Farm dashboard',''],['mt','Management tasks',mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:''],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['eff','Effluent',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')+ebBadge()],['pfg','Pasture & fertiliser',cwBadge()],['staff','Staff & jobs',roBadge()+jbBadge()],['ideas','💡 Suggestions',ideaBadge()]];
+  const tabs=[['info','Farm dashboard',''],['mt','Management tasks',(mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:'')+(ENV?(()=>{ const y=MT.filter(t=>t[2]==='Y'&&mtLive(t)).map(t=>mtYear(t)[0]), r=y.filter(c=>c==='bad').length, o=y.filter(c=>c==='wrn').length; return r?`<span class="ckb bad flash">${r} compliance due</span>`:o?`<span class="ckb wrn">${o} compliance soon</span>`:''; })():'')],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['eff','Effluent',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')+ebBadge()],['pfg','Pasture & fertiliser',cwBadge()],['staff','Staff & jobs',roBadge()+jbBadge()],['ideas','💡 Suggestions',ideaBadge()]];
   const pfSubs=[['pf','🌱','Pasture & fertiliser',''],['cw','🚜','Cultivation whiteboard',cwBadge()]];
   const staffSubs=[['ro','📅','Roster',roBadge()],['jb','📝','Jobs to do',jbBadge()]];
   const effSubs=[['ck','📋','Effluent checklist',ckBadge()],['eb','🗺️','Effluent board',ebBadge()],['eq','✅','Effluent quiz',effQuizBadge()],['et','📝','Effluent training form',effTrainBadge()]];
@@ -3043,7 +3047,7 @@ function officeLoad(){
   Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); if(!(OFTAB==='ck'&&window._ckDirty)&&!window._etDirty) officeRender(); }).catch(()=>{}),
                fetch(SUGGEST_URL+q+'&env=1').then(r=>r.json()).then(d=>{ ENV=d; }).catch(()=>{})]).then(()=>{ officeRender();
     if(ENV&&!window._mpShown){ window._mpShown=true; const td=ymdL(new Date()); let k=''; try{ k=localStorage.getItem('gvmap.mprompt')||''; }catch(e){}
-      if(k!==td){ try{ localStorage.setItem('gvmap.mprompt',td); }catch(e){} loadPeople(()=>mtPrompt()); } } });
+      if(k!==td){ try{ localStorage.setItem('gvmap.mprompt',td); }catch(e){} /* start-up prompt switched off (Dave, 13 Nov) – outstanding jobs are highlighted on the tabs instead */ } } });
   officeRender();
 }
 function sgLoad(){
