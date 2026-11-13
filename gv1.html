@@ -805,6 +805,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .mkg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.mkt1 b{font-size:17px}.mku{font-size:10px;color:#666}.mdl{display:block;font-size:10.5px;font-weight:700;line-height:1.3;white-space:nowrap}.mkdb{color:#8d6e63!important}
 .mkd{margin-top:6px;font-size:12px}.mkd summary{cursor:pointer;color:#2e5e2a;font-weight:700}.mkt{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}.mkt th{text-align:left;border-bottom:1px solid #ccc;padding:3px 4px}.mkt td{border-bottom:1px solid #eee;padding:3px 4px}.mkn{display:block;color:#777;font-size:10.5px;margin-top:4px}
 .pbst{display:grid;grid-template-columns:1.3fr 1fr;gap:10px;border:2px solid;border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fff}.pbst small{display:block;font-size:10.5px;color:#666;font-weight:700}.pbst b{font-size:inherit}.pbst>div>b{display:block;font-size:20px}.pbst span{display:block;font-size:11.5px;color:#444;line-height:1.4}
+.prck label{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;justify-content:flex-start;text-align:left}.prck input{width:auto!important;margin:0!important;flex:0 0 auto}
 .bkt{margin:0 0 8px;border:1px solid #cfd8c9;border-radius:8px;padding:6px 8px;background:#f7faf5}.bkt summary{cursor:pointer;font-weight:700;color:#2e5e2a}.bkg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}.bkg label{font-size:12px;display:flex;flex-direction:column;gap:2px}
 .pbg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.pbt b{font-size:16px}.pbt span{display:block;font-size:10.5px;color:#666;line-height:1.25}
 .ofg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px}
@@ -1777,7 +1778,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13q compliance calendar tasks --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13r compliance edits + environmental plan review form --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
@@ -2370,19 +2371,20 @@ const MT=[  // id, task, freq D/W/M/A, how: photo | done | auto, tab (for auto),
  ['bucket','Effluent bucket rate test (Effluent checklist → bucket test)','Y','auto','ck',null,['01-20']],
  ['nitrogen','Director check of farm nitrogen reporting compliance (quarterly)','Y','done',null,null,['01-01','04-01','07-01','10-01']],
  ['backflow','Submit Form 12 & 12A to SDC for the GV1 backflow','Y','done',null,null,['05-22']],
- ['watermeter','Supply water meter readings to the Regional Council','Y','done',null,null,['05-31']],
- ['pic','PIC forms submitted to Environment Southland (checked by 1 Aug)','Y','done',null,null,['06-01']],
- ['houses','Staff house inspections','Y','done',null,null,['06-15','10-09']],
+ ['watermeter','Director to supply water meter readings to the Regional Council','Y','done',null,null,['05-31']],
+ ['pic','Director to submit PIC forms to Environment Southland','Y','done',null,null,['06-10']],
+ ['houses','Staff house inspections – quarterly (contract milker to organise if not done)','Y','done',null,null,['03-31','06-30','09-30','12-31']],
  ['policy','Farm team reviews the latest farm policy','Y','done',null,null,['06-20']],
  ['plant','Dairy shed plant check / test completed','Y','done',null,null,['07-01']],
  ['vet','Annual consult with the vet – plan for the new season','Y','done',null,null,['07-07']],
- ['reviews','Staff performance reviews completed','Y','done',null,null,['07-10']],
- ['rcinfo','Regional Council farm information submitted','Y','done',null,null,['07-31']],
- ['effsample','Collect effluent samples for nutrient loading tests (photo of the lab report)','Y','done',null,null,['08-01']],
- ['emp','Review the farm effluent management plan (EMP)','Y','done',null,null,['08-01']]];
+ ['rcinfo','Regional Council nitrogen information submitted','Y','done',null,null,['07-31']],
+ ['effsample','Effluent samples collected for nutrient loading tests','Y','done',null,null,['08-01']],
+ ['planrev','Environmental plan review – effluent, farm environment, winter grazing, freshwater & nutrient plans (review form)','Y','form',null,null,['08-01']]];
+// history before the office view existed (from the old Google Form "Environmental Policy Review Form (Responses)")
+const MT_SEED={planrev:'2026-07-25'};
 const MTF={D:'Daily',W:'Weekly',M:'Monthly',A:'As required',Y:'Compliance calendar (Gladvale Farms Public Calendar)'};
 const MT_MEASURE=new Set(['jobs']);   // tracked and shown, but not part of the compliance score
-const MT_LIVE=new Set(['bucket','effsample','nitrogen','backflow','watermeter','pic','houses','policy','plant','vet','reviews','rcinfo','emp','workboard','jobs','roster','effck','ph_ponds','ph_sand','ph_solids','effboard','leak','quiz','efftrain','cams']);   // the rest are placeholders – shown but not scored yet
+const MT_LIVE=new Set(['bucket','effsample','planrev','backflow','watermeter','pic','houses','policy','plant','vet','rcinfo','workboard','jobs','roster','effck','ph_ponds','ph_sand','ph_solids','effboard','leak','quiz','efftrain','cams']);   // the rest are placeholders – shown but not scored yet
 const mtLive=t=>MT_LIVE.has(t[0]);
 const ymdL=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const pd=s=>new Date(s+'T00:00:00');
@@ -2404,7 +2406,7 @@ function mtMonth(y,m){   // compliance for one calendar month (m 1-12)
 }
 const pctCls=p=>p==null?'':p>=MT_TARGET?'ok':p>=85?'wrn':'bad';
 // yearly compliance tasks: due 12 months after they were last done (bucket test also counts the date entered on the effluent checklist)
-function mtYearLast(t){ const a=mtDone(t[0]).slice(); if(t[0]==='bucket'&&ENV&&ENV.calc&&ENV.calc.bucket) a.push(String(ENV.calc.bucket).slice(0,10)); return a.sort().pop()||''; }
+function mtYearLast(t){ const a=mtDone(t[0]).slice(); if(MT_SEED[t[0]]) a.push(MT_SEED[t[0]]); if(t[0]==='bucket'&&ENV&&ENV.calc&&ENV.calc.bucket) a.push(String(ENV.calc.bucket).slice(0,10)); return a.sort().pop()||''; }
 function mtDues(t){ const now=new Date(), y=now.getFullYear(), ds=[]; for(let k=y-1;k<=y+1;k++) (t[6]||['08-01']).forEach(md=>ds.push(pd(k+'-'+md))); return ds.sort((a,b)=>a-b); }
 function mtYear(t){ const now=new Date(); now.setHours(0,0,0,0); const ds=mtDues(t), prev=ds.filter(d=>d<=now).pop(), next=ds.find(d=>d>now), l=mtYearLast(t);
   const gap=next&&prev?(next-prev)/864e5:365, lead=Math.round(gap/2), f=d=>d.toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}), left=Math.round((next-now)/864e5);
@@ -2429,6 +2431,8 @@ function mtOutstanding(){ const now=new Date(), left=new Date(now.getFullYear(),
 function mtBtn(t){
   if(t[3]==='auto') return t[0]==='effck'?`<button class="btn alt mtb" data-tab="ck">Checklist</button><button class="btn alt mtb" data-mtnr="1">Not run today</button>`
                                           :t[0]==='effboard'?`<button class="btn alt mtb" data-tab="eb">Effluent board</button><button class="btn alt mtb" data-mt="effboard" data-note="no shifts this week">No shifts this week</button>`:`<button class="btn alt mtb" data-tab="${t[4]}">${{ck:'Effluent checklist',eq:'Effluent quiz',et:'Training form',eb:'Effluent board',jb:'Jobs to do',ro:'Roster',cw:'Cultivation whiteboard'}[t[4]]||'Open'}</button>`;
+  if(t[0]==='planrev') return `<button class="btn mtb" data-prf="1">📝 Review form</button>`;
+  if(t[0]==='effsample') return `<button class="btn mtb" data-mt="effsample" data-note="samples collected">✓ Samples collected</button>`;
   if(t[0]==='jobs') return `<button class="btn alt mtb" data-tab="jb">Jobs to do</button><label class="btn alt mtb" title="Photo of your own jobs list instead">📷<input type="file" accept="image/*" capture="environment" data-mtph="jobs" hidden></label>`;
   if(t[0]==='roster') return `<button class="btn alt mtb" data-tab="ro">Roster</button><label class="btn alt mtb" title="Photo of your own roster instead">📷<input type="file" accept="image/*" capture="environment" data-mtph="roster" hidden></label>`;
   if(t[0].startsWith('ph_')) return `<label class="btn mtb">📷 Photo<input type="file" accept="image/*" capture="environment" data-mtph="${t[0]}" hidden></label><button class="btn alt mtb" data-tab="eb">Effluent board</button>`;
@@ -2463,10 +2467,32 @@ function mtDo(id,file,note,scope){ const t=MT.find(x=>x[0]===id); if(!t) return;
       if(x.tasks) ENV.tasks=x.tasks; else { ENV.tasks=ENV.tasks||{done:{},photo:{}}; (ENV.tasks.done[id]=ENV.tasks.done[id]||[]).push(ymdL(new Date())); }
       if(x.photos) ENV.photos=x.photos; toast('Recorded ✓'); if(scope==='prompt') mtPrompt(true); else officeRender(); }).catch(()=>toast('No connection – not saved')); };
   if(file) shrinkPhoto(file).then(go).catch(()=>toast('Could not read that photo')); else go(''); }
+// Environmental plan review (replaces the "Environmental Policy Review Form" Google Form on the staff dashboard)
+const PLANS=['Effluent Management Plan','Farm Environment Plan','Winter Grazing Plan','Farm Freshwater Plan','Nutrient Management Plan'];
+function planRevForm(){ const fm=META.name;
+  openSheet(`<h2>Environmental plan review – ${ESC(fm)}</h2><div class="sub">Read each plan (Staff dashboard → Farm Environment Plan) and record the review. Sent to the General Manager and the Director.</div>
+   <form id="prF" class="ckf" autocomplete="off">
+    <label class="field">Date<input name="date" type="date" value="${ymdL(new Date())}"></label>
+    <div class="field prck">Which ${ESC(fm)} plans have been reviewed?${PLANS.map(p=>`<label style="display:flex;gap:8px;align-items:center;font-weight:400;margin:4px 0"><input type="checkbox" name="plan" value="${p}" checked> ${ESC(fm)} ${p}</label>`).join('')}</div>
+    <div class="field">Do any of the plans require changes or updates?<div class="ckyn prck" style="display:flex;gap:16px;margin-top:4px;font-weight:400"><label><input type="radio" name="chg" value="No"> No</label><label><input type="radio" name="chg" value="Yes"> Yes</label></div></div>
+    <div id="prYes" style="display:none"><div class="field">Have you updated the plan?<div class="ckyn prck" style="display:flex;gap:16px;margin-top:4px;font-weight:400"><label><input type="radio" name="upd" value="Yes"> Yes</label><label><input type="radio" name="upd" value="No"> No</label></div></div>
+     <label class="field">Changes required or suggestions<div style="display:flex;gap:6px;align-items:flex-start"><textarea name="det" rows="3" style="flex:1" placeholder="What needs changing – type it or tap the mic"></textarea><button class="jbmic" id="prMic" type="button" title="Talk">${MIC_SVG}</button></div></label></div>
+    <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><b style="font-size:12px;color:#5b6b55">REVIEWER</b>${signerSel('prName',true)}</div>
+    <button class="btn" id="prGo" type="submit" style="width:100%">Submit review</button>
+    <p class="note">Saved to the "Environmental plan reviews" tab of the ${ESC(fm)} Farm Management sheet and ticks off the yearly compliance task.</p></form>`);
+  const f=document.getElementById('prF'), sh=()=>{ document.getElementById('prYes').style.display=(f.querySelector('[name=chg]:checked')||{}).value==='Yes'?'':'none'; };
+  f.addEventListener('change',sh); document.getElementById('prMic').onclick=()=>talkInto(f.det,document.getElementById('prMic'));
+  f.onsubmit=e=>{ e.preventDefault(); const plans=[...f.querySelectorAll('[name=plan]:checked')].map(x=>fm+' '+x.value), chg=(f.querySelector('[name=chg]:checked')||{}).value, upd=(f.querySelector('[name=upd]:checked')||{}).value||'', name=signerName('prName','');
+    if(!plans.length) return toast('Tick the plans you reviewed'); if(!chg) return toast('Answer whether changes are needed'); if(chg==='Yes'&&!upd) return toast('Answer whether you have updated the plan'); if(chg==='Yes'&&upd==='No'&&!f.det.value.trim()) return toast('Describe the changes needed'); if(!name||name==='__other') return toast('Choose the reviewer');
+    const b=document.getElementById('prGo'); b.disabled=true; b.textContent='Sending…';
+    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'planrev',farm:fm,date:f.date.value,plans,chg,upd,det:f.det.value,name})}).then(r=>r.json())
+     .then(r=>{ if(!r.ok){ b.disabled=false; b.textContent='Submit review'; return toast(r.error||'Not saved'); } if(r.tasks&&ENV) ENV.tasks=r.tasks; closeSheet&&closeSheet(); toast('Plan review saved ✓'); officeRender(); })
+     .catch(()=>{ b.disabled=false; b.textContent='Submit review'; toast('No connection – not saved'); }); }; }
 function mtWire(root,scope){
   const sel=root.querySelector('#'+(scope==='prompt'?'mpName':'mtName')), oth=root.querySelector('#'+(scope==='prompt'?'mpOther':'mtOther'));
   if(sel){ const so=()=>{ oth.style.display=sel.value==='__other'?'':'none'; try{ if(sel.value!=='__other') localStorage.setItem('gvmap.signer',sel.value); }catch(e){} }; sel.onchange=so; so(); }
   root.querySelectorAll('[data-mt]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); mtDo(b.dataset.mt,null,b.dataset.note,scope); });
+  root.querySelectorAll('[data-prf]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); planRevForm(); });
   root.querySelectorAll('[data-mtph]').forEach(i=>i.onchange=()=>{ if(i.files[0]) mtDo(i.dataset.mtph,i.files[0],'',scope); });
   root.querySelectorAll('[data-mtnr]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const name=mtWho(scope); if(!name) return;
     fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'task',farm:META.name,id:'effck',tname:'Effluent daily checklist',name,note:'system not run today (Lines 1–3 off)'})}).then(x=>x.json())
