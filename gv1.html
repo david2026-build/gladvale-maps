@@ -802,6 +802,8 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .ofc .dn{margin-top:6px;padding:5px 10px;font-size:12px}
 .ofh{padding:8px 16px 2px;font-weight:800;font-size:12px;letter-spacing:.5px;color:#2e5e2a;cursor:pointer}.ofh span{font-weight:500;color:#888;letter-spacing:0}
 .ofr{padding:4px 16px 4px}.ofcat{font-size:10.5px;font-weight:800;color:#5b6b55;letter-spacing:.6px;text-transform:uppercase;margin:2px 0 3px;border-bottom:1px solid #e6ebe2;padding-bottom:2px}
+.mkg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.mkt1 b{font-size:17px}.mku{font-size:10px;color:#666}.mdl{display:block;font-size:10.5px;font-weight:700;line-height:1.3;white-space:nowrap}.mkdb{color:#8d6e63!important}
+.mkd{margin-top:6px;font-size:12px}.mkd summary{cursor:pointer;color:#2e5e2a;font-weight:700}.mkt{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}.mkt th{text-align:left;border-bottom:1px solid #ccc;padding:3px 4px}.mkt td{border-bottom:1px solid #eee;padding:3px 4px}.mkn{display:block;color:#777;font-size:10.5px;margin-top:4px}
 .ofg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px}
 .ofst{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:10px;background:#efebe9;color:#4e342e}.ofst.gw{background:#c8e6c9;color:#1b5e20}
 .ofl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}.ofl div{background:#fff;border-radius:6px;padding:3px 6px;border:1px solid #eee}.ofl small{display:block;font-size:10px;color:#666}.ofl b{font-size:13px}
@@ -1772,7 +1774,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13j effluent depth, board reporter, nitrogen send-to/mic/map link/completed --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13k Fonterra milk production tiles --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
@@ -2002,6 +2004,47 @@ function nTile(){
    ${COND&&COND.length?condStrip(COND,7):(condLoad(7),'')}<div class="nlegend" style="margin-top:4px"><span>Last 7 days, hourly${COND&&COND.length>1?` · changed ${COND.filter((r,i)=>i&&r[5]!==COND[i-1][5]).length}× this week`:''}</span><button class="nhbtn" data-cond="1">History ›</button></div>
    <small>${lastN?lastN+' · ':''}Rules: green = soil over 9° (3-day average) and ${early?'under 20 mm forecast in 72 h (Jun–Sep)':'5–25 mm forecast in 72 h'}; orange = soil 7–9°${early?' or 20 mm+':', 3–5 mm or over 25 mm'}; red = soil under 7°, over 40 mm in any 24 h${early?'':' or under 3 mm (wait for more rain)'}. Forecast: Yr.</small></div></div>`;
 }
+// ---- Milk production (Fonterra) – pickups from the Fonterra Farm Source page for supply number 31711 GV1.
+// PLACEHOLDER until the database feed is connected: the 5 pickups and season/month totals below were copied from Farm Source on 13 Nov 2026;
+// cows into vat, targets, last-year values and the history graph are example values to be replaced from the database.
+const MILK={supplier:'31711 GV1', asAt:'13 Nov 2026, 11:11 am', season:{v:249077,ly:6.7}, month:{v:22103,ly:3.5}, cows:850,
+  pickups:[['2026-11-13',21492,null,null,''],['2026-11-12',20799,null,156,'Quality'],['2026-11-11',20916,1909.7,168,'Quality'],['2026-11-10',20200,1852.5,161,'Quality'],['2026-11-09',22396,2071.2,167,'Quality']],
+  target:{l:21000,kg:1900,scc:150,pct:9.0,cow:2.2,cows:850}, ly:{l:20500,kg:1840,scc:175,pct:8.98,cow:2.1,cows:860}};
+const MK=[ // key, label, unit, decimals, lower-is-better
+  ['l','Litres','L',0],['kg','kgMS','kg',1],['scc','SCC','k/mL',0,1],['pct','kgMS %','%',2],['cows','Cows into vat','cows',0],['cow','kgMS / cow / day','kg',2]];
+function milkNow(){ const P=MILK.pickups, la=P[0], kgp=P.find(r=>r[2]!=null), sccp=P.find(r=>r[3]!=null);
+  return {l:[la[1],la[0]], kg:kgp?[kgp[2],kgp[0]]:[null], scc:sccp?[sccp[3],sccp[0]]:[null], pct:kgp?[Math.round(kgp[2]/kgp[1]*10000)/100,kgp[0]]:[null],
+    cows:[MILK.cows,null], cow:kgp&&MILK.cows?[Math.round(kgp[2]/MILK.cows*100)/100,kgp[0]]:[null]}; }
+const mFmt=(v,d)=>v==null?'…':Number(v).toLocaleString('en-NZ',{minimumFractionDigits:d,maximumFractionDigits:d});
+function mDelta(v,ref,low,lab){ if(v==null||!ref) return `<span class="mdl">– ${lab}</span>`; const pc=Math.round((v-ref)/ref*1000)/10, good=low?pc<=0:pc>=0;
+  return `<span class="mdl" style="color:${pc===0?'#666':good?'#2e7d32':'#d50000'}">${pc>0?'▲':pc<0?'▼':'●'} ${pc>0?'+':''}${pc}% ${lab}</span>`; }
+const mDay=d=>d?new Date(d+'T12:00:00').toLocaleDateString('en-NZ',{day:'numeric',month:'short'}):'';
+function milkTable(){ return `<table class="mkt"><tr><th>Date</th><th>Litres</th><th>kgMS</th><th>SCC</th><th>kgMS %</th><th>Quality</th></tr>${MILK.pickups.map(r=>`<tr><td>${mDay(r[0])}</td><td>${mFmt(r[1],0)}</td><td>${mFmt(r[2],1)}</td><td>${mFmt(r[3],0)}</td><td>${r[2]!=null?mFmt(r[2]/r[1]*100,2):'…'}</td><td>${r[4]||'…'}</td></tr>`).join('')}</table>`; }
+function milkBlock(){ const N=milkNow();
+  return `<div class="ofr phsec"><div class="ofcat">Milk production · Fonterra ${MILK.supplier} <span class="lvchip ph">placeholder</span></div>
+   <div class="ofg mkg">${MK.map(([k,lab,u,d,low])=>`<div class="oft mkt1" data-milk="${k}"><small>${lab}${N[k][1]?' · '+mDay(N[k][1]):''}</small><b>${mFmt(N[k][0],d)}</b> <span class="mku">${u}</span>${k==='cows'?'<em class="mkdb">from database</em>':''}
+     ${mDelta(N[k][0],MILK.target[k],low,'target')}${mDelta(N[k][0],MILK.ly[k],low,'last year')}</div>`).join('')}
+     <div class="oft mkt1" data-milk="season"><small>Season to date</small><b>${mFmt(MILK.season.v,0)}</b> <span class="mku">kgMS</span>${mDelta(1+MILK.season.ly/100,1,0,'last year')}</div>
+     <div class="oft mkt1" data-milk="month"><small>Month to date</small><b>${mFmt(MILK.month.v,0)}</b> <span class="mku">kgMS</span>${mDelta(1+MILK.month.ly/100,1,0,'last year')}</div></div>
+   <details class="mkd"><summary>Last ${MILK.pickups.length} pickups (Fonterra)</summary>${milkTable()}</details>
+   <small class="mkn">Copied from Farm Source ${MILK.asAt} · cows into vat, targets, last year and graphs are example values until the database is connected · tap a tile for its trend</small></div>`; }
+function milkSeries(k,days){ // example history ending in the real pickups
+  const N=milkNow(), base=k==='season'||k==='month'?MILK.target.kg:MILK.target[k]||N[k][0]||1, now=new Date(); now.setHours(12,0,0,0); let seed=k.length*7919+days; const rnd=()=>(seed=seed*16807%2147483647)/2147483647;
+  const real={}; MILK.pickups.forEach(r=>{ const v=k==='l'?r[1]:k==='kg'||k==='season'||k==='month'?r[2]:k==='scc'?r[3]:k==='pct'?(r[2]!=null?r[2]/r[1]*100:null):k==='cow'?(r[2]!=null?r[2]/MILK.cows:null):MILK.cows; if(v!=null) real[r[0]]=v; });
+  const first=MILK.pickups[MILK.pickups.length-1][0], out=[], ly=[]; for(let i=days-1;i>=0;i--){ const t=now.getTime()-i*864e5, ds=new Date(t).toISOString().slice(0,10), sea=Math.sin((i+20)/60);
+    const ex=base*(0.97+0.04*sea+(rnd()-0.5)*0.02); if(real[ds]!=null) out.push([t,real[ds]]); else if(ds<first) out.push([t,ex]); ly.push([t,(MILK.ly[k]||base)*(0.97+0.04*sea+(rnd()-0.5)*0.02)]); }
+  return {out,ly}; }
+function milkSheet(k,days){ days=days||30; const m=MK.find(x=>x[0]===k)||[k,k==='season'?'Season to date':'Month to date','kgMS',0], N=milkNow(), [_,lab,u,d,low]=m, tot=k==='season'||k==='month';
+  const v=tot?MILK[k].v:N[k][0], tg=tot?null:MILK.target[k], ly=tot?null:MILK.ly[k];
+  openSheet(`<h2>${lab}</h2><div class="sub">Fonterra ${MILK.supplier} · ${tot?'kgMS':'latest '+(N[k][1]?mDay(N[k][1]):'value')}</div>
+   <div class="kv"><div>${tot?'So far':'Now'}<b style="font-size:22px">${mFmt(v,d)} ${u}</b></div>${tot?`<div>vs last year<b>${MILK[k].ly>0?'▲ +':'▼ '}${MILK[k].ly}%</b></div>`:`<div>Target<b>${mFmt(tg,d)} ${u}</b>${mDelta(v,tg,low,'')}</div><div>Last year<b>${mFmt(ly,d)} ${u}</b>${mDelta(v,ly,low,'')}</div>`}</div>
+   <div class="ofcat" style="margin-top:10px">Trend</div><div class="sgr">${[14,30,90,180].map(x=>`<button class="btn ${x===days?'':'alt'}" data-mkd="${x}">${RLAB(x)}</button>`).join('')}</div><div id="mkCh"></div>
+   <div class="ofcat" style="margin-top:10px">Last ${MILK.pickups.length} pickups</div>${milkTable()}
+   <p class="pfnote">The last pickups are from Farm Source (${MILK.asAt}). Earlier history, targets and last year are example values until the database is connected.</p>`);
+  const s=milkSeries(k,days), cfg={ph:true,phText:'EXAMPLE history before 9 Nov – last pickups are real',unit:' '+u,series:[{name:'This season',color:'#1565c0',pts:s.out}]};
+  if(!tot){ cfg.series.push({name:'Last year',color:'#9e9e9e',dash:true,pts:s.ly}); if(tg) cfg.refs=[[tg,'#2e7d32','Target']]; }
+  drawChart(document.getElementById('mkCh'),cfg);
+  document.querySelectorAll('[data-mkd]').forEach(b=>b.onclick=()=>milkSheet(k,+b.dataset.mkd)); }
 function officeFarmInfo(){
   const fs=by('farminfo'), K=k=>{ const v=fs.filter(f=>f.properties.kind===k); return k==='vat'?v.sort((a,b)=>a.properties.name.localeCompare(b.properties.name,'en',{numeric:true})):k==='tank'?v.sort((a,b)=>(/^Dairy/.test(b.properties.name))-(/^Dairy/.test(a.properties.name))):v; };
   const bar=(f,pct,col)=>`<i class="lv" style="display:block;width:100%;height:4px;margin-top:2px"><i style="width:${pct}%;background:${col||FI_COL[f.properties.kind]}"></i></i>`;
@@ -2011,7 +2054,8 @@ function officeFarmInfo(){
   return `<div class="oflg"><span class="lvchip live">● live</span> real data, updated automatically <span class="lvchip ph">placeholder</span> example values until the sensor is connected · tap any tile for its graph</div>
    ${weatherBlock()}
    ${envBlock()}
-   ${row('Milk',K('vat').map(f=>tile(f,f.properties.name.replace('Milk vat','Vat'),f.properties.temp!=null?`<em style="color:${ALC[fiAlert(f)]}">${f.properties.temp.toFixed(1)} °C</em>`:'')).join(''))}
+   ${milkBlock()}
+   ${row('Leave no milk',K('vat').map(f=>tile(f,f.properties.name.replace('Milk vat','Vat'),f.properties.temp!=null?`<em style="color:${ALC[fiAlert(f)]}">${f.properties.temp.toFixed(1)} °C</em>`:'')).join(''))}
    ${row('Concentrates',K('silo').map(f=>tile(f)).join(''))}
    ${row('Water',K('tank').map(f=>tile(f,f.properties.name.replace('Dairy water tank','Dairy tank').replace('381 Boundary Rd water tank','381 Bdy tank'))).join('')+K('meter').map(f=>tile(f,'Water meter',`<em style="color:${f.properties.pumping?'#2e7d32':'#777'}">${f.properties.pumping?'Pumping '+f.properties.flow+' L/s':'Not pumping'}</em>`)).join(''))}
    ${row('Effluent',K('pond').map(f=>tile(f,f.properties.name.replace('Effluent pond','Pond').replace('Main effluent pond','Main pond'))).join('')+K('sand').map(f=>tile(f,'Sand trap')).join(''))}
@@ -2044,7 +2088,7 @@ function drawChart(box,cfg){
   const fx=t=>new Date(t).toLocaleDateString('en-NZ',cfg.hourly?{weekday:'short',day:'numeric'}:(t1-t0>200*864e5?{month:'short',year:'2-digit'}:{day:'numeric',month:'short'}));
   const xt=[]; if(cfg.hourly){ const d=new Date(t0); d.setHours(24,0,0,0); for(let t=d.getTime(); t<t1; t+=864e5) xt.push(t); } else { const n=6; for(let i=0;i<=n;i++) xt.push(t0+(t1-t0)*i/n); }
   const bw=S.some(s=>s.bar)?Math.max(1,W/Math.max(...S.map(s=>s.pts.length))*0.7):0, f1=v=>(Math.round(v*10)/10).toLocaleString('en-NZ');
-  box.innerHTML=`<div class="chw">${cfg.ph?'<div class="chph">PLACEHOLDER – example data until the sensor is connected</div>':''}<svg viewBox="-42 -6 ${W+50} ${H+26}" class="chsvg">
+  box.innerHTML=`<div class="chw">${cfg.ph?`<div class="chph">${cfg.phText||'PLACEHOLDER – example data until the sensor is connected'}</div>`:''}<svg viewBox="-42 -6 ${W+50} ${H+26}" class="chsvg">
     ${(cfg.bands||[]).map(b=>`<rect x="0" width="${W}" y="${y(Math.min(b[1],hi))}" height="${Math.max(0,y(Math.max(b[0],lo))-y(Math.min(b[1],hi)))}" fill="${b[2]}" opacity=".15"/>`).join('')}
     ${grid.map(v=>`<line x1="0" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#e8e8e8"/><text x="-6" y="${y(v)+4}" text-anchor="end">${f1(v)}</text>`).join('')}
     ${xt.map(t=>`<line x1="${x(t)}" x2="${x(t)}" y1="0" y2="${H}" stroke="#f0f0f0"/><text x="${x(t)}" y="${H+16}" text-anchor="${cfg.hourly?'start':'middle'}">${fx(t)}</text>`).join('')}
@@ -2598,6 +2642,7 @@ function officeRender(){
     if(STAFFG.includes(nt)) try{ localStorage.setItem('gvmap.staffsub',nt); }catch(e){}
     if(OFTAB==='ck'&&nt!=='ck') window._ckDirty=false; if(nt!==OFTAB) window._etDirty=false; OFTAB=nt; if(EFFG.includes(nt)) try{ localStorage.setItem('gvmap.effsub',nt); }catch(e){} try{ localStorage.setItem('gvmap.oftab',OFTAB); }catch(e){} officeRender(); panel.scrollTop=0; });
   const toMap=()=>{ if(innerWidth<=820){ document.body.classList.add('mapmode'); setTimeout(()=>map.invalidateSize(),60); } };
+  panel.querySelectorAll('[data-milk]').forEach(t=>t.onclick=()=>milkSheet(t.dataset.milk));
   panel.querySelectorAll('[data-fid]').forEach(t=>t.onclick=()=>{ toMap(); const f=by('farminfo').find(x=>x.properties.fid===t.dataset.fid); if(!f) return; const c=f.geometry.coordinates; map.setView([c[1],c[0]],19); fiSheet(f); });
   document.body.classList.toggle('wide',OFTAB==='ideas'||OFTAB==='cw'||OFTAB==='ro'||OFTAB==='jb'||OFTAB==='board'||OFTAB==='eb'||OFTAB==='mt'||OFTAB==='cam'||OFTAB==='pf'); setTimeout(()=>map.invalidateSize(),50);
   panel.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return; toMap();
