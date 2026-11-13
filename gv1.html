@@ -1777,7 +1777,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13p bucket test + yearly compliance --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13q compliance calendar tasks --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
@@ -2366,11 +2366,23 @@ const MT=[  // id, task, freq D/W/M/A, how: photo | done | auto, tab (for auto),
  ['cams','Clean all security cameras (photo of one camera – confirms they are all cleaned)','M','photo'],
  ['efftrain','Effluent training form – everyone running the effluent system, yearly by 31 July','A','auto','et'],
  ['asd','ASD uploaded for stock movements','A','done'],
- ['bucket','Bucket test of the effluent application rate – at least once a year (Effluent checklist → bucket test)','Y','auto','ck'],
- ['effsample','Effluent samples taken and sent for nutrient analysis – at least once a year (photo of the lab report)','Y','done']];
-const MTF={D:'Daily',W:'Weekly',M:'Monthly',A:'As required',Y:'Yearly compliance'};
+ // yearly compliance – due dates from the Gladvale Farms Public Calendar (id, task, 'Y', how, tab, months, due dates MM-DD)
+ ['bucket','Effluent bucket rate test (Effluent checklist → bucket test)','Y','auto','ck',null,['01-20']],
+ ['nitrogen','Director check of farm nitrogen reporting compliance (quarterly)','Y','done',null,null,['01-01','04-01','07-01','10-01']],
+ ['backflow','Submit Form 12 & 12A to SDC for the GV1 backflow','Y','done',null,null,['05-22']],
+ ['watermeter','Supply water meter readings to the Regional Council','Y','done',null,null,['05-31']],
+ ['pic','PIC forms submitted to Environment Southland (checked by 1 Aug)','Y','done',null,null,['06-01']],
+ ['houses','Staff house inspections','Y','done',null,null,['06-15','10-09']],
+ ['policy','Farm team reviews the latest farm policy','Y','done',null,null,['06-20']],
+ ['plant','Dairy shed plant check / test completed','Y','done',null,null,['07-01']],
+ ['vet','Annual consult with the vet – plan for the new season','Y','done',null,null,['07-07']],
+ ['reviews','Staff performance reviews completed','Y','done',null,null,['07-10']],
+ ['rcinfo','Regional Council farm information submitted','Y','done',null,null,['07-31']],
+ ['effsample','Collect effluent samples for nutrient loading tests (photo of the lab report)','Y','done',null,null,['08-01']],
+ ['emp','Review the farm effluent management plan (EMP)','Y','done',null,null,['08-01']]];
+const MTF={D:'Daily',W:'Weekly',M:'Monthly',A:'As required',Y:'Compliance calendar (Gladvale Farms Public Calendar)'};
 const MT_MEASURE=new Set(['jobs']);   // tracked and shown, but not part of the compliance score
-const MT_LIVE=new Set(['bucket','effsample','workboard','jobs','roster','effck','ph_ponds','ph_sand','ph_solids','effboard','leak','quiz','efftrain','cams']);   // the rest are placeholders – shown but not scored yet
+const MT_LIVE=new Set(['bucket','effsample','nitrogen','backflow','watermeter','pic','houses','policy','plant','vet','reviews','rcinfo','emp','workboard','jobs','roster','effck','ph_ponds','ph_sand','ph_solids','effboard','leak','quiz','efftrain','cams']);   // the rest are placeholders – shown but not scored yet
 const mtLive=t=>MT_LIVE.has(t[0]);
 const ymdL=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const pd=s=>new Date(s+'T00:00:00');
@@ -2393,9 +2405,14 @@ function mtMonth(y,m){   // compliance for one calendar month (m 1-12)
 const pctCls=p=>p==null?'':p>=MT_TARGET?'ok':p>=85?'wrn':'bad';
 // yearly compliance tasks: due 12 months after they were last done (bucket test also counts the date entered on the effluent checklist)
 function mtYearLast(t){ const a=mtDone(t[0]).slice(); if(t[0]==='bucket'&&ENV&&ENV.calc&&ENV.calc.bucket) a.push(String(ENV.calc.bucket).slice(0,10)); return a.sort().pop()||''; }
-function mtYear(t){ const l=mtYearLast(t); if(!l) return ['bad','never recorded – due now'];
-  const due=pd(l); due.setFullYear(due.getFullYear()+1); const left=Math.round((due-new Date())/864e5), ds=due.toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'});
-  return left<0?['bad',`overdue – was due ${ds}`]:left<=30?['wrn',`due by ${ds} (${left} days)`]:['ok',`✓ done ${dshort(l)} · next due ${ds}`]; }
+function mtDues(t){ const now=new Date(), y=now.getFullYear(), ds=[]; for(let k=y-1;k<=y+1;k++) (t[6]||['08-01']).forEach(md=>ds.push(pd(k+'-'+md))); return ds.sort((a,b)=>a-b); }
+function mtYear(t){ const now=new Date(); now.setHours(0,0,0,0); const ds=mtDues(t), prev=ds.filter(d=>d<=now).pop(), next=ds.find(d=>d>now), l=mtYearLast(t);
+  const gap=next&&prev?(next-prev)/864e5:365, lead=Math.round(gap/2), f=d=>d.toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}), left=Math.round((next-now)/864e5);
+  const doneFor=d=>l&&pd(l)>=new Date(d.getTime()-lead*864e5);
+  if(doneFor(next)) return ['ok',`✓ done ${dshort(l)} for ${f(next)}`];
+  if(!l) return [left<=30?'wrn':'',`no record yet · next due ${f(next)} (${left} days)`];
+  if(!doneFor(prev)) return ['bad',`overdue – was due ${f(prev)} (last done ${dshort(l)})`];
+  return left<=30?['wrn',`due by ${f(next)} (${left} days)`]:['ok',`✓ done ${dshort(l)} · next due ${f(next)}`]; }
 function mtStatus(t){ const today=ymdL(new Date()), now=new Date();
   if(t[0]==='efftrain'){ const T=ENV&&ENV.efftrain; if(!T||!T.people) return ['','yearly, by 31 July']; const n=T.people.filter(p=>p.trainState==='needed').length, d=T.people.filter(p=>p.trainState==='due').length;
     return n?['bad',`${n} staff need a training form`]:d?['wrn',`${d} due again by 31 July`]:['ok','✓ all trained for this year']; }
@@ -2434,7 +2451,7 @@ function officeTasks(){
      <div class="mthist">${hist.length?hist.map(h=>`<div><small>${h[0]}</small><b class="${pctCls(h[1])}">${h[1]}%</b></div>`).join(''):'<small>Monthly history builds up from here – scoring started '+dshort(MT_START)+'.</small>'}</div></div>
    <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><b style="font-size:12px;color:#5b6b55">RECORDING AS</b>${signerSel('mtName')}<input id="mtOther" placeholder="Your name" maxlength="80" style="display:none;flex:1"></div>
    <p class="note" style="margin:0 0 6px"><small class="mtlv">live</small> jobs are working and count toward the score. <small class="mtms">measured – not scored</small> jobs are tracked but left out of the score. <small class="mtph">placeholder</small> jobs are shown so you can see what's coming (“extract from DB” = the data will come straight from the farm database) – they aren't scored until they're set up properly. A daily job counts once the day is over, a weekly job once Sunday has passed, a monthly job at month end. Doing a job late in its day/week/month still counts; skipping it lowers the score.</p>
-   ${['D','W','M','A','Y'].map(f=>`<table class="mtt"><tr><th>${MTF[f]}</th><th>${f==='Y'?'Status':'This '+(f==='D'?'day':f==='W'?'week':f==='M'?'month':'–')}</th><th>Last done</th><th>Month</th><th></th></tr>${MT.filter(t=>t[2]===f).map(row).join('')}</table>`).join('')}
+   ${['D','W','M','A','Y'].map(f=>`<table class="mtt"><tr><th>${MTF[f]}</th><th>${f==='Y'?'Status':'This '+(f==='D'?'day':f==='W'?'week':f==='M'?'month':'–')}</th><th>Last done</th><th>Month</th><th></th></tr>${(f==='Y'?MT.filter(t=>t[2]==='Y').sort((a,b)=>mtDues(a).find(d=>d>new Date())-mtDues(b).find(d=>d>new Date())):MT.filter(t=>t[2]===f)).map(row).join('')}</table>`).join('')}
    <p class="note">Every job is recorded on the "Management tasks log" tab of the GV1 Farm Management sheet (photos in the Farm task photos folder).</p></div>`;
 }
 function mtWho(scope){ const id=scope==='prompt'?'mpName':'mtName', o=scope==='prompt'?'mpOther':'mtOther'; const n=signerName(id,o); if(!n) toast('Choose who is recording first'); return n; }
