@@ -804,6 +804,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .ofr{padding:4px 16px 4px}.ofcat{font-size:10.5px;font-weight:800;color:#5b6b55;letter-spacing:.6px;text-transform:uppercase;margin:2px 0 3px;border-bottom:1px solid #e6ebe2;padding-bottom:2px}
 .mkg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.mkt1 b{font-size:17px}.mku{font-size:10px;color:#666}.mdl{display:block;font-size:10.5px;font-weight:700;line-height:1.3;white-space:nowrap}.mkdb{color:#8d6e63!important}
 .mkd{margin-top:6px;font-size:12px}.mkd summary{cursor:pointer;color:#2e5e2a;font-weight:700}.mkt{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}.mkt th{text-align:left;border-bottom:1px solid #ccc;padding:3px 4px}.mkt td{border-bottom:1px solid #eee;padding:3px 4px}.mkn{display:block;color:#777;font-size:10.5px;margin-top:4px}
+.pbg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.pbt b{font-size:16px}.pbt span{display:block;font-size:10.5px;color:#666;line-height:1.25}
 .ofg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px}
 .ofst{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:10px;background:#efebe9;color:#4e342e}.ofst.gw{background:#c8e6c9;color:#1b5e20}
 .ofl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}.ofl div{background:#fff;border-radius:6px;padding:3px 6px;border:1px solid #eee}.ofl small{display:block;font-size:10px;color:#666}.ofl b{font-size:13px}
@@ -863,7 +864,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .ctour{font-size:13px;display:flex;align-items:center;gap:6px}.ctour .btn{padding:5px 12px;font-size:13px}.ctour select{font:inherit;padding:3px}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}.ctile{border:1px solid #dde3d8;border-radius:12px;padding:10px;background:#fafbf9;display:flex;flex-direction:column;gap:3px}.ctile.cur{border:2px solid #1565c0;background:#e3f2fd}.ctile .cic{font-size:22px}.ctile small{color:#666;font-size:11.5px}.cbt2{display:flex;gap:5px;margin-top:6px}.cbt2 .btn{padding:5px 10px;font-size:12.5px}
 .ckl{margin:2px 0 6px;padding:7px 10px;border-radius:8px;font-size:12.5px;font-weight:700}.ckl.ok{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}.ckl.bad{background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a}
-.envg{display:grid;grid-template-columns:150px 1fr;gap:6px;align-items:start}.bcn{display:flex;gap:8px;align-items:flex-start;border:2px solid;border-radius:10px;padding:7px;text-decoration:none;color:#333;background:#fff}.bcn i{flex:0 0 22px;height:22px;border-radius:50%;margin-top:2px}.bcn b{display:block;font-size:20px}.bcn small{display:block;font-size:10.5px;color:#666;line-height:1.25}
+.envg{display:grid;grid-template-columns:150px 1fr;gap:6px;align-items:start}.bcn{display:flex;gap:8px;align-items:flex-start;border:2px solid;border-radius:10px;padding:7px;text-decoration:none;color:#333;background:#fff}.bcn i{flex:0 0 22px;height:22px;border-radius:50%;margin-top:2px;animation:bcnfl 1s infinite}@keyframes bcnfl{50%{opacity:.2;transform:scale(.8)}}.bcn b{display:block;font-size:20px}.bcn small{display:block;font-size:10.5px;color:#666;line-height:1.25}
 .rain{width:100%;border-collapse:collapse;font-size:12px}.rain th{text-align:left;font-size:10.5px;color:#666;font-weight:700;padding:0 4px 2px}.rain td{padding:2px 4px;border-top:1px solid #eee}.rain td:nth-child(2),.rain td:nth-child(3),.rain th:nth-child(n+2){text-align:right}.rain td:nth-child(3){color:#555}.rain td:nth-child(4){text-align:right;width:44px}.rain td small{display:block;font-size:9.5px;color:#888;white-space:nowrap}.rain td:nth-child(n+2){white-space:nowrap}.rain .rn{font-size:10px;color:#999;border:0}
 .rpc{display:inline-block;padding:0 5px;border-radius:7px;font-weight:700;background:#e3f2fd;color:#0d47a1}.rpc.hi{background:#bbdefb}.rpc.lo{background:#fff3e0;color:#e65100}
 .ckst{margin:10px 16px;padding:10px 12px;border-radius:10px;font-weight:800;font-size:15px}.ckst small{display:block;font-weight:500;font-size:12px;margin-top:3px}.ckst.ok{background:#e8f5e9;color:#1b5e20;border:2px solid #66bb6a}.ckst.bad{background:#ffebee;color:#b71c1c;border:2px solid #ef5350}
@@ -1774,7 +1775,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13m Levno, month/season vs target, simpler effluent mm/hr + total applied --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13n beacon flash, effluent system from checklist, pond balance --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
@@ -2009,9 +2010,9 @@ function nTile(){
 // ---- Milk production (Fonterra) – pickups from the Fonterra Farm Source page for supply number 31711 GV1.
 // PLACEHOLDER until the database feed is connected: the 5 pickups and season/month totals below were copied from Farm Source on 13 Nov 2026;
 // cows into vat, targets, last-year values and the history graph are example values to be replaced from the database.
-const MILK={supplier:'31711 GV1', asAt:'13 Nov 2026, 11:11 am', season:{v:249077,ly:6.7,tg:240000}, month:{v:22103,ly:3.5}, cows:850,
+const MILK={supplier:'31711 GV1', asAt:'13 Nov 2026, 11:11 am', season:{v:249077,ly:6.7,tg:240000}, month:{v:22103,ly:3.5}, cows:1100,
   pickups:[['2026-11-13',21492,null,null,''],['2026-11-12',20799,null,156,'Quality'],['2026-11-11',20916,1909.7,168,'Quality'],['2026-11-10',20200,1852.5,161,'Quality'],['2026-11-09',22396,2071.2,167,'Quality']],
-  target:{l:21000,kg:1900,scc:150,pct:9.0,cow:2.2,cows:850}, ly:{l:20500,kg:1840,scc:175,pct:8.98,cow:2.1,cows:860}};
+  target:{l:21000,kg:1900,scc:150,pct:9.0,cow:1.75,cows:1100}, ly:{l:20500,kg:1840,scc:175,pct:8.98,cow:1.7,cows:1080}};
 const MK=[ // key, label, unit, decimals, lower-is-better
   ['l','Litres','L',0],['kg','kgMS','kg',1],['scc','SCC','k/mL',0,1],['pct','kgMS %','%',2],['cows','Cows into vat','cows',0],['cow','kgMS / cow / day','kg',2]];
 function milkNow(){ const P=MILK.pickups, la=P[0], kgp=P.find(r=>r[2]!=null), sccp=P.find(r=>r[3]!=null);
@@ -2052,6 +2053,40 @@ function milkSheet(k,days){ days=days||30; const m=MK.find(x=>x[0]===k)||[k,k===
   else { const s=milkSeries(k,days); cfg={ph:true,phText:'EXAMPLE history before 9 Nov – last pickups are real',unit:' '+u,series:[{name:'This season',color:'#1565c0',pts:s.out},{name:'Last year',color:'#9e9e9e',dash:true,pts:s.ly}]}; if(tg) cfg.refs=[[tg,'#2e7d32','Target']]; }
   drawChart(document.getElementById('mkCh'),cfg);
   document.querySelectorAll('[data-mkd]').forEach(b=>b.onclick=()=>milkSheet(k,+b.dataset.mkd)); }
+// ---- Effluent system run from today's daily effluent checklist (submitting it = pressing Start on the pods)
+function effLive(){ const T=ENV&&ENV.eff&&ENV.eff.today; if(!T||T['Permitted to start']==='No') return null;
+  const c=(ENV&&ENV.calc)||{}, pod=parseFloat(T['Pod run time (min)'])||0, mx=parseFloat(T['Max run time (h)'])||0, D=parseFloat(c.lines)||3, rate=parseFloat(c.rate)||null;
+  const st=new Date(String(T['Submitted']||'').replace(' ','T')+':00'); const el=isNaN(st)?0:Math.max(0,(Date.now()-st)/36e5), done=Math.min(mx,el), remain=Math.max(0,mx-el);
+  const inHr=(el*60)%60, ai=remain>0&&pod>0?Math.floor(inHr/pod):-1, active=ai>=0&&ai<D?ai:-1;
+  const flow=(parseFloat(c.podrate)||rate||0)*(parseFloat(c.pods)||5);   // m³ per hour while a line is pumping (pond calculator G × H)
+  return {T,pod,mx,D,rate,st,done,remain,active,flow,mmHr:podMm(pod,rate),pumpH:mx*pod*D/60,pumpDone:done*pod*D/60,pads:[1,2,3].map(n=>T['Line '+n+' pods (paddock)']||'')}; }
+function effSysHTML(p){ const E=effLive(), ckc=ckState(), T=ckc.today;
+  const head=`<div class="ofcat">Effluent system <span class="lvchip ${E?'live':'ph'}">${E?'● from today’s effluent checklist':'no checklist today'}</span></div>${effCkLine(p)}${leakState&&ENV&&leakState().al!=='ok'?leakLine():''}`;
+  if(!E) return `<div class="ofr">${head}<div class="ofe" data-fid="${p.fid}"><div class="ofst">${T?'Not permitted to start':'Off – Lines 1–3 not started'}</div><div class="ofrt" style="color:#666"><span>The system runs from the settings in the daily effluent checklist. Once it is submitted (and the pods started) this shows the run time, pumping and depth applied.</span></div></div></div>`;
+  const r1=v=>Math.round(v*10)/10, sTime=E.st.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'});
+  return `<div class="ofr">${head}<div class="ofe" data-fid="${p.fid}">
+   <div class="ofst">${E.remain>0?`Running since ${sTime}`:'Cycle finished'} · ${ESC(E.T['Operator today']||E.T['Signed by']||'')}</div>
+   <div class="ofl">${Array.from({length:E.D},(_,i)=>`<div class="${E.active===i?'on':''}"><small>Line ${i+1}${E.active===i?' · ON':''}</small><b>${E.pod} min/hr</b><small style="color:#5d4037">${E.pads[i]?'Pods in '+ESC(E.pads[i]):'pods –'}</small></div>`).join('')}</div>
+   <div class="ofrt"><span>Cycle: <b>${hrs(E.remain)}</b> left</span><span>of ${hrs(E.mx)} max run time</span></div>
+   <div style="height:7px;margin-top:4px;background:#e0e0e0;border-radius:4px;overflow:hidden"><div style="height:100%;width:${E.mx?Math.round(E.done/E.mx*100):0}%;background:#6d4c41"></div></div>
+   <div class="ofk"><div>Application rate<b>${E.mmHr!=null?'≈ '+E.mmHr+' mm/hr':'–'}</b></div><div>Applied so far<b>${E.mmHr!=null?'≈ '+r1(E.mmHr*E.done)+' mm':'–'}</b></div><div>Total today<b>${E.mmHr!=null?'≈ '+r1(E.mmHr*E.mx)+' mm':'–'}</b></div></div>
+   <div class="ofk"><div>Pumping so far<b>${hrs(E.pumpDone)}</b></div><div>Pumping planned<b>${hrs(E.pumpH)}</b></div><div>Out of the pond today<b>${E.flow?'≈ '+Math.round(E.pumpH*E.flow).toLocaleString('en-NZ')+' m³':'–'}</b></div></div>
+   <div class="ofrt" style="margin-top:2px;color:#666"><span>${E.D} lines × ${E.pod} min each hour × ${E.mx} h = ${hrs(E.pumpH)} pumping${E.flow?` at ≈ ${r1(E.flow)} m³/hr`:''} · depth is per paddock</span></div></div></div>`; }
+// ---- Pond balance: rain on the catchment + shed wash water in, today's pumping out (GV1 Farm Info, June 2025)
+const POND={catch:8313+320, ponds:41*34+100*69+47*24, cap:3485+19567, washL:40, src:'GV1 Farm Info (June 2025)'};   // concrete catchment + solids storage area; rain straight onto the 3 ponds; liquid ponds 1 + 2
+function pondBalHTML(){ const fc=ENV&&ENV.fc, E=effLive(), area=POND.catch+POND.ponds, cows=MILK.cows||0, wash=cows*POND.washL/1000, out=E&&E.flow?E.pumpH*E.flow:0;
+  const rT=fc&&fc.today!=null?+fc.today:null, r3=fc&&fc.rain72!=null?+fc.rain72:null, inR=rT!=null?rT*area/1000:null, in3=r3!=null?r3*area/1000:null;
+  const net=(inR||0)+wash-out, net3=(in3||0)+3*wash-3*out, pc=v=>(v>=0?'+':'−')+Math.abs(Math.round(v/POND.cap*1000)/10)+'%', m3=v=>Math.round(v).toLocaleString('en-NZ')+' m³';
+  const tile=(lab,val,sub,col)=>`<div class="oft pbt"${col?` style="border-left:4px solid ${col}"`:''}><small>${lab}</small><b>${val}</b><span>${sub}</span></div>`;
+  const nc=v=>v>0?'#d50000':'#2e7d32';
+  return `<div class="ofr"><div class="ofcat">Effluent pond balance <span class="lvchip live">● forecast + checklist</span></div><div class="ofg pbg">
+   ${tile('Rain in today',inR!=null?m3(inR):'–',rT!=null?`${rT} mm × ${area.toLocaleString('en-NZ')} m²`:'forecast not loaded')}
+   ${tile('Rain – next 3 days',in3!=null?m3(in3):'–',r3!=null?`${r3} mm forecast`:'forecast not loaded')}
+   ${tile('Shed wash water',m3(wash)+'/day',`${cows.toLocaleString('en-NZ')} cows × ${POND.washL} L`)}
+   ${tile('Pumped out today',E?m3(out):'0 m³',E?`${hrs(E.pumpH)} pumping`:'no checklist today – not running')}
+   ${tile('Pond today',(net>=0?'▲ +':'▼ −')+m3(Math.abs(net)),`${pc(net)} of ${POND.cap.toLocaleString('en-NZ')} m³ storage – ${net>0?'rising':'falling'}`,nc(net))}
+   ${tile('Pond next 3 days',(net3>=0?'▲ +':'▼ −')+m3(Math.abs(net3)),`${pc(net3)} if pumping stays the same`,nc(net3))}</div>
+   <small class="mkn">Catchment ${POND.catch.toLocaleString('en-NZ')} m² of yards, pads and solids area plus ${POND.ponds.toLocaleString('en-NZ')} m² of pond surface; storage = liquid ponds 1 and 2 (${POND.src}). Cows from the milk tiles until the database is connected.</small></div>`; }
 function officeFarmInfo(){
   const fs=by('farminfo'), K=k=>{ const v=fs.filter(f=>f.properties.kind===k); return k==='vat'?v.sort((a,b)=>a.properties.name.localeCompare(b.properties.name,'en',{numeric:true})):k==='tank'?v.sort((a,b)=>(/^Dairy/.test(b.properties.name))-(/^Dairy/.test(a.properties.name))):v; };
   const bar=(f,pct,col)=>`<i class="lv" style="display:block;width:100%;height:4px;margin-top:2px"><i style="width:${pct}%;background:${col||FI_COL[f.properties.kind]}"></i></i>`;
@@ -2067,16 +2102,8 @@ function officeFarmInfo(){
    ${row('Water',K('tank').map(f=>tile(f,f.properties.name.replace('Dairy water tank','Dairy tank').replace('381 Boundary Rd water tank','381 Bdy tank'))).join('')+K('meter').map(f=>tile(f,'Water meter',`<em style="color:${f.properties.pumping?'#2e7d32':'#777'}">${f.properties.pumping?'Pumping '+f.properties.flow+' L/s':'Not pumping'}</em>`)).join(''))}
    ${row('Effluent',K('pond').map(f=>tile(f,f.properties.name.replace('Effluent pond','Pond').replace('Main effluent pond','Main pond'))).join('')+K('sand').map(f=>tile(f,'Sand trap')).join(''))}
    <div class="ofr"><div class="ofcat">Records</div><div class="ofg"><a class="oft sheetlink" href="${SHEET_URL}" target="_blank" rel="noopener"><small>Google Sheet</small><b>📊 ${ESC(META.name)} Farm Management ↗</b><span>checklists, tasks, effluent &amp; photo logs, soil temperature history</span></a></div></div>
-   ${eff?`<div class="ofr"><div class="ofcat">Effluent system <span class="lvchip ph">placeholder</span></div>${effCkLine(p)}${leakState&&ENV&&leakState().al!=='ok'?leakLine():''}<div class="ofe" data-fid="${p.fid}">
-     <div class="ofst ${p.greenwash?'gw':''}">${p.status||'Off'}</div>
-     <div class="ofl">${(p.lines||[]).filter(l=>!/green/i.test(l[0])).map(l=>{ const d=effDepth(p).per.find(x=>x.n===l[0]); return `<div class="${p.active===l[0]?'on':''}"><small>${l[0]}${p.active===l[0]?' · ON':''}</small><b>${l[1]} min/hr</b><small style="color:#5d4037">${mm(d.so)} of ${mm(d.plan)}</small></div>`; }).join('')}<div class="${p.greenwash?'on gw':''}"><small>Green wash</small><b>${p.greenwash?'ON':'OFF'}</b></div></div>
-     <div class="ofrt"><span>Cycle: <b>${hrs(p.remain||0)}</b> left</span><span>of ${hrs(p.maxrun||0)} max run time</span></div>
-     <div style="height:7px;margin-top:4px;background:#e0e0e0;border-radius:4px;overflow:hidden"><div style="height:100%;width:${p.maxrun?Math.round((p.maxrun-p.remain)/p.maxrun*100):0}%;background:#6d4c41"></div></div>
-     ${(()=>{ const per=fiVal(eff), done=Math.max(0,(p.maxrun||0)-(p.remain||0)), pumped=done*per/60, total=(p.maxrun||0)*per/60, nl=(p.lines||[]).filter(l=>!/green/i.test(l[0])).length;
-       return `<div class="ofk"><div>Cycle time run<b>${hrs(done)}</b></div><div>Pumping time so far<b>${hrs(pumped)}</b></div><div>Total pumping planned<b>${hrs(total)}</b></div></div>
-       <div class="ofrt" style="margin-top:2px;color:#666"><span>${hrs(p.maxrun||0)} max run time × ${per} min per hour = ${hrs(total)} pumping</span><span>(${nl} lines × ${(p.lines||[])[0]?p.lines[0][1]:0} min)</span></div>
-       ${(()=>{ const d=effDepth(p); return `<div class="ofk"><div>Applied so far<b>${mm(d.so)}</b></div><div>Planned this cycle<b>${mm(d.plan)}</b></div><div>Application rate<b>${d.rate} mm/hr</b></div></div>
-       <div class="ofrt" style="margin-top:2px;color:#666"><span>Each line puts on ${d.rate} mm per hour of pumping; totals are all ${nl} lines added together</span></div>`; })()}`; })()}</div></div>`:''}`;
+   ${eff?effSysHTML(p):''}
+   ${eff?pondBalHTML():''}`;
 }
 function officeBoard(){   // the full maintenance board, same columns as the Google Sheet / printed board
   const rows=boardRows();
