@@ -992,7 +992,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 
 <div class="fabs" id="fabs">
   <button class="fab" data-label="Key" id="keyBtn" aria-label="Map key" title="Map key" style="font-weight:800;font-size:13px">KEY</button>
-  <button class="fab" data-label="Office view" id="officeBtn" aria-label="Office view" title="Office view – farm dashboard, tasks, maintenance board, effluent & cameras"><svg viewBox="0 0 24 24"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h7V6H4zm9 0v4h7V6h-7zm0 6v3h7v-3h-7z"/></svg></button>
+  <button class="fab" data-label="Reporting Dashboard" id="officeBtn" aria-label="Reporting Dashboard" title="Reporting Dashboard – farm dashboard, tasks, maintenance board, effluent & cameras"><svg viewBox="0 0 24 24"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h7V6H4zm9 0v4h7V6h-7zm0 6v3h7v-3h-7z"/></svg></button>
   <button class="fab" data-label="Views" id="viewsBtn" aria-label="Map views" title="Map views"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
   <button class="fab" data-label="Layers" id="layersBtn" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="M12 2 1 8l11 6 11-6-11-6zm0 14.2L3.2 11.4 1 12.6 12 18.6l11-6-2.2-1.2L12 16.2zm0 4L3.2 15.4 1 16.6l11 6 11-6-2.2-1.2L12 20.2z"/></svg></button>
   <button class="fab" data-label="Measure" id="measBtn" aria-label="Measure distance" title="Measure distance / area"><svg viewBox="0 0 24 24"><path d="M2.6 15.6 15.6 2.6l5.8 5.8L8.4 21.4zM6.2 15.2l1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1zm2.8-2.8 1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1z"/></svg></button>
@@ -1602,7 +1602,7 @@ let toastT; function toast(t){ const el=document.getElementById('toast'); el.tex
 /* ---------- suggestions (stored in the GV1 Map Suggestions Google Sheet) ---------- */
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1OXyMJkW_mjoQ3t3319DvobrX41oXU3t4I0eLdFDYmc4/edit';
 const SUGGEST_URL = 'https://script.google.com/macros/s/AKfycbyjpYbL9yBzKs-4a-VxgNqF_mKoF3cAbBNNUdag0_WjvvtFYA6d5LVkIm2jP1CWGTYI/exec';
-// ---- Staff sign-in. Without a pass the backend only sends open Health & safety items; the office view, other tasks and photos need a pass.
+// ---- Staff sign-in. Without a pass the backend only sends open Health & safety items; the Reporting Dashboard, other tasks and photos need a pass.
 const escH=v=>String(v||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
 let STAFF={tok:'',name:''}; try{ const o=JSON.parse(localStorage.getItem('gvmap.staff')||'null'); if(o&&o.tok&&(!o.exp||o.exp>Date.now())) STAFF=o; }catch(e){}
 const _fetch=window.fetch.bind(window);
@@ -1618,7 +1618,7 @@ window.fetch=(u,o)=>{   // every call to the farm backend carries the pass in th
   return _fetch(u,o); };
 function staffSignIn(opts){ opts=opts||{};
   const ov=document.createElement('div'); ov.id='staffOv';
-  ov.innerHTML=`<div class="sbox"><h2>🔒 Staff sign in</h2><div class="sub">${opts.why||'Sign in to see all tasks, photos and the office view.'}</div>
+  ov.innerHTML=`<div class="sbox"><h2>🔒 Staff sign in</h2><div class="sub">${opts.why||'Sign in to see all tasks, photos and the Reporting Dashboard.'}</div>
     <label>Your name<select id="siName"><option value="">Loading names…</option></select></label>
     <label>Your code<input id="siCode" type="password" inputmode="numeric" autocomplete="off" placeholder="Your code"></label>
     <div class="btns"><button class="btn" id="siGo">Sign in</button>${opts.noClose?`<a class="btn alt" href="${location.pathname}">Back to the map</a>`:'<button class="btn alt" id="siX">Cancel</button>'}</div>
@@ -1779,7 +1779,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-15f today row uses live soil reading --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-15g GV1 Reporting Dashboard name --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
@@ -2147,8 +2147,8 @@ const MON=k=>new Date(k+'-15T12:00').toLocaleDateString('en-NZ',{month:'short',y
 function effAlerts(){ if(!ENV) return []; const P=pondNow(), A=availDay(ENV.sm), now=new Date(), c=ckState(), out=[], pr=P?Math.round(P.pct):0;
   const run=c.today&&c.today['Permitted to start']==='Yes'?parseFloat(c.today['Max run time (h)'])||0:0, go=A&&A.h>0, late=!run&&now.getHours()>=10;
   if(P&&P.pct>=80&&go&&late) out.push(['crit',`Ponds ${pr}% full and the system hasn’t been started – it’s after 10 am and the soil (${ENV.sm}%) allows ${hrs(A.h)} at pods ${A.pod} min. Start it now.`]);
-  else if(P&&P.pct>=90) out.push(['crit',`Ponds ${pr}% full – over 90%, red alert. Dave and Jono have been emailed – run the system whenever the soil allows.`]);
-  else if(P&&P.pct>=80) out.push(['wrn',`Ponds ${pr}% full – over 80%, orange alert. Dave and Jono have been emailed.`]);
+  else if(P&&P.pct>=90) out.push(['crit',`Ponds ${pr}% full – over 90%, red alert. Management has been emailed – run the system whenever the soil allows.`]);
+  else if(P&&P.pct>=80) out.push(['wrn',`Ponds ${pr}% full – over 80%, orange alert. Management has been emailed.`]);
   else if(P&&P.pct>=50&&go&&late) out.push(['wrn',`Pond ${pr}% full and not started yet – the soil allows ${hrs(A.h)} today (pods ${A.pod} min).`]);
   if(P&&P.pct>=50&&go&&run&&run<A.h*0.85) out.push(['wrn',`Only ${hrs(run)} max run time set today – ${hrs(A.h)} is available at pods ${A.pod} min (${A.lim}) and the pond is ${pr}% full.`]);
   if(P&&P.src==='placeholder') out.forEach(a=>a[1]+=' (pond level is a placeholder until a reading is entered)');
@@ -2180,8 +2180,8 @@ function effRunSheet(days){ const col=p=>p==null?'#999':p>=85?'#2e7d32':p>=60?'#
 function pondSheet(days){ const d=days||90, from=ymdL(new Date(Date.now()-d*864e5)), P=EH().pond.filter(p=>p.d>=from), pn=pondNow();
   const form=`<div class="ckh" style="margin-top:12px">Record today’s pond levels</div><div class="bkg"><label>Main pond (No 2) %<input id="pdM" type="number" inputmode="decimal" min="0" max="100" step="1" value="${pn&&pn.src==='reading'&&pn.d===ymdL(new Date())?pn.main??'':''}"></label><label>West pond (No 1) %<input id="pdW" type="number" inputmode="decimal" min="0" max="100" step="1"></label></div>
     <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:12px;color:#5b6b55">READ BY</b>${signerSel('pdName',true)}<button class="btn" id="pdGo" type="button">Save pond levels</button></div>
-    <p class="note">Read from the pond level markers. Saved to the “Pond levels” tab of the farm sheet; the daily effluent checklist has the same boxes. Once the level sensors are connected they will fill this in automatically.</p>`;
-  chartSheet('Effluent pond levels','Overall storage = Main pond (No 2, 19,567 m³) + West pond (No 1, 3,485 m³). Alert levels (effluent management plan): 80% = orange alert, 90% = red alert – Dave and Jono are emailed automatically when a reading is entered.',[30,90,180,365],d,()=>{
+    <p class="note">Enter the current pond levels. Saved to the “Pond levels” tab of the farm sheet; the daily effluent checklist has the same boxes. Once the level sensors are connected they will fill this in automatically.</p>`;
+  chartSheet('Effluent pond levels','Overall storage = Main pond (No 2, 19,567 m³) + West pond (No 1, 3,485 m³). Alert levels (effluent management plan): 80% = orange alert, 90% = red alert – management is emailed automatically when a reading is entered.',[30,90,180,365],d,()=>{
     if(!P.length) return {ph:true,phText:'No pond readings recorded yet – enter one below',unit:'%',yMin:0,yMax:100,refs:[[90,'#d50000','90% – red alert'],[80,'#ef6c00','80% – orange alert']],series:[{name:'Overall storage (placeholder today)',color:'#6d4c41',pts:pn?[[Date.now(),pn.pct]]:[]}]};
     const pts=k=>P.filter(p=>p[k]!=null).map(p=>[dms(p.d),p[k]]);
     return {unit:'%',yMin:0,yMax:100,refs:[[90,'#d50000','90% – red alert'],[80,'#ef6c00','80% – orange alert']],series:[{name:'Overall storage',color:'#6d4c41',pts:P.map(p=>[dms(p.d),pondPct(p)]).filter(x=>x[1]!=null)},{name:'Main pond',color:'#1565c0',dash:true,pts:pts('m')},{name:'West pond',color:'#00838f',dash:true,pts:pts('w')}]}; },form);
@@ -2597,7 +2597,7 @@ function mtWire(root,scope){
     fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'task',farm:META.name,id:'effck',tname:'Effluent daily checklist',name,note:'system not run today (Lines 1–3 off)'})}).then(x=>x.json())
       .then(x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.tasks=x.tasks; toast('Recorded – system not run today'); scope==='prompt'?mtPrompt(true):officeRender(); }).catch(()=>toast('No connection')); });
 }
-function mtPrompt(refresh){   // "before you start" – outstanding jobs, shown once a day when the office view opens
+function mtPrompt(refresh){   // "before you start" – outstanding jobs, shown once a day when the Reporting Dashboard opens
   let el=document.getElementById('mtPrompt'); const due=mtOutstanding();
   if(!due.length){ if(el) el.remove(); return; }
   if(!el){ if(refresh) return; el=document.createElement('div'); el.id='mtPrompt'; document.body.appendChild(el); }
@@ -2742,11 +2742,11 @@ function officeChecklistMain(){
    ${RA?`<div class="note" style="margin:-4px 0 8px">Pod run time and max run time are pre-filled from today’s recommendation (soil moisture guide, soil room to ${SM_STOP}% and the ${effCfg().depth} mm limit) – change them if needed.</div>`:''}
    ${fc&&fc.rain72!=null&&fc.rain72>25?`<div class="ckl bad">⚠ Heavy rain coming: <b>${fc.rain72} mm</b> forecast over the next 3 days${fc.max24!=null?` (wettest 24 h ${fc.max24} mm${fc.max24From?' from '+ESC(fc.max24From):''})`:''}. Think about cutting the pod run time / application depth, keep pond storage in hand, and talk to Dave about the application rate if needed.</div>`:''}
    <label class="field">Rain forecast (total) today (mm) <small>${fc?`– filled in from ${ESC(fc.src)} for the rest of today, updated ${ESC(fc.at)} · tomorrow ${fc.tomorrow} mm${fc.rain72!=null?` · next 3 days <b style="color:${fc.rain72>25?'#c62828':'inherit'}">${fc.rain72} mm</b>`:''}`:'– forecast not available, please enter it'}</small><input name="rain" type="number" inputmode="decimal" min="0" step="0.1" value="${fc?fc.today:''}"></label>
-   <div class="ckh">Pond levels today <small>(read the pond level markers – builds the pond history and sets the 80% / 90% alerts)</small></div>
+   <div class="ckh">Pond levels today <small>(builds the pond history and sets the 80% / 90% alerts)</small></div>
    ${(()=>{ const pp=pondPredict(), L=pp&&pp.last, m3=v=>Math.round(v).toLocaleString('en-NZ'), pv=pp&&!pp.same&&!pp.stale;
      return `<div class="bkg"><label>Main pond (No 2) %<input name="pmain" type="number" inputmode="decimal" min="0" max="100" step="1" value="${pv&&pp.main!=null?pp.main:''}" data-pred="${pv&&pp.main!=null?pp.main:''}" placeholder="${L&&L.m!=null?'last '+L.m+'%':''}"></label><label>West pond (No 1) %<input name="pwest" type="number" inputmode="decimal" min="0" max="100" step="1" value="${pv&&pp.west!=null?pp.west:''}" data-pred="${pv&&pp.west!=null?pp.west:''}" placeholder="${L&&L.w!=null?'last '+L.w+'%':''}"></label></div>
      ${!L?'':pp.same?`<div class="note">Already read today (main ${L.m??'–'}%, west ${L.w??'–'}%) – enter again only if it has changed.</div>`:pp.stale?`<div class="note">Last reading was ${pp.days} days ago (${dshort(L.d)}) – too long ago to predict, please read the markers.</div>`
-      :`<div class="note"><b>Predicted – check the markers and correct if different.</b> Last reading ${dshort(L.d)}: main ${L.m??'–'}%, west ${L.w??'–'}%. Since then: rain ${pp.rain} mm ≈ +${m3(pp.inR)} m³, wash water ≈ +${m3(pp.wash)} m³, pumped out ≈ −${m3(pp.out)} m³ → ${pp.net>=0?'+':'−'}${m3(Math.abs(pp.net))} m³ (put on the main pond – the weeping-wall pump keeps moving pond 1 into pond 2).</div>`}`; })()}
+      :`<div class="note"><b>Predicted – check against the actual pond level and correct if different.</b> Last reading ${dshort(L.d)}: main ${L.m??'–'}%, west ${L.w??'–'}%. Since then: rain ${pp.rain} mm ≈ +${m3(pp.inR)} m³, wash water ≈ +${m3(pp.wash)} m³, pumped out ≈ −${m3(pp.out)} m³ → ${pp.net>=0?'+':'−'}${m3(Math.abs(pp.net))} m³ (put on the main pond – the weeping-wall pump keeps moving pond 1 into pond 2).</div>`}`; })()}
    <div class="ckh">Where are the pods today? <small>(this goes straight onto the effluent application board)</small></div>
    ${EB_LINES.map(([line,pads],i)=>{ const lp=String(L['Line '+(i+1)+' pods (paddock)']||''), lb=ebLatest(line,pads), lt=lp?{pd:+lp,d:L['Date']}:lp===''&&L['Date']&&('Line 1 pods (paddock)' in L)?null:lb; return `<label class="field">Pod ${i+1} – effluent ${line} paddock<select name="pod${i+1}"><option value="" ${!lt?'selected':''}>Not running / not on this line today</option>${pads.map(pd=>`<option value="${pd}" ${lt&&lt.pd===pd?'selected':''}>Paddock ${pd}${lt&&lt.pd===pd?' (same as the last checklist'+(lt.d?' – '+dshort(lt.d):'')+')':''}</option>`).join('')}</select></label>`; }).join('')}
    <div class="ckh">People <small>(filled in from the last checklist – change if needed)</small></div>
@@ -2844,7 +2844,7 @@ function officeRender(){
   const panel=document.getElementById('ofp');
   if((OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')) || ((OFTAB==='et'||OFTAB==='eq') && window._etDirty && document.getElementById('etF'))){   // don't wipe a half-filled checklist on the 10-minute refresh
     const tb=panel.querySelector('.oftabs'); if(tb) tb.querySelectorAll('button').forEach((b,i)=>b.innerHTML=tabs[i][1]+' '+tabs[i][2]); return; }
-  panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Office View</h1><div class="ofclock"><b id="ofClock">${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit',second:'2-digit'})}</b> <span>${now.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</span></div><small>data updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit office view</a>
+  panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Reporting Dashboard</h1><div class="ofclock"><b id="ofClock">${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit',second:'2-digit'})}</b> <span>${now.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</span></div><small>data updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit dashboard</a>
     <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]||(t[0]==='eff'&&EFFG.includes(OFTAB))||(t[0]==='staff'&&STAFFG.includes(OFTAB))||(t[0]==='pfg'&&PFG.includes(OFTAB))?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
    ${PFG.includes(OFTAB)?`<div class="effsub two">${pfSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
    ${STAFFG.includes(OFTAB)?`<div class="effsub two">${staffSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
@@ -3072,13 +3072,13 @@ function ideaBadge(){ if(!IDEAS) return ''; const n=IDEAS.filter(x=>/^new$/i.tes
 function officeIdeas(){
   if(!STAFF.tok) return '<div class="ofbd"><p>Sign in to make a suggestion.</p></div>';
   const st=s=>/done|complete/i.test(s)?'ok':/not|no\b|declin/i.test(s)?'bad':/new/i.test(s)?'wrn':'';
-  return `<div class="ofbd"><div class="rohead"><div><b>💡 Suggestions for this office view</b><small>Something you'd like changed, added or fixed? Tell us here – it goes straight to Dave, and his answer shows below.</small></div></div>
+  return `<div class="ofbd"><div class="rohead"><div><b>💡 Suggestions for this dashboard</b><small>Something you'd like changed, added or fixed? Tell us here – it goes straight to Dave, and his answer shows below.</small></div></div>
    <div class="idf"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b style="font-size:12px;color:#5b6b55">FROM</b>${signerSel('idName',true)}<input id="idOther" placeholder="Your name" maxlength="80" style="display:none"><b style="font-size:12px;color:#5b6b55;margin-left:8px">ABOUT</b><select id="idArea">${IDEA_AREAS.map(a=>`<option>${a}</option>`).join('')}</select></div>
     <div class="jbnote" style="display:flex;gap:6px;margin-top:8px;align-items:flex-start"><textarea id="idText" rows="4" style="flex:1" placeholder="What would make this better? Type it, or tap the microphone and say it."></textarea><button class="jbmic" id="idMic" title="Talk – say your suggestion">${MIC_SVG}</button></div>
     <div class="btns" style="margin-top:8px"><button class="btn" id="idSend">Send suggestion</button></div></div>
    <table class="jbt idt"><tr><th>When</th><th>From</th><th>About</th><th>Suggestion</th><th>Status</th><th>Dave's reply</th></tr>
     ${IDEAS==null?'<tr><td colspan="6" class="jbnone">Loading…</td></tr>':IDEAS.map(x=>`<tr><td style="white-space:nowrap">${dshort(x.at.slice(0,10))}</td><td>${ESC(x.name)}</td><td>${ESC(x.area)}</td><td>${ESC(x.text)}</td><td><span class="ckb ${st(x.status)}">${ESC(x.status)}</span></td><td>${ESC(x.reply)}</td></tr>`).join('')||'<tr><td colspan="6" class="jbnone">No suggestions yet.</td></tr>'}</table>
-   <p class="note">Saved on the "Office view suggestions" tab of the farm sheet – fill in Status (e.g. New, Planned, Done, Not doing) and Response there.</p></div>`; }
+   <p class="note">Saved on the "Reporting Dashboard suggestions" tab of the farm sheet – fill in Status (e.g. New, Planned, Done, Not doing) and Response there.</p></div>`; }
 function ideaWire(panel){ const g=id=>panel.querySelector(id), sel=g('#idName'), oth=g('#idOther');
   if(sel){ const so=()=>{ oth.style.display=sel.value==='__other'?'':'none'; }; sel.onchange=so; so(); }
   const mic=g('#idMic'); if(mic) mic.onclick=()=>talkInto(g('#idText'),mic);
@@ -3396,7 +3396,7 @@ keyBtn.onclick=()=>toggleKey(!keyBox.classList.contains('open'));
 const farmBounds = paddocks.getBounds();
 function fitFarm(){ map.fitBounds(farmBounds,{padding:[20,20],paddingTopLeft:[20,70]}); updateLabels(); }
 document.getElementById('fitBtn').onclick=()=>{ closeSheet(); fitFarm(); };
-{ const ob=document.getElementById('officeBtn'); if(OFFICE){ ob.dataset.label='Map view'; ob.title='Leave the office view'; }
+{ const ob=document.getElementById('officeBtn'); if(OFFICE){ ob.dataset.label='Map view'; ob.title='Leave the Reporting Dashboard'; }
   ob.onclick=()=>{ location.href=location.pathname+(OFFICE?'':'?view=office'); }; }
 document.getElementById('listBtn').onclick=()=>{ clearSel();
   const ps=by('paddocks').map(f=>f.properties).sort((a,b)=>a.num-b.num);
@@ -3412,14 +3412,14 @@ if(VIEW==='shed'){   // link from the website: dairy shed, wintering barn, feed 
   ['viewsBtn','boardBtn','officeBtn'].forEach(i=>{ const e=document.getElementById(i); if(e) e.style.display='none'; });
   { const fb=document.getElementById('farmBtn'); fb.textContent='GV1 Hazard Map'; fb.onclick=null; fb.style.cursor='default'; }
 } else if(OFFICE){
-  document.body.classList.add('office'); document.title='GV1 Office View';
+  document.body.classList.add('office'); document.title='GV1 Reporting Dashboard';
   state={}; LAYERS.forEach(d=>{ if(d.id) state[d.id]=false; }); ['paddocks','sugg','lanes','buildings','cowshed','yards','trough','farminfo','pond',...GROUPS['Dairy shed & barn services (2019 plan)'],'sbtiles','cables','effpit','effdrain','valve','camera'].forEach(k=>{ if(LAYERS.some(d=>d.id===k)) state[k]=true; });
   { const tg=document.createElement('button'); tg.id='ofToggle'; document.body.appendChild(tg);   // phone: switch between the office panel and the map
-    const lab=()=>{ tg.textContent=document.body.classList.contains('mapmode')?'📋 Back to office view':'🗺️ Show map'; };
+    const lab=()=>{ tg.textContent=document.body.classList.contains('mapmode')?'📋 Back to the Reporting Dashboard':'🗺️ Show map'; };
     tg.onclick=()=>{ document.body.classList.toggle('mapmode'); if(!document.body.classList.contains('mapmode')) closeSheet(); lab(); setTimeout(()=>map.invalidateSize(),60); };
     new MutationObserver(lab).observe(document.body,{attributes:true,attributeFilter:['class']}); lab(); }
   map.invalidateSize(); syncLayers(); fitFarm();
-  if(!STAFF.tok) staffSignIn({noClose:true, why:'The office view is for Gladvale staff only. Sign in with your name and code.'});
+  if(!STAFF.tok) staffSignIn({noClose:true, why:'The Reporting Dashboard is for Gladvale staff only. Sign in with your name and code.'});
   else { officeLoad(); setInterval(officeLoad, 10*60*1000); }
   let idle=null; const kick=()=>{ clearTimeout(idle); idle=setTimeout(()=>{ closeSheet(); fitFarm(); const mp=document.getElementById('mtPrompt'); if(mp) mp.remove(); if(OFTAB!=='info' && !window._ckDirty){ OFTAB='info'; try{ localStorage.setItem('gvmap.oftab','info'); }catch(e){} officeRender(); } }, 3*60*1000); };
   ['mousedown','touchstart','wheel','keydown'].forEach(ev=>addEventListener(ev,kick,{passive:true})); kick();
