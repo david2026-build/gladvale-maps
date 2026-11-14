@@ -807,7 +807,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .pbst{display:grid;grid-template-columns:1.3fr 1fr;gap:10px;border:2px solid;border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fff}.pbst small{display:block;font-size:10.5px;color:#666;font-weight:700}.pbst b{font-size:inherit}.pbst>div>b{display:block;font-size:20px}.pbst span{display:block;font-size:11.5px;color:#444;line-height:1.4}
 .prck label{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;justify-content:flex-start;text-align:left}.prck input{width:auto!important;margin:0!important;flex:0 0 auto}
 .bkt{margin:0 0 8px;border:1px solid #cfd8c9;border-radius:8px;padding:6px 8px;background:#f7faf5}.bkt summary{cursor:pointer;font-weight:700;color:#2e5e2a}.bkg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}.bkg label{font-size:12px;display:flex;flex-direction:column;gap:2px}
-.pbg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.pbt b{font-size:16px}.pbt span{display:block;font-size:10.5px;color:#666;line-height:1.25}
+.pbg{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.rtt{font-size:12px;margin-top:8px}.rtt td,.rtt th{padding:3px 5px}.pbt b{font-size:16px}.pbt span{display:block;font-size:10.5px;color:#666;line-height:1.25}
 .ofg{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px}
 .ofst{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:10px;background:#efebe9;color:#4e342e}.ofst.gw{background:#c8e6c9;color:#1b5e20}
 .ofl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}.ofl div{background:#fff;border-radius:6px;padding:3px 6px;border:1px solid #eee}.ofl small{display:block;font-size:10px;color:#666}.ofl b{font-size:13px}
@@ -1778,7 +1778,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-13s plan links, compliance colours, no start-up prompt --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-15a effluent runtime targets + pond history --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
@@ -2084,10 +2084,10 @@ function pondBalHTML(){ const fc=ENV&&ENV.fc, E=effLive(), area=POND.catch+POND.
   const net=(inR||0)+wash-out, net3=(in3||0)+3*wash-3*out, pc=v=>(v>=0?'+':'−')+Math.abs(Math.round(v/POND.cap*1000)/10)+'%', m3=v=>Math.round(v).toLocaleString('en-NZ')+' m³';
   const tile=(lab,val,sub,col)=>`<div class="oft pbt"${col?` style="border-left:4px solid ${col}"`:''}><small>${lab}</small><b>${val}</b><span>${sub}</span></div>`;
   const nc=v=>v>0?'#d50000':'#2e7d32';
-  const fs=by('farminfo'), st=POND_ST.map(([n,c])=>{ const f=fs.find(x=>x.properties.name===n); return {n,c,pct:f?fiVal(f):null}; }).filter(s=>s.pct!=null);
+  const fs=by('farminfo'), PN=pondNow(), st=POND_ST.map(([n,c])=>{ const f=fs.find(x=>x.properties.name===n), rd=PN&&PN.src==='reading'?(/Main/.test(n)?PN.main:PN.west):null; return {n,c,pct:rd!=null?rd:f?fiVal(f):null}; }).filter(s=>s.pct!=null);
   const cap=st.reduce((a,s)=>a+s.c,0), vol=st.reduce((a,s)=>a+s.c*s.pct/100,0), spare=cap-vol, pNow=cap?vol/cap*100:null, p1=cap?(vol+net)/cap*100:null, p3=cap?(vol+net3)/cap*100:null, r1=v=>Math.round(v*10)/10;
   const daysFull=net3>0?Math.floor(spare/(net3/3)):null, scol=pNow==null?'':pNow>=85?'#d50000':pNow>=75?'#ef6c00':'#2e7d32';
-  const stor=cap?`<div class="pbst" style="border-color:${scol}"><div><small>Overall storage now · <span style="color:#8d6e63">pond levels are placeholders</span></small><b style="color:${scol}">${r1(pNow)}% full</b><span>${m3(vol)} of ${m3(cap)} · <b>${m3(spare)} spare</b></span>
+  const stor=cap?`<div class="pbst" id="pbStor" style="border-color:${scol};cursor:pointer" title="Pond level history"><div><small>Overall storage now · ${PN&&PN.src==='reading'?`<span style="color:#2e7d32">reading ${dshort(PN.d)}</span>`:'<span style="color:#8d6e63">pond levels are placeholders – tap to enter a reading</span>'} · <span style="color:#1565c0">📈 history</span></small><b style="color:${scol}">${r1(pNow)}% full</b><span>${m3(vol)} of ${m3(cap)} · <b>${m3(spare)} spare</b></span>
      <div style="height:7px;margin:4px 0;background:#e0e0e0;border-radius:4px;overflow:hidden"><div style="height:100%;width:${Math.min(100,pNow)}%;background:${scol}"></div></div><span>${st.map(s=>`${s.n.replace('Effluent pond (west)','West pond').replace('Main effluent pond','Main pond')} ${s.pct}% of ${s.c.toLocaleString('en-NZ')} m³`).join(' · ')}</span></div>
      <div><small>Predicted</small><span>End of today <b>${r1(p1)}%</b> (${net>=0?'+':'−'}${m3(Math.abs(net))})</span><span>In 3 days <b>${r1(p3)}%</b> (${net3>=0?'+':'−'}${m3(Math.abs(net3))})</span><span>${daysFull==null?'Pumping is keeping ahead of rain + wash water':daysFull>60?'At this rate the spare lasts more than 2 months':`At this rate the spare lasts <b>≈ ${daysFull} days</b>`}</span></div></div>`:'';
   return `<div class="ofr"><div class="ofcat">Effluent pond balance <span class="lvchip live">● forecast + checklist</span></div>${stor}<div class="ofg pbg">
@@ -2098,6 +2098,79 @@ function pondBalHTML(){ const fc=ENV&&ENV.fc, E=effLive(), area=POND.catch+POND.
    ${tile('Pond today',(net>=0?'▲ +':'▼ −')+m3(Math.abs(net)),`${pc(net)} of ${POND.cap.toLocaleString('en-NZ')} m³ storage – ${net>0?'rising':'falling'}`,nc(net))}
    ${tile('Pond next 3 days',(net3>=0?'▲ +':'▼ −')+m3(Math.abs(net3)),`${pc(net3)} if pumping stays the same`,nc(net3))}</div>
    <small class="mkn">Catchment ${POND.catch.toLocaleString('en-NZ')} m² of yards, pads and solids area plus ${POND.ponds.toLocaleString('en-NZ')} m² of pond surface; storage = liquid ponds 1 and 2 (${POND.src}). Cows from the milk tiles until the database is connected. Main pond = No 2 lined pond, west pond = No 1 pond. Once the pond level sensors are connected, each day’s predicted change will be checked against the real change so the rain response is learned from your own ponds.</small></div>`; }
+// ---- Effluent runtime targets, monthly runtime and pond level history (Dave, 15 Nov 2026)
+// Target = share of the day the system should be running when the soil allows it, sliding with how full the ponds are:
+// 75%+ full → 90%; 50% → 70%; 25% → 50%; under 25% → 50% Feb–May (keep drawing the ponds down before winter), otherwise easing to 30% when empty.
+// Soil 95–99.3% (wet) halves the target; 99.3%+ (field capacity) = don't run. Pods are set from the soil moisture pod run-time guide.
+const PCAP={main:19567,west:3485}, RT_AUTUMN=[2,3,4,5];
+const EH=()=>(ENV&&ENV.effHist)||{runs:[],pond:[]};
+const pondPct=p=>!p?null:p.a!=null?p.a:p.m!=null&&p.w!=null?Math.round((p.m*PCAP.main+p.w*PCAP.west)/(PCAP.main+PCAP.west)*10)/10:p.m!=null?p.m:p.w!=null?p.w:null;
+function pondAt(d){ let r=null; for(const p of EH().pond){ if(p.d<=d&&pondPct(p)!=null) r=p; else if(p.d>d) break; } return r; }
+function pondNow(){ const td=ymdL(new Date()), r=pondAt(td);
+  if(r&&(dms(td)-dms(r.d))/864e5<=7) return {pct:pondPct(r),main:r.m,west:r.w,d:r.d,src:'reading'};
+  const fs=by('farminfo'), g=n=>{ const f=fs.find(x=>x.properties.name===n); return f?fiVal(f):null; }, m=g('Main effluent pond'), w=g('Effluent pond (west)');
+  return m==null&&w==null?null:{pct:pondPct({m,w}),main:m,west:w,d:null,src:'placeholder',last:r}; }
+function rtTarget(pond,sm,mo){
+  if(sm!=null&&sm>=99.3) return {pct:0,why:`soil ${sm}% – field capacity, don’t run`};
+  if(pond==null) return {pct:null,why:'no pond level'};
+  let t=pond>=75?90:pond>=50?70+(pond-50)*0.8:pond>=25?50+(pond-25)*0.8:RT_AUTUMN.includes(mo)?50:30+pond*0.8, why=`pond ${Math.round(pond)}% full`;
+  if(sm!=null&&sm>=95){ t/=2; why+=` · soil ${sm}% – wet, half target`; } else if(sm!=null) why+=` · soil ${sm}%`;
+  return {pct:Math.round(t),why}; }
+function effDays(n){ const R={}; EH().runs.forEach(r=>R[r.d]=r); const H0=[(EH().runs[0]||{}).d,(EH().pond[0]||{}).d].filter(Boolean).sort()[0]; const c=(ENV&&ENV.calc)||{}, D=parseFloat(c.lines)||3, flow=(parseFloat(c.podrate)||parseFloat(c.rate)||0)*(parseFloat(c.pods)||5), now=new Date(), PN=pondNow(), SM=window._sm365||{}, out=[];
+  for(let i=n-1;i>=0;i--){ const dt=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i), d=ymdL(dt), r=R[d]&&R[d].ok?R[d]:null;
+    const sm=SM[d]!=null?SM[d]:R[d]&&R[d].sm!=null?R[d].sm:i===0&&ENV&&ENV.sm!=null?ENV.sm:null, pr=pondAt(d), est=!pr, pond=pr?pondPct(pr):PN?PN.pct:null, T=rtTarget(pond,sm,dt.getMonth()+1);
+    const runH=r?r.mx:0, pumpH=r?r.mx*r.pod*D/60:0;
+    const pre=!H0||d<H0;   // before the first checklist / pond record – no history to judge against
+    out.push({d,dt,runH,pumpH,m3:pumpH*flow,sm,pond,est,pre,tPct:pre||sm==null?null:T.pct,tH:pre||sm==null||T.pct==null?null:24*T.pct/100,pod:r?r.pod:null,guide:podMin(sm),why:T.why}); }
+  return out; }
+function effMonths(n){ const M={}; effDays(400).filter(x=>!x.pre).forEach(x=>{ const k=x.d.slice(0,7), o=M[k]=M[k]||{k,days:0,run:0,runH:0,pumpH:0,m3:0,tH:0,allow:0,missed:0,est:0};
+    o.days++; if(x.runH>0) o.run++; o.runH+=x.runH; o.pumpH+=x.pumpH; o.m3+=x.m3; if(x.tH) o.tH+=x.tH; if(x.sm!=null&&x.sm<99.3) o.allow++; if(x.est) o.est++;
+    if(x.runH===0&&x.pond!=null&&x.pond>=50&&x.sm!=null&&x.sm<95&&x.d<ymdL(new Date())) o.missed++; });
+  return Object.values(M).sort((a,b)=>a.k<b.k?1:-1).slice(0,n); }
+const MON=k=>new Date(k+'-15T12:00').toLocaleDateString('en-NZ',{month:'short',year:'2-digit'});
+function effAlerts(){ if(!ENV) return []; const P=pondNow(), sm=ENV.sm, now=new Date(), T=rtTarget(P?P.pct:null,sm,now.getMonth()+1), c=ckState(), out=[];
+  const run=c.today&&c.today['Permitted to start']==='Yes'?parseFloat(c.today['Max run time (h)'])||0:0, tH=T.pct?24*T.pct/100:0, pr=P?Math.round(P.pct):0;
+  if(P&&P.pct>=80) out.push(['crit',`Ponds ${pr}% full – over 80%. The effluent management plan says the directors must be phoned straight away.`]);
+  if(P&&P.pct>=50&&sm!=null&&sm<95&&tH){
+    if(!run&&now.getHours()>=10) out.push(['crit',`Pond ${pr}% full and soil ${sm}% – effluent should be running today (target ${T.pct}% of the day ≈ ${hrs(tH)}, pods ${podMin(sm)} min) but it hasn’t been started.`]);
+    else if(run&&run<tH*0.85) out.push(['wrn',`Only ${hrs(run)} max run time set today – the target is ${T.pct}% of the day ≈ ${hrs(tH)} with the pond ${pr}% full and soil ${sm}%. Set a longer max run time.`]); }
+  if(P&&P.src==='placeholder') out.forEach(a=>a[1]+=' (pond level is a placeholder until a reading is entered)');
+  return out; }
+function effAlertBar(){ const a=effAlerts(); return a.map(x=>`<div class="ckl ${x[0]==='crit'?'bad flash':'wrn flasho'}" data-rt="1" style="cursor:pointer">⚠ ${x[1]}</div>`).join(''); }
+function effRunHTML(){ if(!ENV) return '';
+  const P=pondNow(), sm=ENV.sm, now=new Date(), T=rtTarget(P?P.pct:null,sm,now.getMonth()+1), c=ckState(), run=c.today&&c.today['Permitted to start']==='Yes'?parseFloat(c.today['Max run time (h)'])||0:0, tH=T.pct!=null?24*T.pct/100:null;
+  const ms=effMonths(6), cur=ms[0]||{}, pct=x=>x.tH?Math.round(x.runH/x.tH*100):null, col=p=>p==null?'#999':p>=90?'#2e7d32':p>=70?'#ef6c00':'#d50000', r0=v=>Math.round(v).toLocaleString('en-NZ');
+  const tile=(lab,val,sub,cl)=>`<div class="oft pbt"${cl?` style="border-left:4px solid ${cl}"`:''}><small>${lab}</small><b>${val}</b><span>${sub}</span></div>`, cp=pct(cur);
+  return `<div class="ofr" id="effRun" style="cursor:pointer"><div class="ofcat">Effluent runtime &amp; targets <span class="lvchip live">● checklist + soil + pond</span></div>
+   <div class="ckl ${tH==null?'':!tH?'ok':run>=tH*0.85?'ok':run?'wrn':'bad'}" style="margin-bottom:6px">Today’s target: ${tH==null?'– (no pond level)':!tH?`don’t run – ${T.why}`:`run <b>${T.pct}%</b> of the day ≈ <b>${hrs(tH)}</b>, pods <b>${podMin(sm)} min</b>`} <small style="font-weight:400">(${T.why})</small> · ${run?`set today: ${hrs(run)} max run time`:'not started today'}</div>
+   <div class="ofg pbg">
+    ${tile(MON(cur.k||ymdL(now).slice(0,7))+' run time',hrs(cur.runH||0),cur.tH?`${cp}% of the ${hrs(cur.tH)} target`:'target needs pond + soil data',col(cp))}
+    ${tile('Pumping hours',hrs(cur.pumpH||0),`${cur.run||0} of ${cur.days||0} days run · soil allowed ${cur.allow||0}`)}
+    ${tile('Effluent pumped',(cur.m3?'≈ '+r0(cur.m3):'0')+' m³',`this month · ≈ ${P?Math.round((cur.m3||0)/(PCAP.main+PCAP.west)*1000)/10:'–'}% of pond storage`)}
+    ${tile('Days missed',String(cur.missed||0),'pond 50%+ and soil under 95% but not run',cur.missed?'#d50000':'#2e7d32')}</div>
+   <table class="etab rtt"><tr><th>Month</th><th>Days run</th><th>Run time</th><th>Target</th><th>% of target</th><th>Pumped</th><th>Missed</th></tr>
+    ${ms.map(m=>{ const p=pct(m); return `<tr><td>${MON(m.k)}</td><td>${m.run}</td><td>${hrs(m.runH)}</td><td>${m.tH?hrs(m.tH):'–'}</td><td><b style="color:${col(p)}">${p==null?'–':p+'%'}</b></td><td>${m.m3?'≈ '+r0(m.m3)+' m³':'0'}</td><td style="color:${m.missed?'#d50000':'inherit'}">${m.missed||''}</td></tr>`; }).join('')}</table>
+   <small class="mkn">Run time = the max run time on each day’s effluent checklist (no checklist = not run); pumping = run time × pod minutes × ${(ENV.calc&&ENV.calc.lines)||3} lines; m³ from the pond calculator flow. Target = share of the day to run when the soil allows: pond 75%+ full 90%, 50% 70%, 25% 50%, under 25% 50% Feb–May (draw down before winter) otherwise less; soil 95–99.3% halves it, 99.3%+ don’t run. ${P&&P.src==='placeholder'?'<b>Pond levels are placeholders until readings are entered</b> (daily checklist or tap Overall storage).':''} Tap for the daily graph.</small></div>`; }
+function effRunSheet(days){ const d=days||30, rows=effDays(d<=90?d:400).slice(-d);
+  const extra=`<table class="bgd" style="margin-top:8px"><tr><th>Pond level</th><th>Target – share of the day running</th></tr><tr><td>75% full and over</td><td>90%</td></tr><tr><td>50%</td><td>70%</td></tr><tr><td>25%</td><td>50%</td></tr><tr><td>Under 25%</td><td>50% Feb–May (pre-winter draw-down), otherwise easing to 30%</td></tr><tr><td colspan="2">Soil 95–99.3% → half the target · 99.3%+ (field capacity) → don’t run · pod minutes from the soil moisture guide</td></tr></table>`;
+  chartSheet('Effluent run time vs target','Hours run each day (from the daily effluent checklist max run time) against the target set by pond level and soil moisture. Longer ranges are monthly totals.',[30,90,180,365],d,()=>{
+    if(d<=90) return {unit:' h',yMin:0,series:[{name:'Hours run',color:'#6d4c41',bar:true,pts:rows.map(x=>[x.dt.getTime(),Math.round(x.runH*10)/10])},{name:'Target hours',color:'#2e7d32',dash:true,pts:rows.filter(x=>x.tH!=null).map(x=>[x.dt.getTime(),Math.round(x.tH*10)/10])}]};
+    const M={}; rows.forEach(x=>{ const k=x.d.slice(0,7), o=M[k]=M[k]||[0,0]; o[0]+=x.runH; o[1]+=x.tH||0; }); const ks=Object.keys(M).sort();
+    return {unit:' h',yMin:0,series:[{name:'Hours run per month',color:'#6d4c41',bar:true,pts:ks.map(k=>[dms(k+'-15'),Math.round(M[k][0])])},{name:'Target hours',color:'#2e7d32',dash:true,pts:ks.map(k=>[dms(k+'-15'),Math.round(M[k][1])])}]}; },extra); }
+function pondSheet(days){ const d=days||90, from=ymdL(new Date(Date.now()-d*864e5)), P=EH().pond.filter(p=>p.d>=from), pn=pondNow();
+  const form=`<div class="ckh" style="margin-top:12px">Record today’s pond levels</div><div class="bkg"><label>Main pond (No 2) %<input id="pdM" type="number" inputmode="decimal" min="0" max="100" step="1" value="${pn&&pn.src==='reading'&&pn.d===ymdL(new Date())?pn.main??'':''}"></label><label>West pond (No 1) %<input id="pdW" type="number" inputmode="decimal" min="0" max="100" step="1"></label></div>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:12px;color:#5b6b55">READ BY</b>${signerSel('pdName',true)}<button class="btn" id="pdGo" type="button">Save pond levels</button></div>
+    <p class="note">Read from the pond level markers. Saved to the “Pond levels” tab of the farm sheet; the daily effluent checklist has the same boxes. Once the level sensors are connected they will fill this in automatically.</p>`;
+  chartSheet('Effluent pond levels','Overall storage = Main pond (No 2, 19,567 m³) + West pond (No 1, 3,485 m³). Over 80% full must be reported to the directors (effluent management plan).',[30,90,180,365],d,()=>{
+    if(!P.length) return {ph:true,phText:'No pond readings recorded yet – enter one below',unit:'%',yMin:0,yMax:100,refs:[[80,'#d50000','80% – tell the directors'],[75,'#ef6c00','75%']],series:[{name:'Overall storage (placeholder today)',color:'#6d4c41',pts:pn?[[Date.now(),pn.pct]]:[]}]};
+    const pts=k=>P.filter(p=>p[k]!=null).map(p=>[dms(p.d),p[k]]);
+    return {unit:'%',yMin:0,yMax:100,refs:[[80,'#d50000','80% – tell the directors'],[75,'#ef6c00','75%']],series:[{name:'Overall storage',color:'#6d4c41',pts:P.map(p=>[dms(p.d),pondPct(p)]).filter(x=>x[1]!=null)},{name:'Main pond',color:'#1565c0',dash:true,pts:pts('m')},{name:'West pond',color:'#00838f',dash:true,pts:pts('w')}]}; },form);
+  const go=document.getElementById('pdGo'); if(go) go.onclick=()=>{ const m=document.getElementById('pdM').value.trim(), w=document.getElementById('pdW').value.trim(), name=signerName('pdName','');
+    if(!m&&!w) return toast('Enter at least one pond level'); if(!name||name==='__other') return toast('Choose who read the levels');
+    go.disabled=true; go.textContent='Saving…';
+    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'pond',farm:META.name,main:m,west:w,name})}).then(x=>x.json())
+     .then(x=>{ if(!x.ok){ go.disabled=false; go.textContent='Save pond levels'; return toast(x.error||'Could not save'); } ENV.effHist=x.effHist; toast('Pond levels saved'); pondSheet(d); officeRender(); })
+     .catch(()=>{ go.disabled=false; go.textContent='Save pond levels'; toast('No connection – not saved'); }); }; }
 function officeFarmInfo(){
   const fs=by('farminfo'), K=k=>{ const v=fs.filter(f=>f.properties.kind===k); return k==='vat'?v.sort((a,b)=>a.properties.name.localeCompare(b.properties.name,'en',{numeric:true})):k==='tank'?v.sort((a,b)=>(/^Dairy/.test(b.properties.name))-(/^Dairy/.test(a.properties.name))):v; };
   const bar=(f,pct,col)=>`<i class="lv" style="display:block;width:100%;height:4px;margin-top:2px"><i style="width:${pct}%;background:${col||FI_COL[f.properties.kind]}"></i></i>`;
@@ -2105,6 +2178,7 @@ function officeFarmInfo(){
   const row=(cat,html)=>`<div class="ofr phsec">${cat?`<div class="ofcat">${cat} <span class="lvchip ph">placeholder</span></div>`:''}<div class="ofg">${html}</div></div>`;
   const eff=K('eff')[0], p=eff&&eff.properties;
   return `<div class="oflg"><span class="lvchip live">● live</span> real data, updated automatically <span class="lvchip ph">placeholder</span> example values until the sensor is connected · tap any tile for its graph</div>
+   ${effAlertBar()}
    ${weatherBlock()}
    ${envBlock()}
    ${milkBlock()}
@@ -2113,6 +2187,7 @@ function officeFarmInfo(){
    ${row('Water',K('tank').map(f=>tile(f,f.properties.name.replace('Dairy water tank','Dairy tank').replace('381 Boundary Rd water tank','381 Bdy tank'))).join('')+K('meter').map(f=>tile(f,'Water meter',`<em style="color:${f.properties.pumping?'#2e7d32':'#777'}">${f.properties.pumping?'Pumping '+f.properties.flow+' L/s':'Not pumping'}</em>`)).join(''))}
    ${row('Effluent',K('pond').map(f=>tile(f,f.properties.name.replace('Effluent pond','Pond').replace('Main effluent pond','Main pond'))).join('')+K('sand').map(f=>tile(f,'Sand trap')).join(''))}
    ${pondBalHTML()}
+   ${effRunHTML()}
    <div class="ofr"><div class="ofcat">Records</div><div class="ofg"><a class="oft sheetlink" href="${SHEET_URL}" target="_blank" rel="noopener"><small>Google Sheet</small><b>📊 ${ESC(META.name)} Farm Management ↗</b><span>checklists, tasks, effluent &amp; photo logs, soil temperature history</span></a></div></div>
    ${eff?effSysHTML(p):''}`;
 }
@@ -2645,6 +2720,8 @@ function officeChecklistMain(){
    <label class="field">Max run time setpoint (hours) <small id="ckDepth"></small><input name="maxrun" type="number" inputmode="decimal" min="0" max="24" step="0.5" value="${ESC(mx)}"></label>
    ${fc&&fc.rain72!=null&&fc.rain72>25?`<div class="ckl bad">⚠ Heavy rain coming: <b>${fc.rain72} mm</b> forecast over the next 3 days${fc.max24!=null?` (wettest 24 h ${fc.max24} mm${fc.max24From?' from '+ESC(fc.max24From):''})`:''}. Think about cutting the pod run time / application depth, keep pond storage in hand, and talk to Dave about the application rate if needed.</div>`:''}
    <label class="field">Rain forecast (total) today (mm) <small>${fc?`– filled in from ${ESC(fc.src)} for the rest of today, updated ${ESC(fc.at)} · tomorrow ${fc.tomorrow} mm${fc.rain72!=null?` · next 3 days <b style="color:${fc.rain72>25?'#c62828':'inherit'}">${fc.rain72} mm</b>`:''}`:'– forecast not available, please enter it'}</small><input name="rain" type="number" inputmode="decimal" min="0" step="0.1" value="${fc?fc.today:''}"></label>
+   <div class="ckh">Pond levels today <small>(read the pond level markers – optional, but it builds the pond history and sets the runtime target)</small></div>
+   ${(()=>{ const pn=pondNow(), lr=pn&&(pn.src==='reading'?pn:pn.last); return `<div class="bkg"><label>Main pond (No 2) %<input name="pmain" type="number" inputmode="decimal" min="0" max="100" step="1" placeholder="${lr&&lr.main!=null?'last '+lr.main+'%':''}"></label><label>West pond (No 1) %<input name="pwest" type="number" inputmode="decimal" min="0" max="100" step="1" placeholder="${lr&&lr.west!=null?'last '+lr.west+'%':''}"></label></div>`; })()}
    <div class="ckh">Where are the pods today? <small>(this goes straight onto the effluent application board)</small></div>
    ${EB_LINES.map(([line,pads],i)=>{ const lp=String(L['Line '+(i+1)+' pods (paddock)']||''), lb=ebLatest(line,pads), lt=lp?{pd:+lp,d:L['Date']}:lp===''&&L['Date']&&('Line 1 pods (paddock)' in L)?null:lb; return `<label class="field">Pod ${i+1} – effluent ${line} paddock<select name="pod${i+1}"><option value="" ${!lt?'selected':''}>Not running / not on this line today</option>${pads.map(pd=>`<option value="${pd}" ${lt&&lt.pd===pd?'selected':''}>Paddock ${pd}${lt&&lt.pd===pd?' (same as the last checklist'+(lt.d?' – '+dshort(lt.d):'')+')':''}</option>`).join('')}</select></label>`; }).join('')}
    <div class="ckh">People <small>(filled in from the last checklist – change if needed)</small></div>
@@ -2720,7 +2797,7 @@ function ckWire(){
   f.onsubmit=e=>{ e.preventDefault();
     const v=n=>(f[n]&&f[n].value||'').trim(), r=n=>(f.querySelector(`input[name=${n}]:checked`)||{}).value||'';
     const d={beacon:v('beacon'),sm:ENV&&ENV.sm!=null?String(ENV.sm):'',pod:v('pod'),maxrun:v('maxrun'),rain:v('rain'),pic:v('pic'),relief:v('relief'),op:v('op'),
-             training:r('training'),quiz:r('quiz'),pods:r('pods'),leak:v('leak'),bucket:v('bucket'),notes:v('notes'),pod1:v('pod1'),pod2:v('pod2'),pod3:v('pod3')};
+             training:r('training'),quiz:r('quiz'),pods:r('pods'),leak:v('leak'),bucket:v('bucket'),notes:v('notes'),pod1:v('pod1'),pod2:v('pod2'),pod3:v('pod3'),pmain:v('pmain'),pwest:v('pwest')};
     const miss=[['beacon','beacon colour'],['pod','pod run time'],['maxrun','max run time'],['rain','rain forecast'],['pic','PIC'],['op','operator']].filter(x=>!d[x[0]]).map(x=>x[1]);
     if(miss.length) return toast('Please fill in: '+miss.join(', '));
     if(needPh()) return toast('Please take a photo of the pond leak check (System checks section)');
@@ -2728,13 +2805,13 @@ function ckWire(){
     const b=document.getElementById('ckGo'); b.disabled=true; b.textContent='Saving…'; const c=calc();
     post({action:'checklist',farm:META.name,name,f:d,calc:c,leakPhoto:leakPh||undefined}).then(x=>{
       if(!x.ok){ b.disabled=false; b.textContent='Submit today\'s checklist'; return toast(x.error||'Could not save'); }
-      if(ENV){ ENV.eff=x.eff; if(x.board) ENV.board=x.board; ENV.calc=Object.assign({},ENV.calc,c,leakPh?{leakPhoto:'pending',leakPhotoDate:c.leak}:{}); if(leakPh) setTimeout(officeLoad,4000); } window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
+      if(ENV){ ENV.eff=x.eff; if(x.board) ENV.board=x.board; if(x.effHist) ENV.effHist=x.effHist; ENV.calc=Object.assign({},ENV.calc,c,leakPh?{leakPhoto:'pending',leakPhotoDate:c.leak}:{}); if(leakPh) setTimeout(officeLoad,4000); } window._ckDirty=false; officeRender(); document.getElementById('ofp').scrollTop=0; toast(x.permitted?'Checklist saved – Lines 1–3 may be started':'Saved – NOT permitted to start Lines 1–3'); })
      .catch(()=>{ b.disabled=false; b.textContent='Submit today\'s checklist'; toast('No connection – not saved'); }); };
 }
 function officeRender(){
   const rows=boardRows(), now=new Date(), crit=rows.filter(s=>s.rating==='Critical').length;
   const mcur=ENV?mtMonth(new Date().getFullYear(),new Date().getMonth()+1):null;
-  const tabs=[['info','Farm dashboard',''],['mt','Management tasks',(mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:'')+(ENV?(()=>{ const y=MT.filter(t=>t[2]==='Y'&&mtLive(t)).map(t=>mtYear(t)[0]), r=y.filter(c=>c==='bad').length, o=y.filter(c=>c==='wrn').length; return r?`<span class="ckb bad flash">${r} compliance due</span>`:o?`<span class="ckb wrn">${o} compliance soon</span>`:''; })():'')],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['eff','Effluent',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')+ebBadge()],['pfg','Pasture & fertiliser',cwBadge()],['staff','Staff & jobs',roBadge()+jbBadge()],['ideas','💡 Suggestions',ideaBadge()]];
+  const tabs=[['info','Farm dashboard',ENV?(a=>a.some(x=>x[0]==='crit')?'<span class="ckb bad flash">effluent</span>':a.length?'<span class="ckb wrn">effluent</span>':'')(effAlerts()):''],['mt','Management tasks',(mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:'')+(ENV?(()=>{ const y=MT.filter(t=>t[2]==='Y'&&mtLive(t)).map(t=>mtYear(t)[0]), r=y.filter(c=>c==='bad').length, o=y.filter(c=>c==='wrn').length; return r?`<span class="ckb bad flash">${r} compliance due</span>`:o?`<span class="ckb wrn">${o} compliance soon</span>`:''; })():'')],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['eff','Effluent',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')+ebBadge()],['pfg','Pasture & fertiliser',cwBadge()],['staff','Staff & jobs',roBadge()+jbBadge()],['ideas','💡 Suggestions',ideaBadge()]];
   const pfSubs=[['pf','🌱','Pasture & fertiliser',''],['cw','🚜','Cultivation whiteboard',cwBadge()]];
   const staffSubs=[['ro','📅','Roster',roBadge()],['jb','📝','Jobs to do',jbBadge()]];
   const effSubs=[['ck','📋','Effluent checklist',ckBadge()],['eb','🗺️','Effluent board',ebBadge()],['eq','✅','Effluent quiz',effQuizBadge()],['et','📝','Effluent training form',effTrainBadge()]];
@@ -2751,6 +2828,9 @@ function officeRender(){
   const st=document.getElementById('soilTile'); if(st) st.onclick=goSheet(()=>soilGraph('season'));
   panel.querySelectorAll('[data-cond],.nstrip').forEach(b=>b.onclick=e=>{ e.stopPropagation(); goSheet(()=>condSheet(7))(); });
   const bt=document.getElementById('bcnTile'); if(bt) bt.onclick=goSheet(()=>smSheet(30));
+  const pbs=document.getElementById('pbStor'); if(pbs) pbs.onclick=e=>{ e.stopPropagation(); goSheet(()=>pondSheet(90))(); };
+  const er=document.getElementById('effRun'); if(er) er.onclick=goSheet(()=>effRunSheet(30));
+  panel.querySelectorAll('[data-rt]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); goSheet(()=>effRunSheet(30))(); });
   const rt=document.getElementById('rainTbl'); if(rt) rt.onclick=goSheet(()=>rainSheet(30));
   panel.querySelectorAll('.wday,#wxMet').forEach(w=>w.onclick=goSheet(wxSheet));
   panel.querySelectorAll('[data-tab]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); let nt=b.dataset.tab; if(nt==='eff'){ if(EFFG.includes(OFTAB)) return; nt='ck'; try{ nt=localStorage.getItem('gvmap.effsub')||'ck'; }catch(e){} if(!EFFG.includes(nt)) nt='ck'; }
@@ -3046,6 +3126,7 @@ function officeLoad(){
   const q='?farm='+encodeURIComponent(META.name);
   Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); if(!(OFTAB==='ck'&&window._ckDirty)&&!window._etDirty) officeRender(); }).catch(()=>{}),
                fetch(SUGGEST_URL+q+'&env=1').then(r=>r.json()).then(d=>{ ENV=d; }).catch(()=>{})]).then(()=>{ officeRender();
+    if(ENV&&(!window._sm365At||Date.now()-window._sm365At>3*36e5)) serGet('sm',365).then(r=>{ const s=(r.sites||[])[0], o={}; if(s) s.pts.forEach(p=>o[p[0]]=p[1]); window._sm365=o; window._sm365At=Date.now(); if(!(OFTAB==='ck'&&window._ckDirty)&&!window._etDirty) officeRender(); }).catch(()=>{});
     if(ENV&&!window._mpShown){ window._mpShown=true; const td=ymdL(new Date()); let k=''; try{ k=localStorage.getItem('gvmap.mprompt')||''; }catch(e){}
       if(k!==td){ try{ localStorage.setItem('gvmap.mprompt',td); }catch(e){} /* start-up prompt switched off (Dave, 13 Nov) – outstanding jobs are highlighted on the tabs instead */ } } });
   officeRender();
