@@ -1778,7 +1778,7 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-15b effluent hours run vs available --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-15c soil room to 99%, effluent alerts moved --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
 let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
@@ -2112,10 +2112,16 @@ function pondNow(){ const td=ymdL(new Date()), r=pondAt(td);
   return m==null&&w==null?null:{pct:pondPct({m,w}),main:m,west:w,d:null,src:'placeholder',last:r}; }
 function effCfg(){ const c=(ENV&&ENV.calc)||{}, n=k=>{ const x=parseFloat(c[k]); return isNaN(x)?null:x; };
   return {rate:n('rate')||4.8,depth:n('maxdepth')||18,D:n('lines')||3,flow:(n('podrate')||n('rate')||0)*(n('pods')||5)}; }
+const SM_STOP=99;   // err on the side of caution: stop at 99% (field capacity is 99.3%)
+function smK(){   // mm of water per 1% on the Isla Bank soil moisture scale, learned from the past year of rain (Otahuti) vs soil moisture rises; lower quartile = cautious
+  if(window._smK) return window._smK; const S=window._sm365, R=window._rain365; if(!S||!R) return {k:5,n:0,def:true};
+  const ks=Object.keys(S).sort(), v=[]; for(let i=2;i<ks.length;i++){ const a=S[ks[i-2]], b=S[ks[i]], r=(R[ks[i-1]]||0)+(R[ks[i]]||0); if(a!=null&&b!=null&&a<97&&r>=6&&b-a>=0.5) v.push(r/(b-a)); }
+  v.sort((x,y)=>x-y); const k=v.length>=8?Math.max(3,Math.min(10,v[v.length>>2])):5; return window._smK={k:Math.round(k*10)/10,n:v.length,def:v.length<8}; }
 function availDay(sm){ const C=effCfg(); if(sm==null) return null; const pod=podMin(sm);
-  if(!pod) return {h:0,pod:0,mmh:0,lim:'field capacity – don’t run'};
-  const mmh=C.rate*pod/60, dh=C.depth/mmh, h=Math.min(24*RUN_SHARE,dh);
-  return {h,pod,mmh,mm:mmh*h,lim:dh<24*RUN_SHARE?`limited by the ${C.depth} mm consent depth`:`90% of the day – ${Math.round(mmh*h*10)/10} mm, under the ${C.depth} mm limit`}; }
+  if(sm>=SM_STOP||!pod) return {h:0,pod:0,mmh:0,mm:0,room:0,lim:`soil ${sm}% – at or over the ${SM_STOP}% cut-off, don’t run`,ls:'stop'};
+  const K=smK(), room=(SM_STOP-sm)*K.k, cap=Math.min(C.depth,room), mmh=C.rate*pod/60, dh=cap/mmh, h=Math.min(24*RUN_SHARE,dh), mm=mmh*h, f=x=>Math.round(x*10)/10;
+  const ls=dh>=24*RUN_SHARE?'day':room<C.depth?'soil':'depth';
+  return {h,pod,mmh,mm,room,lim:ls==='day'?`90% of the day – ${f(mm)} mm, under the soil room (≈ ${f(room)} mm) and the ${C.depth} mm limit`:ls==='soil'?`limited by soil room: ≈ ${f(room)} mm before the soil reaches ${SM_STOP}%`:`limited by the ${C.depth} mm consent depth`,ls}; }
 function effDays(n){ const R={}; EH().runs.forEach(r=>R[r.d]=r); const H0=[(EH().runs[0]||{}).d,(EH().pond[0]||{}).d].filter(Boolean).sort()[0], C=effCfg(), now=new Date(), SM=window._sm365||{}, out=[];
   for(let i=n-1;i>=0;i--){ const dt=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i), d=ymdL(dt), r=R[d]&&R[d].ok?R[d]:null;
     const sm=SM[d]!=null?SM[d]:R[d]&&R[d].sm!=null?R[d].sm:i===0&&ENV&&ENV.sm!=null?ENV.sm:null, A=availDay(sm), pr=pondAt(d), pre=!H0||d<H0;
@@ -2128,21 +2134,21 @@ function effMonths(n){ const M={}; effDays(400).filter(x=>!x.pre).forEach(x=>{ (
   return Object.keys(M).sort().reverse().slice(0,n).map(k=>Object.assign({k},effSum(M[k]))); }
 const MON=k=>new Date(k+'-15T12:00').toLocaleDateString('en-NZ',{month:'short',year:'2-digit'});
 function effAlerts(){ if(!ENV) return []; const P=pondNow(), A=availDay(ENV.sm), now=new Date(), c=ckState(), out=[], pr=P?Math.round(P.pct):0;
-  const run=c.today&&c.today['Permitted to start']==='Yes'?parseFloat(c.today['Max run time (h)'])||0:0;
-  if(P&&P.pct>=80) out.push(['crit',`Ponds ${pr}% full – over 80%. The effluent management plan says the directors must be phoned straight away.`]);
-  if(P&&P.pct>=50&&A&&A.h>0){
-    if(!run&&now.getHours()>=10) out.push(['crit',`Pond ${pr}% full and the soil allows ${hrs(A.h)} of running today (pods ${A.pod} min) – but the system hasn’t been started.`]);
-    else if(run&&run<A.h*0.85) out.push(['wrn',`Only ${hrs(run)} max run time set today – ${hrs(A.h)} is available at pods ${A.pod} min (${A.lim}) and the pond is ${pr}% full.`]); }
+  const run=c.today&&c.today['Permitted to start']==='Yes'?parseFloat(c.today['Max run time (h)'])||0:0, go=A&&A.h>0, late=!run&&now.getHours()>=10;
+  if(P&&P.pct>=80&&go&&late) out.push(['crit',`Ponds ${pr}% full and the system hasn’t been started – it’s after 10 am and the soil (${ENV.sm}%) allows ${hrs(A.h)} at pods ${A.pod} min. Start it now and phone the directors (over 80%).`]);
+  else if(P&&P.pct>=80) out.push(['wrn',`Ponds ${pr}% full – over 80%. The effluent management plan says the directors must be phoned straight away.`]);
+  else if(P&&P.pct>=50&&go&&late) out.push(['wrn',`Pond ${pr}% full and not started yet – the soil allows ${hrs(A.h)} today (pods ${A.pod} min).`]);
+  if(P&&P.pct>=50&&go&&run&&run<A.h*0.85) out.push(['wrn',`Only ${hrs(run)} max run time set today – ${hrs(A.h)} is available at pods ${A.pod} min (${A.lim}) and the pond is ${pr}% full.`]);
   if(P&&P.src==='placeholder') out.forEach(a=>a[1]+=' (pond level is a placeholder until a reading is entered)');
   return out; }
-function effAlertBar(){ const a=effAlerts(); return a.map(x=>`<div class="ckl ${x[0]==='crit'?'bad flash':'wrn flasho'}" data-rt="1" style="cursor:pointer">⚠ ${x[1]}</div>`).join(''); }
+function effAlertBar(){ const a=effAlerts(); return a.map(x=>`<div class="ckl ${x[0]==='crit'?'bad flash':'wrn'}" data-rt="1" style="cursor:pointer;margin:0 0 6px">⚠ ${x[1]}</div>`).join(''); }
 function effRunHTML(){ if(!ENV) return '';
   const C=effCfg(), A=availDay(ENV.sm), c=ckState(), run=c.today&&c.today['Permitted to start']==='Yes'?parseFloat(c.today['Max run time (h)'])||0:0, setPod=c.today?parseFloat(c.today['Pod run time (min)']):null;
   const ms=effMonths(6), cur=ms[0]||{}, now=new Date(), sy=now.getMonth()>=5?now.getFullYear():now.getFullYear()-1, ss=effSum(effDays(400).filter(x=>x.d>=sy+'-06-01'));
   const col=p=>p==null?'#999':p>=85?'#2e7d32':p>=60?'#ef6c00':'#d50000', r0=v=>Math.round(v).toLocaleString('en-NZ'), P=pondNow();
   const tile=(lab,val,sub,cl)=>`<div class="oft pbt"${cl?` style="border-left:4px solid ${cl}"`:''}><small>${lab}</small><b>${val}</b><span>${sub}</span></div>`;
   return `<div class="ofr" id="effRun" style="cursor:pointer"><div class="ofcat">Effluent runtime – hours run vs hours available <span class="lvchip live">● checklist + soil moisture</span></div>
-   <div class="ckl ${!A?'':!A.h?'ok':run>=A.h*0.85?'ok':run?'wrn':'bad'}" style="margin-bottom:6px">${!A?'Available today: – (no soil moisture reading)':!A.h?`Available today: <b>0 h</b> – soil ${ENV.sm}%, at field capacity, don’t run`:`Available today: <b>${hrs(A.h)}</b> at pods <b>${A.pod} min</b> (soil ${ENV.sm}%) = ${Math.round(A.mmh*100)/100} mm/hr → <b>${Math.round(A.mm*10)/10} mm</b> per application · ${A.lim}`}<br><small style="font-weight:400">${run?`Set today: ${setPod} min × ${hrs(run)} = ${Math.round(C.rate*setPod/60*run*10)/10} mm`:'Not started today'} · consent: max <b>${C.depth} mm</b> per application, bucket-test rate ${C.rate} mm/hr (max 10 mm/hr)</small></div>
+   <div class="ckl ${!A?'':!A.h?'ok':run>=A.h*0.85?'ok':run?'wrn':'bad'}" style="margin-bottom:6px">${!A?'Available today: – (no soil moisture reading)':!A.h?`Available today: <b>0 h</b> – ${A.lim}`:`Available today: <b>${hrs(A.h)}</b> at pods <b>${A.pod} min</b> (soil ${ENV.sm}%) = ${Math.round(A.mmh*100)/100} mm/hr → <b>${Math.round(A.mm*10)/10} mm</b> per application · ${A.lim}`}<br><small style="font-weight:400">${run?`Set today: ${setPod} min × ${hrs(run)} = ${Math.round(C.rate*setPod/60*run*10)/10} mm`:'Not started today'} · consent: max <b>${C.depth} mm</b> per application, bucket-test rate ${C.rate} mm/hr (max 10 mm/hr)</small></div>
    <div class="ofg pbg">
     ${tile(MON(cur.k||ymdL(now).slice(0,7))+' – hours run',hrs(cur.runH||0),`of <b>${hrs(cur.aH||0)}</b> available · <b style="color:${col(cur.pct)}">${cur.pct==null?'–':cur.pct+'% used'}</b>`,col(cur.pct))}
     ${tile('Hours missed',hrs(cur.miss||0),`available but not run this month · ${cur.run||0} of ${cur.aDays||0} runnable days used`,cur.miss>24?'#d50000':cur.miss?'#ef6c00':'#2e7d32')}
@@ -2151,13 +2157,13 @@ function effRunHTML(){ if(!ENV) return '';
     ${tile('Pond now',P?Math.round(P.pct)+'% full':'–',P?(P.src==='reading'?'reading '+dshort(P.d):'placeholder – enter a reading'):'',P&&P.pct>=80?'#d50000':P&&P.pct>=50?'#ef6c00':'#2e7d32')}</div>
    <table class="etab rtt"><tr><th>Month</th><th>Hours run</th><th>Hours available</th><th>% used</th><th>Missed</th><th>Days run / runnable</th><th>Over the guide</th><th>Pumped</th></tr>
     ${ms.map(m=>`<tr><td>${MON(m.k)}</td><td>${hrs(m.runH)}</td><td>${hrs(m.aH)}</td><td><b style="color:${col(m.pct)}">${m.pct==null?'–':m.pct+'%'}</b></td><td style="color:${m.miss?'#d50000':'inherit'}">${m.miss?hrs(m.miss):''}</td><td>${m.run} / ${m.aDays}</td><td style="color:${m.over?'#d50000':'inherit'}">${m.over?m.over+' day'+(m.over>1?'s':''):''}</td><td>${m.m3?'≈ '+r0(m.m3)+' m³':'0'}</td></tr>`).join('')}</table>
-   <small class="mkn">Hours available each day = 90% of the day at the pod minutes from the Isla Bank soil moisture guide (wetter soil = shorter pod runs), cut back only if the ${C.depth} mm consent depth would be reached first (depth = ${C.rate} mm/hr × pod min ÷ 60 × hours). Field capacity (99.3%+) = 0. “Over the guide” = days run longer than available (wet soil or past the depth limit). Hours run = the max run time on each day’s checklist (no checklist = not run). Pumped = hours run × pod min × ${C.D} lines × ${C.flow} m³/hr. History starts with the first checklist on record. Tap for the daily graph.</small></div>`; }
+   <small class="mkn">Hours available each day = 90% of the day at the pod minutes from the Isla Bank soil moisture guide (wetter soil = shorter pod runs), cut back if the soil would reach ${SM_STOP}% first or the ${C.depth} mm consent depth would be reached (depth = ${C.rate} mm/hr × pod min ÷ 60 × hours). Soil room = (${SM_STOP}% − soil %) × ≈ ${smK().k} mm per 1%${smK().def?' (default until a year of rain data loads)':`, learned from ${smK().n} rain events at Otahuti vs the Isla Bank soil moisture rise (cautious lower quartile)`}. ${SM_STOP}% or wetter = 0 (field capacity is 99.3%). “Over the guide” = days run longer than available (wet soil or past the depth limit). Hours run = the max run time on each day’s checklist (no checklist = not run). Pumped = hours run × pod min × ${C.D} lines × ${C.flow} m³/hr. History starts with the first checklist on record. Tap for the daily graph.</small></div>`; }
 function effRunSheet(days){ const d=days||30, rows=effDays(d<=90?d:400).slice(-d).filter(x=>!x.pre);
   chartSheet('Effluent hours run vs hours available','Brown bars = hours the system ran (daily checklist max run time). Green line = hours available that day from the soil moisture guide and the consent depth. The gap is missed application time. Longer ranges are monthly totals.',[30,90,180,365],d,()=>{
     if(d<=90) return {unit:' h',yMin:0,series:[{name:'Hours run',color:'#6d4c41',bar:true,pts:rows.map(x=>[x.dt.getTime(),Math.round(x.runH*10)/10])},{name:'Hours available',color:'#2e7d32',dash:true,pts:rows.filter(x=>x.aH!=null).map(x=>[x.dt.getTime(),Math.round(x.aH*10)/10])}]};
     const M={}; rows.forEach(x=>{ const k=x.d.slice(0,7), o=M[k]=M[k]||[0,0]; o[0]+=x.runH; o[1]+=x.aH||0; }); const ks=Object.keys(M).sort();
     return {unit:' h',yMin:0,series:[{name:'Hours run per month',color:'#6d4c41',bar:true,pts:ks.map(k=>[dms(k+'-15'),Math.round(M[k][0])])},{name:'Hours available',color:'#2e7d32',dash:true,pts:ks.map(k=>[dms(k+'-15'),Math.round(M[k][1])])}]}; },
-    `<table class="bgd" style="margin-top:8px"><tr><th>Soil moisture</th><th>Pods</th><th>Hours available</th></tr>${POD_BANDS.map(b=>{ const sm=b[0]>=99.3?99.5:b[0]===0?80:(b[0]+Math.min(b[1],99.3))/2, A=availDay(sm); return `<tr><td><i style="background:${b[2]}"></i>${b[0]>=99.3?'99.3% + (field capacity)':b[3]}</td><td>${A?A.pod+' min':'–'}</td><td>${A?(A.h?hrs(A.h)+(A.h<21.5?' (depth limit)':''):'0 – don’t run'):'–'}</td></tr>`; }).join('')}</table>`); }
+    `<table class="bgd" style="margin-top:8px"><tr><th>Soil moisture</th><th>Pods</th><th>Hours available</th></tr>${POD_BANDS.map(b=>{ const sm=b[0]>=99.3?99.5:b[0]===0?80:(b[0]+Math.min(b[1],99.3))/2, A=availDay(sm); return `<tr><td><i style="background:${b[2]}"></i>${b[0]>=99.3?'99.3% + (field capacity)':b[0]===99?'99–99.2% (over the 99% cut-off)':b[3]}</td><td>${A?A.pod+' min':'–'}</td><td>${A?(A.h?hrs(A.h)+(A.ls==='soil'?' (soil room)':A.ls==='depth'?' (depth limit)':''):'0 – don’t run'):'–'}</td></tr>`; }).join('')}</table>`); }
 function pondSheet(days){ const d=days||90, from=ymdL(new Date(Date.now()-d*864e5)), P=EH().pond.filter(p=>p.d>=from), pn=pondNow();
   const form=`<div class="ckh" style="margin-top:12px">Record today’s pond levels</div><div class="bkg"><label>Main pond (No 2) %<input id="pdM" type="number" inputmode="decimal" min="0" max="100" step="1" value="${pn&&pn.src==='reading'&&pn.d===ymdL(new Date())?pn.main??'':''}"></label><label>West pond (No 1) %<input id="pdW" type="number" inputmode="decimal" min="0" max="100" step="1"></label></div>
     <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:12px;color:#5b6b55">READ BY</b>${signerSel('pdName',true)}<button class="btn" id="pdGo" type="button">Save pond levels</button></div>
@@ -2179,7 +2185,6 @@ function officeFarmInfo(){
   const row=(cat,html)=>`<div class="ofr phsec">${cat?`<div class="ofcat">${cat} <span class="lvchip ph">placeholder</span></div>`:''}<div class="ofg">${html}</div></div>`;
   const eff=K('eff')[0], p=eff&&eff.properties;
   return `<div class="oflg"><span class="lvchip live">● live</span> real data, updated automatically <span class="lvchip ph">placeholder</span> example values until the sensor is connected · tap any tile for its graph</div>
-   ${effAlertBar()}
    ${weatherBlock()}
    ${envBlock()}
    ${milkBlock()}
@@ -2187,6 +2192,7 @@ function officeFarmInfo(){
    ${row('Concentrates',K('silo').map(f=>tile(f)).join(''))}
    ${row('Water',K('tank').map(f=>tile(f,f.properties.name.replace('Dairy water tank','Dairy tank').replace('381 Boundary Rd water tank','381 Bdy tank'))).join('')+K('meter').map(f=>tile(f,'Water meter',`<em style="color:${f.properties.pumping?'#2e7d32':'#777'}">${f.properties.pumping?'Pumping '+f.properties.flow+' L/s':'Not pumping'}</em>`)).join(''))}
    ${row('Effluent',K('pond').map(f=>tile(f,f.properties.name.replace('Effluent pond','Pond').replace('Main effluent pond','Main pond'))).join('')+K('sand').map(f=>tile(f,'Sand trap')).join(''))}
+   ${effAlertBar()}
    ${pondBalHTML()}
    ${effRunHTML()}
    <div class="ofr"><div class="ofcat">Records</div><div class="ofg"><a class="oft sheetlink" href="${SHEET_URL}" target="_blank" rel="noopener"><small>Google Sheet</small><b>📊 ${ESC(META.name)} Farm Management ↗</b><span>checklists, tasks, effluent &amp; photo logs, soil temperature history</span></a></div></div>
@@ -3127,7 +3133,7 @@ function officeLoad(){
   const q='?farm='+encodeURIComponent(META.name);
   Promise.all([fetch(SUGGEST_URL+q).then(r=>r.json()).then(d=>{ sgData=d; sgDraw(); if(!(OFTAB==='ck'&&window._ckDirty)&&!window._etDirty) officeRender(); }).catch(()=>{}),
                fetch(SUGGEST_URL+q+'&env=1').then(r=>r.json()).then(d=>{ ENV=d; }).catch(()=>{})]).then(()=>{ officeRender();
-    if(ENV&&(!window._sm365At||Date.now()-window._sm365At>3*36e5)) serGet('sm',365).then(r=>{ const s=(r.sites||[])[0], o={}; if(s) s.pts.forEach(p=>o[p[0]]=p[1]); window._sm365=o; window._sm365At=Date.now(); if(!(OFTAB==='ck'&&window._ckDirty)&&!window._etDirty) officeRender(); }).catch(()=>{});
+    if(ENV&&(!window._sm365At||Date.now()-window._sm365At>3*36e5)) Promise.all([serGet('sm',365),serGet('rain',365).catch(()=>null)]).then(([r,rn])=>{ const s=(r.sites||[])[0], o={}, q={}; if(s) s.pts.forEach(p=>o[p[0]]=p[1]); const sr=rn&&(rn.sites||[])[0]; if(sr){ sr.pts.forEach(p=>q[p[0]]=p[1]); window._rain365=q; } window._sm365=o; window._smK=null; window._sm365At=Date.now(); if(!(OFTAB==='ck'&&window._ckDirty)&&!window._etDirty) officeRender(); }).catch(()=>{});
     if(ENV&&!window._mpShown){ window._mpShown=true; const td=ymdL(new Date()); let k=''; try{ k=localStorage.getItem('gvmap.mprompt')||''; }catch(e){}
       if(k!==td){ try{ localStorage.setItem('gvmap.mprompt',td); }catch(e){} /* start-up prompt switched off (Dave, 13 Nov) – outstanding jobs are highlighted on the tabs instead */ } } });
   officeRender();
