@@ -837,6 +837,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 #mtPrompt{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:12px}.mpw{background:#fff;border-radius:16px;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.4)}.mpw h2{margin:0 0 4px;color:#2e5e2a}.mpw p{margin:0 0 10px;font-size:13px;color:#555}
 .mpr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eee}.mpr b{display:block;font-size:14px}.mpr small{margin-top:2px}
 #ofToggle{display:none}
+details.xnote{margin:4px 0 6px}details.xnote>summary{cursor:pointer;color:#5b6b55;font-size:12px;font-weight:600;list-style:none;display:inline-block;padding:2px 0}details.xnote>summary::-webkit-details-marker{display:none}details.xnote[open]>summary{color:#2e5e2a}details.xnote>*:not(summary){display:block;margin-top:4px}
 .chbox{min-height:60px;color:#888}.chw{position:relative}.chsvg{width:100%;height:auto}.chsvg text{font-size:14px;fill:#666}.chph{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) rotate(-8deg);border:2px dashed #9e9e9e;color:#757575;background:rgba(255,255,255,.75);padding:4px 10px;border-radius:8px;font-weight:800;font-size:12px;pointer-events:none;white-space:nowrap}.chnone{padding:20px;color:#888}
 .lvchip{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.3px;padding:1px 6px;border-radius:8px;vertical-align:1px;text-transform:uppercase}.lvchip.live{background:#c8e6c9;color:#1b5e20}.lvchip.ph{background:#eeeeee;color:#757575;border:1px dashed #9e9e9e}
 .oflg{margin:8px 16px 0;font-size:11.5px;color:#666;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -918,7 +919,8 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 .gtile{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:6px;margin:4px 0}.gtile>div{background:#f4f6f1;border-radius:8px;padding:6px 8px}.gtile .gmain{background:#e8f5e9;border:2px solid #2e7d32}.gtile small{display:block;color:#666;font-size:11px}.gtile b{font-size:22px;color:#1b5e20}.gtile span{display:block;font-size:11px;color:#666}
 .gtile .gar{font-style:normal;font-weight:800;font-size:13px;margin-left:6px;padding:2px 7px;border-radius:10px}.gar.up{background:#e8f5e9;color:#2e7d32}.gar.dn{background:#ffebee;color:#c62828}.gar.fl{background:#eceff1;color:#455a64}.gtile.g2{grid-template-columns:1fr 2.3fr}.gtile .gph{border:1px dashed #bbb;background:#fafafa}.gtile .lvchip{display:inline-block;margin-left:4px;vertical-align:middle}.gtile .gph b{color:#999}
 .etr{margin:14px 16px;padding:10px 12px;border:2px solid #2e5e2a;border-radius:10px;background:#f7faf5}.etab{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 4px}.etab th{text-align:left;background:#e8f0e3;padding:4px}.etab td{padding:4px;border-bottom:1px solid #e3e3e3}.tok{color:#2e7d32;font-weight:700}.tbad{color:#c62828;font-weight:600}.ckbx{display:flex!important;gap:8px;align-items:flex-start;font-size:13.5px}.ckbx input{margin-top:3px;flex:none;width:18px;height:18px}.ckbx.disc{background:#fff8e1;padding:8px;border-radius:6px;margin-top:10px}.eqq{margin:10px 0;padding:8px 10px;background:#f4f6f1;border-radius:8px}.eqq b{display:block;margin-bottom:4px;font-size:14px}.eqq label{display:block;padding:3px 0;font-size:14px}.eqres{margin:16px;padding:14px;border-radius:10px;font-size:15px}.eqres.ok{background:#e8f5e9;border:2px solid #2e7d32}.eqres.bad{background:#fff3e0;border:2px solid #ef6c00}.eqres div{margin:6px 0}.ckl.wrn{background:#fff8e1;color:#5d4037}
-.office .effsub{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px;background:linear-gradient(#eef3ef,#f7faf8);border-bottom:1px solid #dde5df}
+.office .eirad{display:flex;flex-direction:column;gap:4px;margin-top:4px;font-weight:400}.eirad label{display:flex!important;gap:8px;align-items:flex-start;justify-content:flex-start;text-align:left;margin:0!important;font-size:14px}.eirad input{width:auto!important;min-height:0!important;height:auto!important;margin:3px 0 0!important;padding:0!important;flex:none}
+.effsub{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:12px 16px;background:linear-gradient(#eef3ef,#f7faf8);border-bottom:1px solid #dde5df}
 .office .effsub button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:64px;border:1px solid #d3ddd5;background:#fff;color:#2c4a34;border-radius:12px;padding:8px 6px;font:600 13px inherit;font-family:inherit;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.06);transition:background .15s,box-shadow .15s,transform .1s;text-align:center;line-height:1.2}
 .office .effsub button:hover{background:#f2f8f3;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .office .effsub button i{font-style:normal;font-size:20px;line-height:1}
@@ -992,7 +994,7 @@ b.ok{color:#2e7d32}b.wrn{color:#e65100}b.bad{color:#c62828}
 
 <div class="fabs" id="fabs">
   <button class="fab" data-label="Key" id="keyBtn" aria-label="Map key" title="Map key" style="font-weight:800;font-size:13px">KEY</button>
-  <button class="fab" data-label="Reporting Dashboard" id="officeBtn" aria-label="Reporting Dashboard" title="Reporting Dashboard – farm dashboard, tasks, maintenance board, effluent & cameras"><svg viewBox="0 0 24 24"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h7V6H4zm9 0v4h7V6h-7zm0 6v3h7v-3h-7z"/></svg></button>
+  <button class="fab" data-label="Dashboard" id="officeBtn" aria-label="Dashboard" title="Reporting Dashboard – farm dashboard, tasks, maintenance board, effluent & cameras"><svg viewBox="0 0 24 24"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h7V6H4zm9 0v4h7V6h-7zm0 6v3h7v-3h-7z"/></svg></button>
   <button class="fab" data-label="Views" id="viewsBtn" aria-label="Map views" title="Map views"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
   <button class="fab" data-label="Layers" id="layersBtn" aria-label="Layers"><svg viewBox="0 0 24 24"><path d="M12 2 1 8l11 6 11-6-11-6zm0 14.2L3.2 11.4 1 12.6 12 18.6l11-6-2.2-1.2L12 16.2zm0 4L3.2 15.4 1 16.6l11 6 11-6-2.2-1.2L12 20.2z"/></svg></button>
   <button class="fab" data-label="Measure" id="measBtn" aria-label="Measure distance" title="Measure distance / area"><svg viewBox="0 0 24 24"><path d="M2.6 15.6 15.6 2.6l5.8 5.8L8.4 21.4zM6.2 15.2l1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1zm2.8-2.8 1.4 1.4 1.1-1.1-1.4-1.4zm2.8-2.8 2.1 2.1 1.1-1.1-2.1-2.1z"/></svg></button>
@@ -1470,7 +1472,10 @@ map.on('zoomend',syncLayers);
 
 /* ---------- sheet ---------- */
 const sheet = document.getElementById('sheet'), body = document.getElementById('sheetBody'), fabs = document.getElementById('fabs');
-function openSheet(html){ if(window.EDITING) return; body.innerHTML = html; sheet.classList.toggle('wide', html.indexOf('class="mb"')>=0); sheet.classList.add('open');
+function collapseNotes(root){   // long explanations stay hidden until tapped (Dave, 15 Nov 2026)
+  if(!root) return; root.querySelectorAll('small.mkn, p.note, div.note, .smk').forEach(el=>{ if(el.closest('details.xnote')||el.closest('form .field')||el.classList.contains('keep')) return; const t=el.textContent.trim(); if(t.length<140) return;
+    const d=document.createElement('details'); d.className='xnote'; d.innerHTML='<summary>ℹ️ More detail</summary>'; el.parentNode.insertBefore(d,el); d.appendChild(el); d.addEventListener('click',e=>e.stopPropagation()); }); }
+function openSheet(html){ if(window.EDITING) return; body.innerHTML = html; setTimeout(()=>collapseNotes(body),0); sheet.classList.toggle('wide', html.indexOf('class="mb"')>=0); sheet.classList.add('open');
   requestAnimationFrame(()=>{ if(innerWidth<760){ const h=sheet.offsetHeight; fabs.style.visibility = h>innerHeight*0.45?'hidden':''; fabs.style.bottom=(h+14)+'px'; } }); }
 function closeSheet(){ sheet.classList.remove('open'); fabs.style.bottom=''; fabs.style.visibility=''; clearSel(); try{ if(draw && drawbar.style.display==='none') drawEnd(); }catch(e){} }
 document.getElementById('closeSheet').onclick = closeSheet;
@@ -1779,9 +1784,9 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-15g GV1 Reporting Dashboard name --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-15h collapsible detail, Dashboard button --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
-let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
+let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} try{ const qt=new URLSearchParams(location.search).get('tab'); if(qt&&/^[a-z]{2,5}$/.test(qt)) OFTAB=qt; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
 // Graduated pod run-time guide from Isla Bank soil moisture (Dave's scale): ~99% is field capacity = don't run; drier soil = longer runs.
 const POD_PTS=[[99.3,0],[99.2,1],[99.1,2],[99,3],[98,5],[97,7],[95,10],[92,13],[90,15],[88,17],[86,20]];   // 99.3% = field capacity at Isla Bank
@@ -1989,6 +1994,49 @@ function effWire(panel){
         box.innerHTML=`<b>${r.pass?'✓ Passed':'✕ Not passed yet'} – ${r.score}/${r.outOf}</b>${r.wrong&&r.wrong.length?'<div>Have another look at question'+(r.wrong.length>1?'s ':' ')+r.wrong.join(', ')+'. You can take the quiz again.</div>':''}<div>Saved and emailed to you, Dave and Jono.</div><button class="btn alt" type="button">Back to the checklist</button>`;
         window._etDirty=false; f.replaceWith(box); box.querySelector('button').onclick=()=>go('ck'); }
       else { toast('Training form saved and emailed'); go('ck'); } })
+     .catch(()=>{ toast('No connection – try again'); b.disabled=false; b.textContent='Try again'; }); }; }
+// ---- Report an effluent issue / non-compliance monitoring (replaces the Google Form that was on the website – Dave, 15 Nov 2026)
+const EI_LIKELY=['Very unlikely – may happen once in your career','Unlikely – may happen once a year','Possible – may happen once a month','Likely – may happen once a week','Almost certain – may happen every day'];
+const EI_OLD='https://docs.google.com/spreadsheets/d/1FAkWJttnRySSdn1FTe1qCTtcgMBwna2eEVbdYHNRGmo/edit';
+function effIssueHTML(){
+  const ppl=(window._ppl||[]).map(p=>p.name), today=ymdL(new Date()), now=new Date().toTimeString().slice(0,5);
+  const T=(n,l,req,rows)=>`<label class="field">${l}${rows?`<textarea name="${n}" rows="${rows}" ${req?'required':''}></textarea>`:`<input name="${n}" ${req?'required':''} autocomplete="off" list="eiPpl">`}</label>`;
+  const R=(n,l,opts)=>`<div class="field">${l}<div class="eirad">${opts.map(o=>`<label><input type="radio" name="${n}" value="${ESC(o)}"> ${ESC(o)}</label>`).join('')}</div></div>`;
+  return `<datalist id="eiPpl">${ppl.map(n=>`<option>${ESC(n)}</option>`).join('')}</datalist><form id="eiF" class="ckf" autocomplete="off">
+   <div class="ckh">${ESC(META.name)} – report an effluent issue or non-compliance</div>
+   <p class="note" style="margin:0 0 8px">If you see a potential effluent issue, spill or non-compliance, stop it first if it is safe to do so, phone the farm manager or a director, then fill this in. Management gets an email straight away.</p>
+   <div class="field">Which form?<div class="eirad"><label><input type="radio" name="kind" value="issue" checked> Potential effluent issue or spill</label><label><input type="radio" name="kind" value="monitor"> Non-compliance monitoring (follow-up on an earlier report)</label></div></div>
+   <label class="field">Person completing the form<input name="name" required autocomplete="off" list="eiPpl"></label>
+   <div class="bkg"><label>Date<input type="date" name="date" value="${today}" required></label><label>Time<input type="time" name="time" value="${now}"></label></div>
+   <div id="eiIssue">
+    ${T('first','Name of the person who first reported the issue')}${T('others','Other staff on farm this day')}
+    ${T('desc','Description of the issue or non-compliance (and where)',true,3)}${T('spot','Who should have spotted this before you?')}
+    ${T('harm','What harm could / did happen?',false,2)}${T('notified','Who did you notify?')}${T('fix','What did you do to help fix it?',false,2)}
+    ${T('cause','Who or what was responsible, and why?',false,2)}${R('likely','How likely is it to happen (again)?',EI_LIKELY)}
+    ${T('prevent','Suggested solutions – how do we stop it happening (again)?',false,2)}
+    ${R('trained','Have you completed the Gladvale effluent training?',['Yes','No'])}
+   </div>
+   <div id="eiMon" style="display:none">
+    ${T('situation','Describe the current situation',false,3)}
+    ${R('mitigated','Have we done everything reasonably practicable to mitigate this non-compliance?',['Yes','No','Not sure'])}
+    ${R('control','Is the spill still under control?',['Yes','No','Not applicable'])}
+    ${T('charge','Who has been placed in charge of monitoring?')}
+   </div>
+   <div class="field">Photo of the issue <small>(strongly recommended)</small><label class="btn alt" style="display:inline-block;margin-top:4px">📷 Add photo<input type="file" accept="image/*" capture="environment" id="eiPhoto" hidden></label><img id="eiPrev" style="display:none;max-width:100%;margin-top:6px;border-radius:8px"></div>
+   <div class="btns"><button class="btn" type="submit">Submit report</button></div>
+   <p class="note">Saved to the “Effluent issues” tab of the farm sheet. <a href="${EI_OLD}" target="_blank" rel="noopener">Older reports (Google Form, 2021–2026) ↗</a></p></form>`; }
+function effIssueWire(panel){
+  const f=panel.querySelector('#eiF'); if(!f) return; f.addEventListener('input',()=>{ window._etDirty=true; });
+  const sw=()=>{ const m=f.querySelector('input[name=kind]:checked').value==='monitor'; f.querySelector('#eiIssue').style.display=m?'none':''; f.querySelector('#eiMon').style.display=m?'':'none'; f.desc.required=!m; f.situation.required=m; };
+  f.querySelectorAll('input[name=kind]').forEach(r=>r.onchange=sw); sw();
+  let photo=null; const pi=f.querySelector('#eiPhoto'), pv=f.querySelector('#eiPrev');
+  pi.onchange=()=>{ if(!pi.files[0]) return; shrinkPhoto(pi.files[0]).then(u=>{ photo=u; pv.src=u; pv.style.display='block'; }).catch(()=>toast('Could not read that photo')); };
+  if(!window._ppl) loadPeople(()=>{ const dl=document.getElementById('eiPpl'); if(dl) dl.innerHTML=(window._ppl||[]).map(p=>`<option>${ESC(p.name)}</option>`).join(''); });
+  f.onsubmit=e=>{ e.preventDefault(); const d={action:'effissue',farm:META.name}; new FormData(f).forEach((v,k)=>{ if(!(v instanceof File)) d[k]=v; }); if(photo) d.photo=photo;
+    const b=f.querySelector('button[type=submit]'); b.disabled=true; b.textContent='Saving…';
+    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(d)}).then(r=>r.json()).then(r=>{
+      if(!r.ok){ toast(r.error||'Could not save'); b.disabled=false; b.textContent='Try again'; return; }
+      window._etDirty=false; const box=document.createElement('div'); box.className='eqres ok'; box.innerHTML='<b>✓ Report saved</b><div>Management has been emailed. Thank you for reporting it.</div>'; f.replaceWith(box); })
      .catch(()=>{ toast('No connection – try again'); b.disabled=false; b.textContent='Try again'; }); }; }
 // Nitrogen application conditions (Dave's rules): 3-day average soil temperature, rain in the next 72 h, wettest 24 h, beacon
 function nTile(){
@@ -2714,7 +2762,7 @@ function smGraph(){
    <circle cx="${W}" cy="${y(s[s.length-1][1])}" r="3.5" fill="#1565c0"/></svg>`;
 }
 const BEACON_T={red:90,orange:80};   // must match BEACON in the Apps Script
-const EFFG=['ck','eb','eq','et'];
+const EFFG=['ck','eb','eq','et','ei'];
 function effQuizBadge(){ const T=ENV&&ENV.efftrain; if(!T||!T.people) return ''; const n=T.people.filter(p=>p.quizState!=='done').length; return T.allStaff?'<span class="ckb ok">all staff ✓</span>':n?`<span class="ckb wrn">${n} to do</span>`:''; }
 function effTrainBadge(){ const T=ENV&&ENV.efftrain; if(!T||!T.people) return ''; const n=T.people.filter(p=>p.trainState==='needed').length; return n?`<span class="ckb bad">${n} needed</span>`:''; }
 function ebBadge(){ return ENV&&PH_KINDS.some(([k])=>phState(k).al!=='ok')?` <span class="ckb ${PH_KINDS.some(([k])=>phState(k).al==='crit')?'bad':'wrn'}">photos due</span>`:''; }
@@ -2746,7 +2794,7 @@ function officeChecklistMain(){
    ${(()=>{ const pp=pondPredict(), L=pp&&pp.last, m3=v=>Math.round(v).toLocaleString('en-NZ'), pv=pp&&!pp.same&&!pp.stale;
      return `<div class="bkg"><label>Main pond (No 2) %<input name="pmain" type="number" inputmode="decimal" min="0" max="100" step="1" value="${pv&&pp.main!=null?pp.main:''}" data-pred="${pv&&pp.main!=null?pp.main:''}" placeholder="${L&&L.m!=null?'last '+L.m+'%':''}"></label><label>West pond (No 1) %<input name="pwest" type="number" inputmode="decimal" min="0" max="100" step="1" value="${pv&&pp.west!=null?pp.west:''}" data-pred="${pv&&pp.west!=null?pp.west:''}" placeholder="${L&&L.w!=null?'last '+L.w+'%':''}"></label></div>
      ${!L?'':pp.same?`<div class="note">Already read today (main ${L.m??'–'}%, west ${L.w??'–'}%) – enter again only if it has changed.</div>`:pp.stale?`<div class="note">Last reading was ${pp.days} days ago (${dshort(L.d)}) – too long ago to predict, please read the markers.</div>`
-      :`<div class="note"><b>Predicted – check against the actual pond level and correct if different.</b> Last reading ${dshort(L.d)}: main ${L.m??'–'}%, west ${L.w??'–'}%. Since then: rain ${pp.rain} mm ≈ +${m3(pp.inR)} m³, wash water ≈ +${m3(pp.wash)} m³, pumped out ≈ −${m3(pp.out)} m³ → ${pp.net>=0?'+':'−'}${m3(Math.abs(pp.net))} m³ (put on the main pond – the weeping-wall pump keeps moving pond 1 into pond 2).</div>`}`; })()}
+      :`<div class="note keep"><b>Predicted – check against the actual pond level and correct if different.</b> Last reading ${dshort(L.d)}: main ${L.m??'–'}%, west ${L.w??'–'}%. Since then: rain ${pp.rain} mm ≈ +${m3(pp.inR)} m³, wash water ≈ +${m3(pp.wash)} m³, pumped out ≈ −${m3(pp.out)} m³ → ${pp.net>=0?'+':'−'}${m3(Math.abs(pp.net))} m³ (put on the main pond – the weeping-wall pump keeps moving pond 1 into pond 2).</div>`}`; })()}
    <div class="ckh">Where are the pods today? <small>(this goes straight onto the effluent application board)</small></div>
    ${EB_LINES.map(([line,pads],i)=>{ const lp=String(L['Line '+(i+1)+' pods (paddock)']||''), lb=ebLatest(line,pads), lt=lp?{pd:+lp,d:L['Date']}:lp===''&&L['Date']&&('Line 1 pods (paddock)' in L)?null:lb; return `<label class="field">Pod ${i+1} – effluent ${line} paddock<select name="pod${i+1}"><option value="" ${!lt?'selected':''}>Not running / not on this line today</option>${pads.map(pd=>`<option value="${pd}" ${lt&&lt.pd===pd?'selected':''}>Paddock ${pd}${lt&&lt.pd===pd?' (same as the last checklist'+(lt.d?' – '+dshort(lt.d):'')+')':''}</option>`).join('')}</select></label>`; }).join('')}
    <div class="ckh">People <small>(filled in from the last checklist – change if needed)</small></div>
@@ -2840,16 +2888,17 @@ function officeRender(){
   const tabs=[['info','Farm dashboard',ENV?(a=>a.some(x=>x[0]==='crit')?'<span class="ckb bad flash">effluent</span>':a.length?'<span class="ckb wrn">effluent</span>':'')(effAlerts()):''],['mt','Management tasks',(mcur&&mcur.pct!=null?`<span class="ckb ${mcur.pct>=MT_TARGET?'ok':mcur.pct>=85?'wrn':'bad'}">${mcur.pct}%</span>`:'')+(ENV?(()=>{ const y=MT.filter(t=>t[2]==='Y'&&mtLive(t)).map(t=>mtYear(t)[0]), r=y.filter(c=>c==='bad').length, o=y.filter(c=>c==='wrn').length; return r?`<span class="ckb bad flash">${r} compliance due</span>`:o?`<span class="ckb wrn">${o} compliance soon</span>`:''; })():'')],['board','Maintenance board',`<span class="ckb ${crit?'bad flash':''}">${rows.length}</span>`],['eff','Effluent',ckBadge()+(ENV&&leakState().al!=='ok'?` <span class="ckb ${leakState().al==='crit'?'bad flash':'wrn flasho'}">leak check</span>`:'')+ebBadge()],['pfg','Pasture & fertiliser',cwBadge()],['staff','Staff & jobs',roBadge()+jbBadge()],['ideas','💡 Suggestions',ideaBadge()]];
   const pfSubs=[['pf','🌱','Pasture & fertiliser',''],['cw','🚜','Cultivation whiteboard',cwBadge()]];
   const staffSubs=[['ro','📅','Roster',roBadge()],['jb','📝','Jobs to do',jbBadge()]];
-  const effSubs=[['ck','📋','Effluent checklist',ckBadge()],['eb','🗺️','Effluent board',ebBadge()],['eq','✅','Effluent quiz',effQuizBadge()],['et','📝','Effluent training form',effTrainBadge()]];
+  const effSubs=[['ck','📋','Effluent checklist',ckBadge()],['eb','🗺️','Effluent board',ebBadge()],['eq','✅','Effluent quiz',effQuizBadge()],['et','📝','Effluent training form',effTrainBadge()],['ei','⚠️','Report an effluent issue','']];
   const panel=document.getElementById('ofp');
-  if((OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')) || ((OFTAB==='et'||OFTAB==='eq') && window._etDirty && document.getElementById('etF'))){   // don't wipe a half-filled checklist on the 10-minute refresh
+  if((OFTAB==='ck' && window._ckDirty && document.getElementById('ckF')) || ((OFTAB==='et'||OFTAB==='eq'||OFTAB==='ei') && window._etDirty && document.getElementById(OFTAB==='ei'?'eiF':'etF'))){   // don't wipe a half-filled checklist on the 10-minute refresh
     const tb=panel.querySelector('.oftabs'); if(tb) tb.querySelectorAll('button').forEach((b,i)=>b.innerHTML=tabs[i][1]+' '+tabs[i][2]); return; }
   panel.innerHTML=`<div class="oh"><h1>${ESC(META.name)} Reporting Dashboard</h1><div class="ofclock"><b id="ofClock">${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit',second:'2-digit'})}</b> <span>${now.toLocaleDateString('en-NZ',{weekday:'short',day:'numeric',month:'short'})}</span></div><small>data updated ${now.toLocaleTimeString('en-NZ',{hour:'numeric',minute:'2-digit'})} · refreshes every 10 min</small><a href="./${META.name.toLowerCase()}.html" style="position:absolute;right:14px;top:14px;color:#fff;font-size:12px;border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:4px 10px;text-decoration:none">✕ Exit dashboard</a>
     <div class="oftabs">${tabs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]||(t[0]==='eff'&&EFFG.includes(OFTAB))||(t[0]==='staff'&&STAFFG.includes(OFTAB))||(t[0]==='pfg'&&PFG.includes(OFTAB))?'on':''}">${t[1]} ${t[2]}</button>`).join('')}</div></div>
    ${PFG.includes(OFTAB)?`<div class="effsub two">${pfSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
    ${STAFFG.includes(OFTAB)?`<div class="effsub two">${staffSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
    ${EFFG.includes(OFTAB)?`<div class="effsub">${effSubs.map(t=>`<button data-tab="${t[0]}" class="${OFTAB===t[0]?'on':''}"><i>${t[1]}</i><span>${t[2]}</span>${t[3]?`<em>${t[3]}</em>`:''}</button>`).join('')}</div>`:''}
-   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklistMain()+effTrainSection():OFTAB==='et'?(window._effForm='train',effFormHTML()):OFTAB==='eq'?(window._effForm='quiz',effFormHTML()):OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():OFTAB==='cam'?officeCams():OFTAB==='pf'?officePF():OFTAB==='ro'?officeRoster():OFTAB==='jb'?officeJobs():OFTAB==='cw'?officeCult():OFTAB==='ideas'?officeIdeas():officeFarmInfo()}</div>`;
+   <div class="ofbody">${OFTAB==='board'?officeBoard():OFTAB==='ck'?officeChecklistMain()+effTrainSection():OFTAB==='et'?(window._effForm='train',effFormHTML()):OFTAB==='eq'?(window._effForm='quiz',effFormHTML()):OFTAB==='ei'?effIssueHTML():OFTAB==='eb'?officeEffBoard():OFTAB==='mt'?officeTasks():OFTAB==='cam'?officeCams():OFTAB==='pf'?officePF():OFTAB==='ro'?officeRoster():OFTAB==='jb'?officeJobs():OFTAB==='cw'?officeCult():OFTAB==='ideas'?officeIdeas():officeFarmInfo()}</div>`;
+  collapseNotes(panel);
   const goSheet=fn=>()=>{ if(innerWidth<=820) document.body.classList.add('mapmode'); fn(); };
   const st=document.getElementById('soilTile'); if(st) st.onclick=goSheet(()=>soilGraph('season'));
   panel.querySelectorAll('[data-cond],.nstrip').forEach(b=>b.onclick=e=>{ e.stopPropagation(); goSheet(()=>condSheet(7))(); });
@@ -2877,6 +2926,7 @@ function officeRender(){
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} sgShow(s); });
   panel.querySelectorAll('[data-done]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const s=sgData.find(x=>x.id===b.dataset.done); if(s) sgComplete(s); });
   if(OFTAB==='ck'){ ckWire(); effWire(panel); }
+  if(OFTAB==='ei') effIssueWire(panel);
   if(OFTAB==='et'||OFTAB==='eq'){ effWire(panel); if(!window._ppl) loadPeople(()=>{ if((OFTAB==='et'||OFTAB==='eq')&&!window._etDirty) officeRender(); }); }
   if(OFTAB==='cam') camWire(panel);
   if(OFTAB==='pf') pfWire(panel);
@@ -3396,7 +3446,7 @@ keyBtn.onclick=()=>toggleKey(!keyBox.classList.contains('open'));
 const farmBounds = paddocks.getBounds();
 function fitFarm(){ map.fitBounds(farmBounds,{padding:[20,20],paddingTopLeft:[20,70]}); updateLabels(); }
 document.getElementById('fitBtn').onclick=()=>{ closeSheet(); fitFarm(); };
-{ const ob=document.getElementById('officeBtn'); if(OFFICE){ ob.dataset.label='Map view'; ob.title='Leave the Reporting Dashboard'; }
+{ const ob=document.getElementById('officeBtn'); if(OFFICE){ ob.dataset.label='Dashboard'; ob.title='Close the dashboard and go back to the map'; ob.classList.add('on'); }
   ob.onclick=()=>{ location.href=location.pathname+(OFFICE?'':'?view=office'); }; }
 document.getElementById('listBtn').onclick=()=>{ clearSel();
   const ps=by('paddocks').map(f=>f.properties).sort((a,b)=>a.num-b.num);
