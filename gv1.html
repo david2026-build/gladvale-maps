@@ -1784,9 +1784,9 @@ document.getElementById('boardBtn').onclick=()=>{ clearSel();
   body.querySelectorAll('.mb tr[data-id]').forEach(tr=>tr.onclick=()=>{ const s=sgData.find(x=>x.id===tr.dataset.id); if(!s) return;
     try{ const g=typeof s.geom==='string'?JSON.parse(s.geom):s.geom; map.fitBounds(L.geoJSON(g).getBounds(),{maxZoom:18}); }catch(e){} state.sugg=true; syncLayers(); sgShow(s); });
   document.getElementById('mbPrint').onclick=()=>{ const w=window.open('','_blank'); if(!w) return toast('Allow pop-ups to print');
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-15h collapsible detail, Dashboard button --></html>`); w.document.close(); }; };
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GV1 Maintenance Board</title><style>body{font-family:Arial,sans-serif;margin:16px}h1{text-align:center;font-size:22px;margin:0 0 4px}.d{text-align:center;color:#666;font-size:12px}.mb{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}.mb th,.mb td{border:1px solid #000;padding:8px;text-align:center;height:28px}.mb th{background:#eee}.mbr-Critical{background:#ff1744;color:#fff}.mbr-Major{background:#ffff00}.mbr-Minor{background:#00ff00}.np{display:none}.mblg{display:grid;grid-template-columns:auto 1fr;font-size:12px;max-width:360px}.mblg span{border:1px solid #000;padding:3px 6px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body><h1>GV1 Maintenance Board</h1><div class="d">Printed ${new Date().toLocaleDateString('en-NZ',{day:'numeric',month:'long',year:'numeric'})}</div>${boardHTML()}<script>setTimeout(()=>print(),300)<\/script></body><!-- build 2026-11-17a one-off tab links, ES fallback, records last --></html>`); w.document.close(); }; };
 // ---- Office view: tabs (Farm information | Maintenance board | Effluent checklist) ----
-let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} try{ const qt=new URLSearchParams(location.search).get('tab'); if(qt&&/^[a-z]{2,5}$/.test(qt)) OFTAB=qt; }catch(e){} if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
+let ENV=null, OFTAB='info'; try{ OFTAB=localStorage.getItem('gvmap.oftab')||'info'; }catch(e){} try{ const qt=new URLSearchParams(location.search).get('tab'); if(qt&&/^[a-z]{2,5}$/.test(qt)){ OFTAB=qt; if(STAFF&&STAFF.tok){ const u=new URL(location.href); u.searchParams.delete('tab'); history.replaceState(null,'',u.pathname+u.search+u.hash); } } }catch(e){}   // a ?tab= link opens that tab once; it is not remembered if(OFTAB==='cam') OFTAB='info';   // the Cameras tab was removed – cameras open from the map
 const BEACON_GUIDE={Red:[2,5],Orange:[5,10],Green:[10,20]}, BCOL={Red:'#d50000',Orange:'#ef6c00',Green:'#2e7d32'};
 // Graduated pod run-time guide from Isla Bank soil moisture (Dave's scale): ~99% is field capacity = don't run; drier soil = longer runs.
 const POD_PTS=[[99.3,0],[99.2,1],[99.1,2],[99,3],[98,5],[97,7],[95,10],[92,13],[90,15],[88,17],[86,20]];   // 99.3% = field capacity at Isla Bank
@@ -1809,10 +1809,14 @@ function effCkLine(p){   // shown in the Effluent system box on the farm info ta
   if(c.today) return `<div class="ckl bad flash">✕ Today's checklist says NOT permitted to start – Lines 1–3 must stay off (green wash is OK)</div>`;
   return `<div class="ckl ${lines?'bad flash':'wrn'}">${lines?'⚠ Lines 1–3 look to be running but there is no effluent checklist today – complete it now':'No effluent checklist today – Lines 1–3 assumed NOT run. Complete it before starting them (green wash is OK)'} <button class="btn" data-tab="ck" style="padding:3px 10px;font-size:12px;margin-left:4px">Open checklist</button></div>`;
 }
+const agoTxt=ms=>{ const m=Math.max(1,Math.round((Date.now()-ms)/6e4)); return m<60?m+' min':m<2880?Math.round(m/60)+' h':Math.round(m/1440)+' days'; };
+function esStaleNote(){   // Environment Southland not answering – say we are using the last data we had and how old it is
+  const st=ENV&&ENV.esStale; if(!st) return ''; const t=Math.min(...Object.values(st));
+  return `<div class="ckl wrn" style="margin:4px 0 8px;font-size:13px">⚠ Environment Southland isn’t responding – showing the last data we had${ENV.smAt?` (reading ${ESC(ENV.smAt)})`:''}, saved ${agoTxt(t)} ago${st.rain&&!st.sm?' (rainfall only)':''}. It keeps trying and updates as soon as ES is back.</div>`; }
 function envBlock(){
   if(!ENV) return `<div class="ofr"><div class="ofcat">Effluent spreading conditions</div><div class="ofg"><div class="oft"><small>Loading Environment Southland data…</small></div></div></div>`;
   const r=ENV.rain||{}, pc=v=>v==null?'':`<span class="rpc ${v>=120?'hi':v<=70?'lo':''}">${v}%</span>`, pb=podBand(ENV.sm), pm=podMin(ENV.sm), col=pb?pb[2]:'#999';
-  return `<div class="ofr"><div class="ofcat">Effluent spreading conditions · Isla Bank <span class="lvchip live">● live</span></div>
+  return `<div class="ofr"><div class="ofcat">Effluent spreading conditions · Isla Bank <span class="lvchip ${ENV.esStale?'ph':'live'}">${ENV.esStale?'last data':'● live'}</span></div>${esStaleNote()}
    <div class="envg"><div class="bcn" id="bcnTile" title="Open the soil moisture graph" style="border-color:${col}">
       <i style="background:${col}"></i><div><small>Soil moisture (ES) · pod run guide</small><b style="color:${col}">${pm!=null?pm+' min':'No data'}</b>${(()=>{ const rate=+((ENV.calc||{}).rate||0), L=(ENV.eff&&ENV.eff.last)||{}, ef=by('farminfo').find(f=>f.properties.kind==='eff'), cp=parseFloat(L['Pod run time (min)']), mx=parseFloat(L['Max run time (h)'])||(ef&&ef.properties.maxrun)||null;
         const g=pm?podMm(pm,rate):null, c=!isNaN(cp)?podMm(cp,rate):null;
@@ -1909,7 +1913,7 @@ function growTile(){
     <div><small>Average for this week</small><b>${R0(normV)}</b><span>${norm.length} walks, 2020–${ly.slice(0,4)}</span></div></div>
    <div class="gtile g2"><div><small>Average pasture cover now</small><b>${R0(cov)}</b><span>kg DM/ha · farm walk ${f(lastWalk)}</span></div>
     <div class="gph"><small>Average cover next week <span class="lvchip ph">placeholder</span></small><b>–</b><span>Will be: cover now + 7 days × predicted growth − what the grazing board says the herd will eat (hectares grazed × cover eaten). Fills in once GV1 is on the grazing board.</span></div></div>
-   <small style="color:#777;font-size:11px;display:block;margin:2px 0 6px">${G.pred?`Inputs: 3-day soil temperature at Isla Bank ${ENV.soilT3}° and soil moisture ${ENV.sm!=null?ENV.sm+'%':'–'} (${dryNow?'drying – below '+DRY+'%':'not limiting'}). Fitted to ${G.n} GV1 farm-walk periods since ${f(G.from)} (MINDA), accuracy about ±${R0(G.rmse)} kg, explains ${Math.round(G.r2*100)}% of the ups and downs. ${G.useDry?`Dry spells in the record (${G.dryN} periods): each % below ${DRY}% has cut growth by about ${(-G.c).toFixed(1)} kg.`:`Soil moisture is in the model but there hasn't been a dry spell since the soil records started (Nov 2025), so it can't weigh it yet – it will start reducing the prediction automatically once dry periods are recorded.`} Soil temperature also carries the seasonal effects that go with it (day length, sunshine), so treat it as a guide.`:`Not enough overlapping soil and farm-walk data yet (${G.n} periods).`}</small>
+   <small class="mkn" style="color:#777;font-size:11px;display:block;margin:2px 0 6px">${G.pred?`Inputs: 3-day soil temperature at Isla Bank ${ENV.soilT3}° and soil moisture ${ENV.sm!=null?ENV.sm+'%':'–'} (${dryNow?'drying – below '+DRY+'%':'not limiting'}). Fitted to ${G.n} GV1 farm-walk periods since ${f(G.from)} (MINDA), accuracy about ±${R0(G.rmse)} kg, explains ${Math.round(G.r2*100)}% of the ups and downs. ${G.useDry?`Dry spells in the record (${G.dryN} periods): each % below ${DRY}% has cut growth by about ${(-G.c).toFixed(1)} kg.`:`Soil moisture is in the model but there hasn't been a dry spell since the soil records started (Nov 2025), so it can't weigh it yet – it will start reducing the prediction automatically once dry periods are recorded.`} Soil temperature also carries the seasonal effects that go with it (day length, sunshine), so treat it as a guide.`:`Not enough overlapping soil and farm-walk data yet (${G.n} periods).`}</small>
    <div class="nlegend" style="margin:0 0 6px"><span>${SN?`Prediction updated ${ESC(SN.at)} · next update about ${nextUp}. `:''}Updates every 6 hours, and straight away when a new MINDA farm walk is loaded (the model is refitted from the walks then).</span><button class="nhbtn" data-cond="1">History ›</button></div></div>`;
 }
 // ---- Effluent training form + effluent quiz (replace the Google Forms). Saved and marked by the backend, emailed to the person, Dave and Jono.
@@ -2004,9 +2008,10 @@ function effIssueHTML(){
   const R=(n,l,opts)=>`<div class="field">${l}<div class="eirad">${opts.map(o=>`<label><input type="radio" name="${n}" value="${ESC(o)}"> ${ESC(o)}</label>`).join('')}</div></div>`;
   return `<datalist id="eiPpl">${ppl.map(n=>`<option>${ESC(n)}</option>`).join('')}</datalist><form id="eiF" class="ckf" autocomplete="off">
    <div class="ckh">${ESC(META.name)} – report an effluent issue or non-compliance</div>
-   <p class="note" style="margin:0 0 8px">If you see a potential effluent issue, spill or non-compliance, stop it first if it is safe to do so, phone the farm manager or a director, then fill this in. Management gets an email straight away.</p>
+   <p class="note" style="margin:0 0 8px">If you see a potential effluent issue, spill or non-compliance, stop it first if it is safe to do so, phone the farm manager or a director, then fill this in. The director gets an email straight away.</p>
    <div class="field">Which form?<div class="eirad"><label><input type="radio" name="kind" value="issue" checked> Potential effluent issue or spill</label><label><input type="radio" name="kind" value="monitor"> Non-compliance monitoring (follow-up on an earlier report)</label></div></div>
    <label class="field">Person completing the form<input name="name" required autocomplete="off" list="eiPpl"></label>
+   <label class="field">Your email <small>(optional – a copy of the report is emailed to you)</small><input name="email" type="email" inputmode="email" autocomplete="email"></label>
    <div class="bkg"><label>Date<input type="date" name="date" value="${today}" required></label><label>Time<input type="time" name="time" value="${now}"></label></div>
    <div id="eiIssue">
     ${T('first','Name of the person who first reported the issue')}${T('others','Other staff on farm this day')}
@@ -2060,7 +2065,7 @@ function nTile(){
   return `<div class="ofr"><div class="ofcat">Nitrogen application conditions <span class="lvchip live">● live</span></div>
    <div class="ntile" style="border-color:${col}"><div class="nst" style="background:${col}">${lab}</div><ul>${why.map(w=>`<li class="${w[0]}">${w[0]==='g'?'✓':w[0]==='o'?'●':'✕'} ${w[1]}</li>`).join('')}</ul>
    ${COND&&COND.length?condStrip(COND,7):(condLoad(7),'')}<div class="nlegend" style="margin-top:4px"><span>Last 7 days, hourly${COND&&COND.length>1?` · changed ${COND.filter((r,i)=>i&&r[5]!==COND[i-1][5]).length}× this week`:''}</span><button class="nhbtn" data-cond="1">History ›</button></div>
-   <small>${lastN?lastN+' · ':''}Rules: green = soil over 9° (3-day average) and ${early?'under 20 mm forecast in 72 h (Jun–Sep)':'5–25 mm forecast in 72 h'}; orange = soil 7–9°${early?' or 20 mm+':', 3–5 mm or over 25 mm'}; red = soil under 7°, over 40 mm in any 24 h${early?'':' or under 3 mm (wait for more rain)'}. Forecast: Yr.</small></div></div>`;
+   <small class="mkn">${lastN?lastN+' · ':''}Rules: green = soil over 9° (3-day average) and ${early?'under 20 mm forecast in 72 h (Jun–Sep)':'5–25 mm forecast in 72 h'}; orange = soil 7–9°${early?' or 20 mm+':', 3–5 mm or over 25 mm'}; red = soil under 7°, over 40 mm in any 24 h${early?'':' or under 3 mm (wait for more rain)'}. Forecast: Yr.</small></div></div>`;
 }
 // ---- Milk production (Fonterra) – pickups from the Fonterra Farm Source page for supply number 31711 GV1.
 // PLACEHOLDER until the database feed is connected: the 5 pickups and season/month totals below were copied from Farm Source on 13 Nov 2026;
@@ -2256,8 +2261,8 @@ function officeFarmInfo(){
    ${effAlertBar()}
    ${pondBalHTML()}
    ${effRunHTML()}
-   <div class="ofr"><div class="ofcat">Records</div><div class="ofg"><a class="oft sheetlink" href="${SHEET_URL}" target="_blank" rel="noopener"><small>Google Sheet</small><b>📊 ${ESC(META.name)} Farm Management ↗</b><span>checklists, tasks, effluent &amp; photo logs, soil temperature history</span></a></div></div>
-   ${eff?effSysHTML(p):''}`;
+   ${eff?effSysHTML(p):''}
+   <div class="ofr"><div class="ofcat">Records</div><div class="ofg"><a class="oft sheetlink" href="${SHEET_URL}" target="_blank" rel="noopener"><small>Google Sheet</small><b>📊 ${ESC(META.name)} Farm Management ↗</b><span>checklists, tasks, effluent &amp; photo logs, soil temperature history</span></a></div></div>`;
 }
 function officeBoard(){   // the full maintenance board, same columns as the Google Sheet / printed board
   const rows=boardRows();
@@ -2299,10 +2304,10 @@ const RLAB=d=>d==='season'?'Season (from 1 June)':d===7?'7 days':d===180?'6 mont
 function chartSheet(title,sub,ranges,days,load,extra){
   openSheet(`<h2>${title}</h2><div class="sub">${sub}</div>${ranges?`<div class="sgr">${ranges.map(d=>`<button class="btn ${d===days?'':'alt'}" data-rg="${d}">${RLAB(d)}</button>`).join('')}</div>`:''}<div id="chBox" class="chbox">Loading…</div>${extra||''}`); sheet.classList.add('wide');
   document.querySelectorAll('[data-rg]').forEach(b=>b.onclick=()=>chartSheet(title,sub,ranges,isNaN(+b.dataset.rg)?b.dataset.rg:+b.dataset.rg,load,extra));
-  Promise.resolve(load(days)).then(cfg=>{ const box=document.getElementById('chBox'); if(box) drawChart(box,cfg); }).catch(()=>{ const box=document.getElementById('chBox'); if(box) box.textContent='Could not load the data'; });
+  window._serStaleAt=null; Promise.resolve(load(days)).then(cfg=>{ const box=document.getElementById('chBox'); if(box){ drawChart(box,cfg); if(window._serStaleAt){ const n=document.createElement('div'); n.className='ckl wrn'; n.style.cssText='margin:6px 0;font-size:13px'; n.textContent='⚠ Environment Southland isn’t responding – this graph is the last data we had, saved '+agoTxt(window._serStaleAt)+' ago. It updates as soon as ES is back.'; box.parentNode.insertBefore(n,box); } } }).catch(()=>{ const box=document.getElementById('chBox'); if(box) box.textContent='Could not load the data'; });
 }
 const dms=d=>new Date(d+'T00:00:00').getTime();
-const serGet=(s,d)=>fetch(SUGGEST_URL+'?series='+s+'&days='+d).then(r=>r.json());
+const serGet=(s,d)=>fetch(SUGGEST_URL+'?series='+s+'&days='+d).then(r=>r.json()).then(j=>{ if(j&&j.stale) window._serStaleAt=j.stale; return j; });
 function soilGraph(days){ chartSheet('Soil temperature (10 cm) – this year vs last year','Live · Environment Southland soil monitoring at Isla Bank. Solid = this year (shading = daily low–high), dashed = the same dates last year, carried on 2 weeks ahead to show where it went next. Every day is saved in the Soil temperature history tab of the farm sheet.',[7,30,60,90,'season',365],days||'season',
   d=>serGet('soilT',d).then(r=>({unit:' °C',refs:[[10,'#2e7d32','10 °C']],series:(r.sites||[]).map((s,i)=>({name:s.name+(s.latest?` – now ${(+s.latest[1]).toFixed(1)}°C`:'')+(i?((p=>p?` – ${p[1]}°C on this day`:' – last year before 13 Nov 2025 isn’t available from Environment Southland')(s.pts.find(p=>p[0]===ymdL(new Date())))):''),color:s.avg?'#2e7d32':i?'#1565c0':'#6d4c41',dash:!!i,band:!i,pts:s.pts.map(p=>[dms(p[0]),p[1],p[2],p[3]])}))}))); }
 function smSheet(days){ chartSheet('Soil moisture – Isla Bank','Live · Environment Southland soil moisture (water-filled pores). Shading = the graduated pod run-time guide: around 99% is field capacity (0 min), drier soil allows longer runs.',[7,30,60,90,180,365],days||30,
@@ -2779,7 +2784,7 @@ function officeChecklistMain(){
   const fmt=v=>v==null||!isFinite(v)?'–':(Math.round(v*10)/10).toLocaleString('en-NZ');
   const lk=ENV?leakState():null;
   return `${st}${lk&&lk.al!=='ok'?`<div style="margin:0 16px">${leakLine()}</div>`:''}<form id="ckF" class="ckf" autocomplete="off">
-   <div class="ckh">Today's conditions</div>
+   <div class="ckh">Today's conditions</div>${esStaleNote()}
    <div class="bcbox" id="ckBc" title="Tap for the soil moisture graph" style="cursor:pointer;border-color:${pb?pb[2]:'#ccc'}"><div class="bctop"><i style="background:${pb?pb[2]:'#999'}"></i><div><small>Soil moisture · Isla Bank (Environment Southland, live)</small><b style="color:${pb?pb[2]:'#333'}">${smv!=null?`${smv}% → pod run guide ${pm} min`:'Not available'}</b><small>${ESC((ENV&&ENV.smAt)||'')} · <a href="#" id="ckSmG">📈 more history</a></small></div></div>${recTxt?`<div class="ckl ${RA.h?'ok':'bad'}" style="margin:8px 0 4px;font-size:14px">${recTxt}</div>`:''}
      ${smGraph()}<div class="smk">Last 30 days · shading shows the pod run-time guide bands – around 99% is field capacity (don’t run), drier soil allows longer runs</div>
      ${podTable(smv)}</div>
