@@ -2172,7 +2172,7 @@ function pondBalHTML(){ const fc=ENV&&ENV.fc, E=effLive(), area=POND.catch+POND.
 // Pond level is shown alongside for context (a full pond with hours left unused is the problem) but does not change the available hours.
 const PCAP={main:19567,west:3485}, RUN_SHARE=0.9;
 const EH=()=>{ const h=ENV&&ENV.effHist; if(!h) return {runs:[],pond:[]};
-  if(!h._n){ h._n=1; const fix=d=>{ d=String(d||''); if(/^\d{4}-\d\d-\d\d/.test(d)) return d.slice(0,10); const t=new Date(d); return isNaN(t)?d:ymdL(t); };   // the sheet can hand dates back as "Thu Nov 19 2026 …"
+  if(!h._n){ h._n=1; const fix=d=>{ d=String(d||''); if(/^\d{4}-\d\d-\d\d/.test(d)) return d.slice(0,10); let t=new Date(d+(/\d{4}/.test(d)?'':' '+new Date().getFullYear())); if(!isNaN(t)&&t-Date.now()>2*864e5) t.setFullYear(t.getFullYear()-1); return isNaN(t)?d:ymdL(t); };   // the backend can send just "Thu Nov 19" (no year)   // the sheet can hand dates back as "Thu Nov 19 2026 …"
     const M={}; (h.pond||[]).forEach(p=>{ const d=fix(p.d), o=M[d]||(M[d]={d}); ['m','w','e','a'].forEach(k=>{ if(p[k]!=null) o[k]=p[k]; }); o.src=p.src; o.t=p.t; });
     h.pond=Object.keys(M).sort().map(k=>M[k]); (h.runs||[]).forEach(r=>r.d=fix(r.d)); h.runs=(h.runs||[]).sort((a,b)=>a.d<b.d?-1:1); }
   return h; };
@@ -3539,5 +3539,5 @@ const hp = new URLSearchParams(location.hash.slice(1)); if(hp.get('p')) selectPa
   b.style.cssText='position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:1200;background:#6a1b9a;color:#fff;padding:8px 14px;border-radius:8px;font:600 13px/1.35 Arial,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:90vw;text-align:center';
   b.textContent=(q.get('t')||'Highlighted paddocks')+': '+fs.map(f=>f.properties.num).join(', ')+' – '+Math.round(ha*100)/100+' ha'; document.body.appendChild(b); })();
 </script>
-</body><!-- build 2026-11-20c pond estimate (main/west/east) + live effluent shed + sheet date fix -->
+</body><!-- build 2026-11-20d pond estimate (main/west/east) + live effluent shed + sheet date fix -->
 </html>
