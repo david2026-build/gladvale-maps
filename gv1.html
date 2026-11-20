@@ -822,6 +822,7 @@ padding:8px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(1
 .ofnote{margin:8px 16px 0;font-size:11px;color:#888}
 .ckl.wrn{background:#fff3e0;color:#e65100;border:1px solid #ffb74d}.ckb.wrn{background:#ffe0b2;color:#e65100}
 .flasho{animation:flasho 1s infinite}@keyframes flasho{50%{background:#ffcc80;box-shadow:0 0 10px 2px rgba(239,108,0,.6)}}
+.phbs{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}.phdel{color:#c62828!important}.phdel.sure{background:#c62828!important;color:#fff!important}#lkNew img{width:72px;height:54px;object-fit:cover;border-radius:6px}
 .lkph{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0}.lkph img{width:72px;height:54px;object-fit:cover;border-radius:6px}.lkph small{color:#666;font-size:11.5px}.phb{padding:6px 12px;font-size:13px;cursor:pointer}
 .phg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.phc{border:2px solid #c8e6c9;border-radius:10px;padding:8px;background:#fff;display:flex;flex-direction:column;gap:4px}.phc.crit{border-color:#ef5350}.phc.wrn{border-color:#ffb74d}.phc img,.phc .phn{width:100%;height:90px;object-fit:cover;border-radius:6px;background:#eef1ea;display:flex;align-items:center;justify-content:center;color:#999;font-size:12px}.phc small{color:#666;font-size:11px}
 .ebg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-items:start}.eb{width:100%;border-collapse:collapse;font-size:12px}.eb th,.eb td{border:1px solid #bbb;padding:3px 4px;text-align:center}.eb th{background:#eee;font-size:11px}.eb th small{display:block;font-weight:500;color:#1565c0}.eb .pd{font-weight:800;background:#f6f6f6}.ebc{cursor:pointer;min-width:34px;height:20px}.ebc:hover{background:#e3f2fd}.ebc.set{background:#efebe9;font-weight:700;color:#4e342e}.eb tr.now td{box-shadow:inset 0 0 0 1px #1565c0}.eb tr.now .pd{background:#bbdefb}
@@ -2209,12 +2210,25 @@ function pondAt(d){ let r=null; for(const p of EH().pond){ if(p.d<=d&&pondPct(p)
 // Readings saved from the checklist without changing the predicted value are not treated as corrections.
 // The weeping-wall pump keeps moving pond 1 (west) into pond 2 (main), so the west pond is held at its last reading and the change goes on the main pond.
 function pondT(L){ const m=String(L.t||'').match(/(\d{1,2}):(\d\d)\s*(am|pm)/i); let h=12, mi=0; if(m){ h=+m[1]%12+(/pm/i.test(m[3])?12:0); mi=+m[2]; } return dms(L.d)+(h*60+mi)*6e4; }
-function pondFlow(L){ const td=ymdL(new Date()), now=Date.now(), t0=Math.min(now,pondT(L)), days=(now-t0)/864e5, R=window._rain365||{}, area=POND.catch+POND.ponds;
-  let rain=0; Object.keys(R).forEach(k=>{ if(k>L.d&&k<=td) rain+=+R[k]||0; });
+// raw water balance from reading L to time `end` (default now): rain on catchment + wash water − effluent pumped (runs on/after the reading day; today's run so far)
+function pondFlowRaw(L,end){ const now=Date.now(); end=Math.min(end||now,now); const td=ymdL(new Date()), ed=ymdL(new Date(end)), t0=Math.min(end,pondT(L)), days=Math.max(0,(end-t0)/864e5), R=window._rain365||{}, area=POND.catch+POND.ponds;
+  let rain=0; Object.keys(R).forEach(k=>{ if(k>L.d&&k<=ed) rain+=+R[k]||0; });
   const wash=days*(MILK.cows||0)*POND.washL/1000; let out=0;
-  if(L.d<td){ const n=Math.round((dms(td)-dms(L.d))/864e5); out=effDays(n+1).filter(x=>x.d>=L.d&&x.d<td).reduce((a,x)=>a+(x.m3||0),0); }
-  const E=effLive(); if(E&&E.flow&&E.pumpDone>0){ const st=E.st.getTime(), el=Math.max(1,now-st), after=Math.max(0,now-Math.max(st,t0)); out+=E.pumpDone*E.flow*Math.min(1,after/el); }
-  const inR=rain*area/1000; return {days,rain:Math.round(rain*10)/10,inR,wash,out,net:inR+wash-out}; }
+  if(L.d<ed){ const n=Math.round((dms(td)-dms(L.d))/864e5); out=effDays(n+1).filter(x=>x.d>=L.d&&x.d<ed).reduce((a,x)=>a+(x.m3||0),0); }
+  if(ed===td){ const E=effLive(); if(E&&E.flow&&E.pumpDone>0){ const st=E.st.getTime(), el=Math.max(1,now-st), after=Math.max(0,now-Math.max(st,t0)); out+=E.pumpDone*E.flow*Math.min(1,after/el); } }
+  return {days,rain:Math.round(rain*10)/10,inR:rain*area/1000,wash,out}; }
+// Learning (Dave, 20 Nov 2026): every pair of manual main-pond readings is compared with what the model predicted between them.
+// Rain factor k = how much of the rain on the catchment really reaches the ponds; drift b = any steady gain/loss per day the model doesn't explain (m³/day).
+function pondLearn(){ const h=EH(); if(h._learn&&h._learnR===window._rain365) return h._learn; h._learnR=window._rain365; const R=h.pond.filter(p=>p.m!=null&&!pondPred(p,'m')), iv=[];
+  for(let i=1;i<R.length;i++){ const A=R[i-1], B=R[i], tB=pondT(B), F=pondFlowRaw(A,tB); if(F.days<0.5||F.days>14) continue; iv.push({A,B,days:F.days,inR:F.inR,wash:F.wash,out:F.out,act:(B.m-A.m)/100*PCAP.main}); }
+  let k=1, b=0; const wet=iv.filter(x=>x.inR>50); if(wet.length>=2){ const y=wet.reduce((a,x)=>a+x.act-x.wash+x.out,0), r=wet.reduce((a,x)=>a+x.inR,0); k=Math.max(0.3,Math.min(2.5,y/r)); }
+  if(iv.length>=2){ const d=iv.reduce((a,x)=>a+x.days,0); b=Math.max(-250,Math.min(250,iv.reduce((a,x)=>a+x.act-(k*x.inR+x.wash-x.out),0)/d)); }
+  const err=iv.length?Math.round(iv.reduce((a,x)=>a+Math.abs(x.act-(x.inR+x.wash-x.out))/PCAP.main*100,0)/iv.length*10)/10:null;
+  return h._learn={k:Math.round(k*100)/100,b:Math.round(b),n:iv.length,iv,err}; }
+function pondFlow(L,end){ const F=pondFlowRaw(L,end), Ln=pondLearn(), inR=F.inR*Ln.k, drift=Ln.b*F.days; return Object.assign(F,{inRraw:F.inR,inR,drift,net:inR+F.wash+drift-F.out}); }
+// seasonal pond targets – Farm Policy, "Seasonal targets for pond levels": summer (Dec–Feb) under 25% full, autumn (Mar–May) under 20%. Winter "as empty as possible", spring filling – no number given.
+const POND_TGT=m=>m===12||m<=2?25:m>=3&&m<=5?20:null;
+const pondTgt=d=>POND_TGT(+String(d).slice(5,7));
 const PNAME={m:'main',w:'west',e:'east'};
 const pondPred=(p,k)=>{ const m=String(p.src||'').match(/predicted, not changed(?::\s*([a-z, ]+))?\)/i); return !!m&&(!m[1]||m[1].includes(PNAME[k])); };   // saved without being changed = not a correction
 function pondModel(){ const H=EH().pond; if(!H.length) return null;
@@ -2268,6 +2282,7 @@ function effAlerts(){ if(!ENV) return []; const P=pondNow(), A=availDay(ENV.sm),
   else if(P&&P.pct>=80) out.push(['wrn',`Ponds ${pr}% full – over 80%, orange alert. Management has been emailed.`]);
   else if(P&&P.pct>=50&&go&&late) out.push(['wrn',`Pond ${pr}% full and not started yet – the soil allows ${hrs(A.h)} today (pods ${A.pod} min).`]);
   if(P&&P.pct>=50&&go&&run&&run<A.h*0.85) out.push(['wrn',`Only ${hrs(run)} max run time set today – ${hrs(A.h)} is available at pods ${A.pod} min (${A.lim}) and the pond is ${pr}% full.`]);
+  const tg=pondTgt(ymdL(now)); if(P&&P.src!=='placeholder'&&tg&&P.main!=null&&P.main>tg) out.push([P.main>tg+15?'crit':'wrn',`Main pond ${Math.round(P.main)}% – the Farm Policy target for ${now.getMonth()>=2&&now.getMonth()<=4?'autumn':'summer'} is under ${tg}% full. Run the system every day the soil allows to get it down.`]);
   if(P&&P.src==='placeholder') out.forEach(a=>a[1]+=' (pond level is a placeholder until a reading is entered)');
   return out; }
 function effAlertBar(){ const a=effAlerts(); return a.map(x=>`<div class="ckl ${x[0]==='crit'?'bad flash':'wrn'}" data-rt="1" style="cursor:pointer;margin:0 0 6px">⚠ ${x[1]}</div>`).join(''); }
@@ -2294,15 +2309,27 @@ function effRunSheet(days){ const col=p=>p==null?'#999':p>=85?'#2e7d32':p>=60?'#
     return {unit:' h',yMin:0,series:[{name:'Hours run per month',color:'#6d4c41',bar:true,pts:ks.map(k=>[dms(k+'-15'),Math.round(M[k][0])])},{name:'Hours available',color:'#2e7d32',dash:true,pts:ks.map(k=>[dms(k+'-15'),Math.round(M[k][1])])}]}; },
     `<div class="ckh" style="margin-top:10px">Monthly totals</div><table class="etab rtt"><tr><th>Month</th><th>Hours run</th><th>Hours available</th><th>% used</th><th>Missed</th><th>Days run / runnable</th><th>Over the guide</th><th>Pumped</th></tr>
     ${effMonths(12).map(m=>`<tr><td>${MON(m.k)}</td><td>${hrs(m.runH)}</td><td>${hrs(m.aH)}</td><td><b style="color:${col(m.pct)}">${m.pct==null?'–':m.pct+'%'}</b></td><td style="color:${m.miss?'#d50000':'inherit'}">${m.miss?hrs(m.miss):''}</td><td>${m.run} / ${m.aDays}</td><td style="color:${m.over?'#d50000':'inherit'}">${m.over?m.over+' day'+(m.over>1?'s':''):''}</td><td>${m.m3?'≈ '+r0(m.m3)+' m³':'0'}</td></tr>`).join('')}</table><div class="ckh" style="margin-top:10px">Soil moisture guide</div>${podTable(ENV&&ENV.sm)}`); }
+// predicted main pond line: from each manual reading, day by day, what the model expected until the next reading (then it resets to the reading);
+// after the last reading it runs to now and on through the rain forecast for the next 3 days (pumping assumed as today's checklist, or none)
+function pondPredLine(from){ const R=EH().pond.filter(p=>p.m!=null&&!pondPred(p,'m')), out=[], now=Date.now(), cl=v=>Math.max(0,Math.min(100,Math.round(v*10)/10));
+  R.forEach((A,i)=>{ const tA=pondT(A), tB=i<R.length-1?pondT(R[i+1]):now; if(tB<dms(from)) return; out.push([tA,A.m]);
+    for(let t=tA+864e5;t<tB;t+=864e5) out.push([t,cl(A.m+pondFlow(A,t).net/PCAP.main*100)]);
+    out.push([tB,cl(A.m+pondFlow(A,tB).net/PCAP.main*100)]); });
+  const M=pondModel(), fc=ENV&&ENV.fc, E=effLive(); if(M&&M.main!=null&&fc&&fc.days){ let v=M.main; const Ln=pondLearn(), area=POND.catch+POND.ponds, wash=(MILK.cows||0)*POND.washL/1000, pump=E&&E.flow?E.pumpH*E.flow:0;
+    fc.days.slice(1,4).forEach((d,i)=>{ v=cl(v+((+d.rain||0)*area/1000*Ln.k+wash+Ln.b-pump)/PCAP.main*100); out.push([dms(d.d)+12*36e5,v]); }); }
+  return out; }
+function pondTgtLine(from){ const out=[], end=Date.now()+4*864e5; for(let t=dms(from);t<=end;t+=864e5){ out.push([t,pondTgt(ymdL(new Date(t)))]); } return out.filter(x=>x[1]!=null); }
 function pondSheet(days){ const d=days||90, from=ymdL(new Date(Date.now()-d*864e5)), P=EH().pond.filter(p=>p.d>=from), pn=pondNow();
   const est=pn&&pn.src!=='placeholder'?`<div class="ckl ok" style="margin-top:10px">Estimated now: <b>main ${pn.main!=null?Math.round(pn.main)+'%':'–'}</b> · <b>west ${pn.west!=null?Math.round(pn.west)+'%':'–'}</b> · <b>east ${pn.east!=null?pn.east+'%':'–'}</b>${pn.pct!=null?` · overall (main + west) ${Math.round(pn.pct)}%`:''}<br><small style="font-weight:400">Main pond from its last reading (${pn.Lm?dshort(pn.Lm.d)+' – '+pn.Lm.m+'%':'none'}), west pond from its last reading (${pn.Lw?dshort(pn.Lw.d)+' – '+pn.Lw.w+'%':'none'}), east pond held at its last reading (${pn.Le?dshort(pn.Le.d)+' – '+pn.Le.e+'%':'none yet'}), plus rain ${pn.flow?pn.flow.rain:0} mm, shed wash water and the effluent pumped since. Enter a new reading whenever you check the markers – it becomes the new starting point.</small></div>`:'';
   const form=est+`<div class="ckh" style="margin-top:12px">Record today’s pond levels</div><div class="bkg"><label>Main pond (No 2) %<input id="pdM" type="number" inputmode="decimal" min="0" max="100" step="1" placeholder="${pn&&pn.main!=null?'est. '+Math.round(pn.main)+'%':''}"></label><label>West pond (No 1) %<input id="pdW" type="number" inputmode="decimal" min="0" max="100" step="1" placeholder="${pn&&pn.west!=null?'est. '+Math.round(pn.west)+'%':''}"></label><label>East pond %<input id="pdE" type="number" inputmode="decimal" min="0" max="100" step="1" placeholder="${pn&&pn.east!=null?'last '+pn.east+'%':''}"></label></div>
     <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0"><b style="font-size:12px;color:#5b6b55">READ BY</b>${signerSel('pdName',true)}<button class="btn" id="pdGo" type="button">Save pond levels</button></div>
     <p class="note">Enter the level of each pond you have read (one or both). Saved to the “Pond levels” tab of the farm sheet; the daily effluent checklist has the same boxes. Once the level sensors are connected they will fill this in automatically.</p>`;
+  const Ln=pondLearn(), tg=pondTgt(ymdL(new Date())), learnTxt=`<div class="ckh" style="margin-top:12px">Predicted vs actual</div><p class="note keep">Blue = the main pond levels people have entered. Orange dashed = what the dashboard predicted from each reading (rain on the yards, pads and ponds + shed wash water − effluent pumped), carried on through the next 3 days of forecast rain. ${Ln.n>=2?`Learned from <b>${Ln.n}</b> pairs of readings: rain factor <b>×${Ln.k}</b>${Ln.b?`, plus <b>${Ln.b>0?'+':''}${Ln.b} m³/day</b> the model didn’t explain`:''} (average miss before learning ${Ln.err}% of the main pond).`:`The model learns from every pair of main pond readings – after a few days of corrected readings it adjusts how much rain reaches the ponds and any steady gain or loss it hasn’t accounted for${Ln.n?` (${Ln.n} pair so far)`:''}.`}</p>
+    <p class="note">Green dashed = seasonal pond targets from the <a href="https://docs.google.com/document/d/1vlBrEMGO7IWPs9_l5Qxy-hfQFD0AyUdEUfOcipXxqA0/edit#heading=h.99xzz2vkmbb4" target="_blank" rel="noopener">Farm Policy</a> (“Seasonal targets for pond levels”): summer (Dec–Feb) under 25% full, autumn (Mar–May) under 20% full. Winter is “as empty as possible” and spring is the filling season – no number is set for those, so only the 80% / 90% alerts apply. ${tg?`Today’s target: under ${tg}%.`:'No numeric target this season.'} Management is emailed if a reading is over the target for the time of year.</p>`;
   chartSheet('Effluent pond levels','Overall storage = Main pond (No 2, 19,567 m³) + West pond (No 1, 3,485 m³). Alert levels (effluent management plan): 80% = orange alert, 90% = red alert – management is emailed automatically when a reading is entered.',[30,90,180,365],d,()=>{
     if(!P.length) return {ph:true,phText:'No pond readings recorded yet – enter one below',unit:'%',yMin:0,yMax:100,refs:[[90,'#d50000','90% – red alert'],[80,'#ef6c00','80% – orange alert']],series:[{name:'Overall storage (placeholder today)',color:'#6d4c41',pts:pn?[[Date.now(),pn.pct]]:[]}]};
-    const pts=k=>P.filter(p=>p[k]!=null).map(p=>[dms(p.d),p[k]]);
-    return {unit:'%',yMin:0,yMax:100,refs:[[90,'#d50000','90% – red alert'],[80,'#ef6c00','80% – orange alert']],series:[{name:'Overall storage',color:'#6d4c41',pts:P.map(p=>[dms(p.d),pondPct(p)]).filter(x=>x[1]!=null)},{name:'Main pond',color:'#1565c0',dash:true,pts:pts('m')},{name:'West pond',color:'#00838f',dash:true,pts:pts('w')},{name:'East pond',color:'#8e24aa',dash:true,pts:pts('e')}].concat(pn&&pn.src!=='placeholder'&&pn.pct!=null?[{name:'Estimated now',color:'#ef6c00',pts:[[Date.now(),pn.pct]]}]:[])}; },form);
+    const pts=k=>P.filter(p=>p[k]!=null).map(p=>[pondT(p),p[k]]);
+    return {unit:'%',yMin:0,yMax:100,refs:[[90,'#d50000','90% – red alert'],[80,'#ef6c00','80% – orange alert']],series:[{name:'Main pond – actual (readings)',color:'#1565c0',pts:pts('m')},{name:'Main pond – predicted',color:'#c2185b',dash:true,pts:pondPredLine(from)},{name:'Seasonal target (Farm Policy)',color:'#2e7d32',dash:true,pts:pondTgtLine(from)},{name:'West pond',color:'#00838f',dash:true,pts:pts('w')},{name:'East pond',color:'#8e24aa',dash:true,pts:pts('e')}].concat([])}; },learnTxt+form);
   const go=document.getElementById('pdGo'); if(go) go.onclick=()=>{ const m=document.getElementById('pdM').value.trim(), w=document.getElementById('pdW').value.trim(), e=document.getElementById('pdE').value.trim(), name=signerName('pdName','');
     if(!m&&!w&&!e) return toast('Enter at least one pond level'); if(!name||name==='__other') return toast('Choose who read the levels');
     go.disabled=true; go.textContent='Saving…';
@@ -2764,7 +2791,7 @@ function officeEffBoard(){
   const card=([k,lab])=>{ const s=phState(k); return `<div class="phc ${s.al==='crit'?'crit flash':s.al==='warn'?'wrn flasho':''}">
      ${s.p?`<a href="https://drive.google.com/file/d/${s.p.id}/view" target="_blank" rel="noopener"><img src="https://drive.google.com/thumbnail?id=${s.p.id}&sz=w300" alt=""></a>`:'<div class="phn">no photo yet</div>'}
      <b>${lab}</b><small>${s.p?`${dshort(s.p.date)} · ${s.n} day${s.n===1?'':'s'} ago · ${ESC(s.p.by)}`:'Weekly photo needed'}</small>
-     <label class="btn alt phb">📷 Take photo<input type="file" accept="image/*" capture="environment" data-ph="${k}" hidden></label></div>`; };
+     <div class="phbs"><label class="btn alt phb">📷 Take photo<input type="file" accept="image/*" capture="environment" data-ph="${k}" hidden></label><label class="btn alt phb">🖼 Choose saved photo<input type="file" accept="image/*" data-ph="${k}" hidden></label>${s.p?`<button class="btn alt phb phdel" type="button" data-phdel="${k}">🗑 Remove this photo</button>`:''}</div></div>`; };
   const tbl=([line,pads])=>{ const lt=ebLatest(line,pads); return `<div class="ebt"><table class="eb"><tr><th colspan="5">Effluent ${line}${lt?`<small>pods now: paddock ${lt.pd} (since ${dshort(lt.d)})</small>`:''}</th></tr><tr><th>Pdk</th><th>Shift 1</th><th>Shift 2</th><th>Shift 3</th><th>Shift 4</th></tr>
      ${pads.map(pd=>{ const r=ebGet(line,pd), col=[[],[],[],[]]; r.forEach((d,i)=>col[i%4].push(d)); return `<tr class="${lt&&lt.pd===pd?'now':''}"><td class="pd">${pd}</td>${col.map((ds,i)=>`<td class="ebc ${ds.length?'set':''}" data-l="${line}" data-p="${pd}" title="${ds.length>1?'Shift '+(i+1)+' and shift '+(i+5)+'…':''}">${ds.map(dshort).join('<br>')}</td>`).join('')}</tr>`; }).join('')}</table></div>`; };
   const sol=`<div class="ebt ebsol"><table class="eb"><tr><th colspan="3">Solid effluent paddocks</th></tr><tr><th>Pdk</th><th>Date</th><th>Recorded by</th></tr>
@@ -2783,6 +2810,9 @@ function ebWire(){
   const post=b=>fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(x=>x.json());
   document.querySelectorAll('[data-ph]').forEach(inp=>inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const name=who(); if(!name) return;
     toast('Uploading photo…'); shrinkPhoto(f).then(ph=>post({action:'effphoto',farm:META.name,kind:inp.dataset.ph,photo:ph,name})).then(x=>{ if(!x.ok) return toast(x.error||'Could not save'); ENV.photos=x.photos; officeRender(); toast('Photo saved'); }).catch(()=>toast('Could not upload the photo')); });
+  document.querySelectorAll('[data-phdel]').forEach(b=>b.onclick=()=>{ if(!b.dataset.sure){ b.dataset.sure='1'; b.textContent='Tap again to remove it'; b.classList.add('sure'); setTimeout(()=>{ if(b.isConnected){ delete b.dataset.sure; b.textContent='🗑 Remove this photo'; b.classList.remove('sure'); } },5000); return; }
+    const name=who(); if(!name) return; b.disabled=true; toast('Removing photo…');
+    post({action:'effphotodel',farm:META.name,kind:b.dataset.phdel,name}).then(x=>{ if(!x.ok){ b.disabled=false; return toast(x.error||'Could not remove'); } ENV.photos=x.photos; officeRender(); toast('Photo removed – the one before it is back'); }).catch(()=>{ b.disabled=false; toast('No connection – not removed'); }); });
   const em=document.getElementById('ebMap'); if(em) em.onclick=()=>{ state.effapp=!isOn('effapp'); try{ localStorage.setItem(STKEY,JSON.stringify(state)); }catch(e){} syncLayers(); if(isOn('effapp')){ effAppDraw(); fitFarm(); } officeRender(); };
   document.querySelectorAll('.ebc').forEach(td=>td.onclick=()=>{ const name=who(); if(!name) return; ebSheet(td.dataset.l,td.dataset.p,name,post); });
 }
@@ -2888,7 +2918,9 @@ function officeChecklistMain(){
    ${leakLine()}
    <label class="field">Date of last effluent pond leak detection check (monthly)<input name="leak" type="date" value="${ESC(cal.leak||L['Last pond leak check'])}"></label>
    <div class="lkph">${cal.leakPhoto?`<a href="https://drive.google.com/file/d/${cal.leakPhoto}/view" target="_blank" rel="noopener"><img src="https://drive.google.com/thumbnail?id=${cal.leakPhoto}&sz=w200" alt=""></a><small>Photo for the check on ${dshort(cal.leakPhotoDate)}</small>`:'<small>No leak check photo yet</small>'}
-     <label class="btn alt phb">📷 Photo of the leak check<input type="file" accept="image/*" capture="environment" id="lkPh" hidden></label><img id="lkPrev" style="display:none"></div>
+     ${cal.leakPhoto&&cal.leakPhoto!=='pending'?'<button class="btn alt phb phdel" type="button" id="lkDel">🗑 Remove saved photo</button>':''}
+     <label class="btn alt phb">📷 Take photo of the leak check<input type="file" accept="image/*" capture="environment" class="lkIn" hidden></label><label class="btn alt phb">🖼 Choose saved photo<input type="file" accept="image/*" class="lkIn" hidden></label>
+     <span id="lkNew" style="display:none;align-items:center;gap:6px"><img id="lkPrev" alt=""><button class="btn alt phb" type="button" id="lkX">✕ Don’t use this photo</button></span></div>
    <p class="note" style="margin-top:2px">When you change the leak check date, a photo of the leak detection check is needed before it will save.</p>
    <label class="field">Date of last application-rate bucket test <small>(at least once a year)</small><input name="bucket" type="date" value="${ESC(cal.bucket||L['Last bucket test'])}"></label>
    ${(()=>{ const t=MT.find(x=>x[0]==='bucket'), s=t?mtYear(t):['','']; return `<div class="ckl ${s[0]==='ok'?'ok':s[0]==='wrn'?'wrn':'bad'}" style="margin:0 0 6px">Bucket test: ${s[1]}</div>`; })()}
@@ -2931,7 +2963,12 @@ function ckWire(){
   const nr=document.getElementById('ckNR'); if(nr) nr.onclick=()=>{ const name=signerName('nrName',''); if(!name||name==='__other') return toast('Choose who is recording');
     nr.disabled=true; fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'task',farm:META.name,id:'effck',tname:'Effluent daily checklist',name,note:'system not run today (Lines 1–3 off)'})}).then(x=>x.json())
       .then(x=>{ if(!x.ok){ nr.disabled=false; return toast(x.error||'Could not save'); } ENV.tasks=x.tasks; officeRender(); toast('Recorded – system not run today'); }).catch(()=>{ nr.disabled=false; toast('No connection'); }); };
-  let leakPh=''; const lkIn=document.getElementById('lkPh'); if(lkIn) lkIn.onchange=()=>{ const fl=lkIn.files[0]; if(!fl) return; shrinkPhoto(fl).then(d=>{ leakPh=d; const pv=document.getElementById('lkPrev'); pv.src=d; pv.style.display='block'; window._ckDirty=true; }).catch(()=>toast('Could not read that photo')); };
+  let leakPh=''; document.querySelectorAll('.lkIn').forEach(lkIn=>lkIn.onchange=()=>{ const fl=lkIn.files[0]; if(!fl) return; shrinkPhoto(fl).then(d=>{ leakPh=d; document.getElementById('lkPrev').src=d; document.getElementById('lkNew').style.display='inline-flex'; window._ckDirty=true; }).catch(()=>toast('Could not read that photo')); lkIn.value=''; });
+  const lkX=document.getElementById('lkX'); if(lkX) lkX.onclick=()=>{ leakPh=''; document.getElementById('lkNew').style.display='none'; toast('Photo removed – choose the right one'); };
+  const lkDel=document.getElementById('lkDel'); if(lkDel) lkDel.onclick=()=>{ if(!lkDel.dataset.sure){ lkDel.dataset.sure='1'; lkDel.textContent='Tap again to remove it'; lkDel.classList.add('sure'); setTimeout(()=>{ if(lkDel.isConnected){ delete lkDel.dataset.sure; lkDel.textContent='🗑 Remove saved photo'; lkDel.classList.remove('sure'); } },5000); return; }
+    const name=signerName('ckName','ckOther'); if(!name||name==='__other') return toast('Choose your name at the bottom of the checklist first'); lkDel.disabled=true;
+    fetch(SUGGEST_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'effcalc',farm:META.name,name,leakPhotoDel:1})}).then(x=>x.json())
+     .then(x=>{ if(!x.ok){ lkDel.disabled=false; return toast(x.error||'Could not remove'); } if(ENV) ENV.calc=x.calc; toast('Leak check photo removed – add the right one'); officeRender(); }).catch(()=>{ lkDel.disabled=false; toast('No connection – not removed'); }); };
   const leakOld=((ENV&&ENV.calc)||{}).leak||'';
   const needPh=()=>f.leak.value&&f.leak.value!==leakOld&&!leakPh;
   const upd=()=>{ window._ckDirty=true; guide(); depth(); warn(); recalc(); oth(); };
@@ -3566,5 +3603,5 @@ const hp = new URLSearchParams(location.hash.slice(1)); if(hp.get('p')) selectPa
   b.style.cssText='position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:1200;background:#6a1b9a;color:#fff;padding:8px 14px;border-radius:8px;font:600 13px/1.35 Arial,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);max-width:90vw;text-align:center';
   b.textContent=(q.get('t')||'Highlighted paddocks')+': '+fs.map(f=>f.properties.num).join(', ')+' – '+Math.round(ha*100)/100+' ha'; document.body.appendChild(b); })();
 </script>
-</body><!-- build 2026-11-20f live Fonterra milk when hosted in the Gladvale database app -->
+</body><!-- build 2026-11-20g photos choose/remove + pond predicted vs actual, learning, seasonal targets -->
 </html>
